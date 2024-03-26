@@ -1,0 +1,26 @@
+.vscode
+
+# Do not change the order of these groups
+cert/*
+!cert/.gitkeep
+
+session/*
+!session/.gitkeep
+
+data/file/*
+!data/file/.gitkeep
+!data/file/demo/
+
+data/user/admin/*
+!data/user/admin/.gitkeep
+!data/user/admin/demo/
+
+data/user/customer/*
+!data/user/customer/.gitkeep
+!data/user/customer/demo/
+
+# Ignore packages
+/vendor/
+
+# Ignore .env file
+.env

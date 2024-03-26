@@ -1,0 +1,18 @@
+.ammount_input {
+    width: 75px;
+}
+
+.book_image {
+    width: 200px;
+}
+
+
+.payment {
+    width: 250px;
+}
+
+@media only screen and (max-width: 768px) {
+    .payment {
+        width: 200px;
+    }
+}
