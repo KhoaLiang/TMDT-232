@@ -1,9 +1,0 @@
-version: '3.8'
-
-services:
-  frontend-prod:
-    build:
-      context: .
-      dockerfile: dockerfile/frontend.prod.dockerfile
-    ports:
-      - '3000:80'
