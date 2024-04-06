@@ -112,3 +112,20 @@ body {
       scrollbar-width: none;
       /* Firefox */
 }
+
+textarea {
+      width: 800px;
+      height: 80px;
+      background-color: #ffffff;
+      resize: none;
+}
+
+button{
+      width: 100px;
+      height: 30px;
+      background-color: #282828;
+      border: none;
+      color:#ffffff;
+      font-family: arial;
+      font-weight: 400;
+}
