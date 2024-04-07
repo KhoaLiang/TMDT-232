@@ -12,7 +12,7 @@ if ($return_status_code === 400) {
       require_once __DIR__ . '/../../../error/403.php';
 } else if ($return_status_code === 200) {
       unset($_SESSION['update_customer_id']);
-      
+
       require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
 
       if (isset($_GET['id'])) {
@@ -38,7 +38,7 @@ if ($return_status_code === 400) {
 
                   $query_result = null;
 
-                  $stmt = $conn->prepare('select book.id,book.name,book.edition,book.isbn,book.ageRestriction,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath from book where book.id=?');
+                  $stmt = $conn->prepare('select book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath from book where book.id=?');
                   if (!$stmt) {
                         http_response_code(500);
                         require_once __DIR__ . '/../../../error/500.php';
@@ -182,6 +182,33 @@ if ($return_status_code === 400) {
                         }
                   }
                   $stmt->close();
+
+                  $stmt = $conn->prepare('select exists(select * from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where fileOrderContain.bookID=? and customerOrder.status=true) as result');
+                  if (!$stmt) {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Query `select exists(select * from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where fileOrderContain.bookID=? and customerOrder.status=true) as result` preparation failed!']);
+                        $conn->close();
+                        exit;
+                  }
+                  $stmt->bind_param('s', $id);
+                  $isSuccess = $stmt->execute();
+                  if (!$isSuccess) {
+                        http_response_code(500);
+                        echo json_encode(['error' => $stmt->error]);
+                        $stmt->close();
+                        $conn->rollback();
+                        $conn->close();
+                        exit;
+                  } else {
+                        $result = $stmt->get_result();
+                        $result = $result->fetch_assoc();
+                        $stmt->close();
+
+                        if ($result['result'] === 1)
+                              $query_result['fileCopy']['deletable'] = false;
+                        else
+                              $query_result['fileCopy']['deletable'] = true;
+                  }
                   $conn->close();
             } catch (Exception $e) {
                   http_response_code(500);
@@ -221,7 +248,7 @@ if ($return_status_code === 400) {
             ?>
             <section id="page">
                   <div class='w-100 h-100 d-flex'>
-                        <form onsubmit="confirmSubmitForm(event)" class='position-relative border border-1 rounded border-dark custom_container m-auto bg-white d-flex flex-column overflow-y-auto overflow-x-hidden'>
+                        <form onsubmit="confirmSubmitForm(event)" class='position-relative border border-1 rounded border-dark custom_container m-auto bg-white d-flex flex-column my-4'>
                               <h1 class='ms-xl-3 mt-2 mx-auto'>Edit Book</h1>
                               <div class="ms-auto me-3 mt-xl-3 mb-3 mb-xl-2 mt-5 order-xl-1 order-2 button_group align-self-xl-end">
                                     <button class="btn btn-secondary ms-1" onclick="resetForm()" type='button'>Reset</button>
@@ -235,7 +262,7 @@ if ($return_status_code === 400) {
                                                       <input type="text" class="form-control fs-4" id="bookNameInput" value="<?php echo $query_result['name']; ?>">
                                                 </div>
                                                 <div class="mb-auto my-2 d-flex flex-column w-100 align-items-center">
-                                                      <img class='custom_image w-100' id="bookImage" alt="book image" <?php echo $query_result['imagePath']; ?>>
+                                                      <img class='custom_image w-100' id="bookImage" alt="Book image" <?php echo $query_result['imagePath']; ?>>
                                                       </img>
                                                       <label class='btn btn-sm btn-light border border-dark mt-3 mx-auto'>
                                                             <input accept='image/jpeg,image/png' id="imageInput" type='file' class='d-none' onchange="setNewImage(event)"></input>
@@ -258,10 +285,6 @@ if ($return_status_code === 400) {
                                                 <div class="my-2 px-xl-5 px-3">
                                                       <label for="isbnInput" class="form-label">ISBN-13:<span class='fw-bold text-danger'>&nbsp;*</span></label>
                                                       <input type="text" class="form-control" id="isbnInput" value="<?php echo $query_result['isbn']; ?>">
-                                                </div>
-                                                <div class="my-2 px-xl-5 px-3">
-                                                      <label for="ageInput" class="form-label">Age Restriction:</label>
-                                                      <input type="number" class="form-control" id="ageInput" value="<?php echo $query_result['ageRestriction'] ? $query_result['ageRestriction'] : ''; ?>">
                                                 </div>
                                                 <div class="my-2 px-xl-5 px-3">
                                                       <label for="authorInput" class="form-label">Author:<span class='fw-bold text-danger'>&nbsp;*</span></label>
@@ -309,7 +332,7 @@ if ($return_status_code === 400) {
                                                                   </span>
                                                                   <div class="d-flex align-items-center mt-auto" id="btn_grp">
                                                                         <div class="d-flex align-items-center">
-                                                                              <?php if ($query_result['fileCopy']['filePath'])
+                                                                              <?php if ($query_result['fileCopy']['filePath'] && $query_result['fileCopy']['deletable'])
                                                                                     echo '<div class=\'me-3\'>
                                                                                     <input onchange="setRemoveFile(event)" type="checkbox" class="btn-check" id="btncheck1">
                                                                                     <label class="btn btn-outline-danger btn-sm" for="btncheck1">Remove file</label>
@@ -333,7 +356,7 @@ if ($return_status_code === 400) {
                               </div>
                         </form>
                   </div>
-                  <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="Select category modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -365,7 +388,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="Confirm change modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -382,7 +405,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="Error modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -398,7 +421,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="Success modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">

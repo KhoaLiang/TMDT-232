@@ -1,9 +1,5 @@
 <?php
-
-use Dotenv\Parser\Value;
-
 require_once __DIR__ . '/../../tool/php/role_check.php';
-require_once __DIR__ . '/../../tool/php/ratingStars.php';
 
 $return_status_code = return_navigate_error();
 
@@ -14,42 +10,6 @@ if ($return_status_code === 400) {
       http_response_code(403);
       require __DIR__ . '/../../error/403.php';
 } else if ($return_status_code === 200) {
-      require_once __DIR__. '/../../config/db_connection.php';
-      require_once __DIR__. '/../../tool/php/converter.php';
-      require_once __DIR__. '/../../tool/php/formatter.php';
-
-      try{
-            $conn = mysqli_connect($db_host, $db_user, $db_password, $db_database, $db_port);
-
-            if (!$conn) {
-                  http_response_code(500);
-                  require_once __DIR__ . '/../../error/500.php';
-                  exit;
-            }
-            $elem = $conn->prepare('select book.id, book.name, author.authorName, fileCopy.price as filePrice, physicalCopy.price as physicalPrice, book.imagePath as pic, book.avgRating as star from book inner join author on book.id = author.bookID
-                                                                                                                                                                                  join fileCopy on book.id = fileCopy.id
-                                                                                                                                                                                  join physicalCopy on book.id = physicalCopy.id
-                                                                                                                                                                                  limit 6');
-            $elem->execute();
-            $elem = $elem->get_result();
-
-            $featured = $conn->prepare('select distinct book.id, pSales, fSales, (pSales + fSales)  as sales, book.name, author.authorName, fileCopy.price as filePrice, physicalCopy.price as physicalPrice, book.imagePath as pic, book.avgRating as star from book left join (select sum(amount) as pSales, physicalOrderContain.bookID from physicalOrderContain group by bookID) as physicalOrders on book.id = physicalOrders.bookID
-                                                                                                                                                                                                                                                                        right join (select count(orderID) as fSales, fileOrderContain.bookID from fileOrderContain group by bookID) as fileOrders on book.id = fileOrders.bookID
-                                                                                                                                                                                                                                                                        join author on book.id = author.bookID
-                                                                                                                                                                                                                                                                        join fileCopy on book.id = fileCopy.id
-                                                                                                                                                                                                                                                                        join physicalCopy on book.id = physicalCopy.id
-                                                                                                                                                                                                                                                            order by sales DESC
-                                                                                                                                                                                                                                                            limit 5');
-            $featured->execute();
-            $featured = $featured->get_result();
-
-            $conn->close();
-      }
-      catch (Exception $e){
-            http_response_code(500);
-            require_once __DIR__ . '/../../error/500.php';
-            exit;
-      }
 ?>
 
       <!DOCTYPE html>
@@ -57,80 +17,15 @@ if ($return_status_code === 400) {
 
       <head>
             <?php
-            require __DIR__ . '/../../head_element/cdn.php';
-            require __DIR__ . '/../../head_element/meta.php';
+            require_once __DIR__ . '/../../head_element/cdn.php';
+            require_once __DIR__ . '/../../head_element/meta.php';
             ?>
             <link rel="stylesheet" href="/css/preset_style.css">
 
-            <meta name="author" content="Khoa">
+            <meta name="author" content="Nghia Duong, Anh Khoa">
             <meta name="description" content="Home page of NQK bookstore">
-            <title>NQK Shop</title>
-
-            <style>
-                  .card:hover {
-                        transform: scale(1.05);
-                  } 
-                  .author {
-                        color: gray;
-                  }
-                  .pic {
-                        height: 28rem;
-                  }
-                  a{
-                        text-decoration: none;
-                        color: black;
-                  }
-                  @media (min-width: 767.98px) { .card-body {
-                  max-height: 205px; /* Adjust this value as needed */
-                  overflow: auto; /* Add a scrollbar if the content is too long */
-                  } 
-                  .card-body::-webkit-scrollbar {
-                  display: none;
-                  }
-            }
-            .heading-decord{
-                  font-weight: bold;
-                  padding: 20px;
-            }
-            .bgr-col{
-                  background-color: #F8F8FF;
-            }
-            .carousel-item{
-                  height: 36rem;
-                  color: white;
-                  position: relative;
-                  background-position: center;
-                  background-size: cover;
-                  
-            }
-            @media screen and (max-width: 768px) {
-                  .carousel-item{
-                        height: 50rem;
-                  }
-                  
-            }
-            .overlay-image{
-                  position: absolute;
-                  top: -10px;
-                  left: 0;
-                  right: 0;
-                  bottom: 0;
-                  /* background-image:url(https://th.bing.com/th/id/R.9ab69065931f33912678c9fa0055c875?rik=l4n%2bZal8cVnKMg&pid=ImgRaw&r=0); */
-                  background-position: center;
-                  background-size: cover;
-                  opacity: 0.70;
-                  border-radius: 25px;
-            }
-            .carousel-control-prev-icon {
-            filter: invert(1) grayscale(100%) brightness(200%);
-            }
-            .carousel-control-next-icon {
-            filter: invert(1) grayscale(100%) brightness(200%);
-            }
-            .carousel-indicators{
-            filter: invert(1) grayscale(100%) brightness(200%);
-            }
-            </style>
+            <title>Home</title>
+            <link rel="stylesheet" href="/css/customer/home/style.css">
       </head>
 
       <body>
@@ -138,162 +33,181 @@ if ($return_status_code === 400) {
             require_once __DIR__ . '/../../layout/customer/header.php';
             ?>
             <section id="page">
-            <br>
-            
-            
-      <?php
-            if($featured->num_rows > 0){
-                  echo '<div class= "container border border-dark rounded bgr-col my-3">';
-                  echo '<p class="h1">Featured books</p>';
-                  echo '<hr>';
-                  echo '<div class="row justify-content-center align-items-center g-2 m-3 p-1">';
-                  $rows = array();
-                  for($i = 0; $i <= $featured->num_rows; $i++){
-                        $row=$featured->fetch_assoc();
-                        $rows[] = $row;
-                        if($i < 2){
-                         $imagePath = "https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row['pic']));
-                        echo ' <div class="col-9 col-md-6">';
-                        echo "<a href=\"book/book-detail?bookID=".normalizeURL(rawurlencode($row["id"]))."\">"; 
-                        echo'                  <div class="card mx-2">
-                                                <div class="row g-0">
-                                                      <div class="col-md-7 d-flex justify-content-center ">';
-                        echo '<img src="' . $imagePath . '" class="card-img my-3 px-3" style="height: 28rem;" alt="...">';
-                        echo '
+                  <div class='w-100 d-flex flex-column'>
+                        <div class='w-100 sales' id='salePanel'>
+                              <div class='container-lg p-2'>
+                                    <div class='mx-3 bg-white rounded mt-3 py-2 px-2 px-sm-3 d-flex align-items-center'>
+                                          <div class='d-flex'>
+                                                <img alt='Icon' src='/image/flash_sale.png' class='flash_sale_image'>
+                                                <div class='ms-3 d-flex align-items-center'>
+                                                      <p class='bg-dark text-white p-2 rounded mb-0 timer' id='days'></p>
+                                                      <p class='mb-0 fs-5 text-dark mx-1'>:</p>
+                                                      <p class='bg-dark text-white p-2 rounded mb-0 timer' id='hours'></p>
+                                                      <p class='mb-0 fs-5 text-dark mx-1'>:</p>
+                                                      <p class='bg-dark text-white p-2 rounded mb-0 timer' id='minutes'></p>
+                                                      <p class='mb-0 fs-5 text-dark mx-1'>:</p>
+                                                      <p class='bg-dark text-white p-2 rounded mb-0 timer' id='seconds'></p>
+                                                </div>
+                                          </div>
+                                          <a aria-label="view more discounted books" id='learn_more_sales' href='/book/?select=sale' class='text-decoration-none ms-auto fs-5 d-flex align-items-center'>More<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                      <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                      <g id="SVGRepo_iconCarrier">
+                                                            <path d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z" fill="#007bff"></path>
+                                                      </g>
+                                                </svg>
+                                          </a>
+                                    </div>
                               </div>
-                              <div class="col-md-5">
-                                    <div class="card-body" style="max-height: 350px;">
-                                    <h5 class="card-title">'.$row["name"].'</h5>
-                                    <p class="author">'.$row["authorName"].'</p>';
-                                    echo "<p class=\"price\">"."E-book price: ".$row["filePrice"]."$"."</p>";
-                        echo "<p class=\"price\">"."Physical price: ".$row["physicalPrice"]."$"."</p>";
-                        echo '<span class="text-warning">'.displayRatingStars($row["star"]).'</span>';
-                        echo "(".$row["star"].")";
-                        echo '</div>
+                              <div class='container-lg p-2 my-3 position-relative'>
+                                    <div class='w-100 h-100 position-absolute align-items-center justify-content-between pe-3' id='slideNavigate'>
+                                          <div class='slide-button-div'>
+                                                <button aria-label="Left slide" id='slideLeft' class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                                      <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#828282" transform="rotate(180)">
+                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                            <g id="SVGRepo_iconCarrier">
+                                                                  <path d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z" fill="#828282"></path>
+                                                            </g>
+                                                      </svg>
+                                                </button>
+                                          </div>
+                                          <div class='slide-button-div'>
+                                                <button aria-label="Right slide" id='slideRight' class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                                      <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#828282">
+                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                            <g id="SVGRepo_iconCarrier">
+                                                                  <path d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z" fill="#828282"></path>
+                                                            </g>
+                                                      </svg>
+                                                </button>
+                                          </div>
+                                    </div>
+                                    <div class='mx-3 d-flex overflow-x-auto hideBrowserScrollbar' id='saleList'>
+                                    </div>
                               </div>
+                        </div>
+                        <div class='container-lg p-2 mt-4' id='bestSellerPanel'>
+                              <div class='mx-3'>
+                                    <h4 class='text-white mb-0 text-center banner p-3 rounded-top'>Best Sellers</h4>
+                                    <div class='bg-white row mx-0 rounded-bottom'>
+                                          <div class='col-12 col-lg-5 select-border my-3 pe-0' id='bestSellerList1'>
+                                          </div>
+                                          <div class='col-lg-7 d-lg-block d-none py-3' id='bestSellerList2'>
+                                          </div>
+                                    </div>
                               </div>
-                        </div>';
-                        echo '</a>
-                                    </div>'; //end col-9 col-md-4
-                        }
-                        
-                  }
-                        echo "</div>"; //row end
-                        echo '<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
-  <div class="carousel-indicators">
-    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-    <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
-  </div>
-  <div class="carousel-inner">';
-for($i = 2; $i < $featured->num_rows; $i++){
-      echo '<div class="carousel-item ';
-      if($i == 2){
-            echo ' active" data-interval="1500">';
-      }
-      else{
-            echo '" data-interval="1000">';
-      }
-      echo '<div class="overlay-image m-3"> </div>';
-      echo '<div class="row justify-content-center align-items-center g-2 m-3 p-1">';
-      $imagePath = "https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($rows[$i]['pic']));
-                        echo ' <div class="col-10 col-md-10">';
-                        echo "<a href=\"book/book-detail?bookID=".normalizeURL(rawurlencode($rows[$i]["id"]))."\">"; 
-                        echo'                  <div class="card mx-2" style="opacity: 90%">
-                                                <div class="row g-0">
-                                                      <div class="col-md-7 d-flex justify-content-center ">';
-                        echo '<img src="' . $imagePath . '" class="card-img w-75 my-3 px-3" style="height: 28rem;" alt="...">';
-                        echo '
+                        </div>
+                        <div class='container-lg p-2 my-4' id='topCategoryPanel'>
+                              <div class='mx-3 bg-white rounded pb-3'>
+                                    <div class='mb-0 text-center p-3 d-flex justify-content-center align-items-center'>
+                                          <h4><svg width="28px" height="28px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                      <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                      <g id="SVGRepo_iconCarrier">
+                                                            <path opacity="0.34" d="M5 10H7C9 10 10 9 10 7V5C10 3 9 2 7 2H5C3 2 2 3 2 5V7C2 9 3 10 5 10Z" stroke="#ff0000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path d="M17 10H19C21 10 22 9 22 7V5C22 3 21 2 19 2H17C15 2 14 3 14 5V7C14 9 15 10 17 10Z" stroke="#ff0000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path opacity="0.34" d="M17 22H19C21 22 22 21 22 19V17C22 15 21 14 19 14H17C15 14 14 15 14 17V19C14 21 15 22 17 22Z" stroke="#ff0000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                            <path d="M5 22H7C9 22 10 21 10 19V17C10 15 9 14 7 14H5C3 14 2 15 2 17V19C2 21 3 22 5 22Z" stroke="#ff0000" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                      </g>
+                                                </svg>&nbsp;Top Categories</h4>
+                                    </div>
+                                    <div class='d-flex overflow-x-auto px-4 pb-2' id='categoryList'>
+                                    </div>
+                                    <hr>
+                                    <div class='container-lg px-2 position-relative'>
+                                          <div class='w-100 h-100 position-absolute align-items-center justify-content-between pe-4' id='slideNavigate2'>
+                                                <div class='slide-button-div'>
+                                                      <button aria-label="Left slide" id='slideLeft2' class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                                            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#828282" transform="rotate(180)">
+                                                                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                                  <g id="SVGRepo_iconCarrier">
+                                                                        <path d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z" fill="#828282"></path>
+                                                                  </g>
+                                                            </svg>
+                                                      </button>
+                                                </div>
+                                                <div class='slide-button-div'>
+                                                      <button aria-label="Right slide" id='slideRight2' class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                                            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#828282">
+                                                                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                                  <g id="SVGRepo_iconCarrier">
+                                                                        <path d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z" fill="#828282"></path>
+                                                                  </g>
+                                                            </svg>
+                                                      </button>
+                                                </div>
+                                          </div>
+                                          <div class='mx-md-4 d-flex overflow-x-auto hideBrowserScrollbar' id='bookList1'>
+                                          </div>
+                                    </div>
                               </div>
-                              <div class="col-md-5">
-                                    <div class="card-body" style="max-height: 350px;">
-                                    <h5 class="card-title">'.$rows[$i]["name"].'</h5>
-                                    <p class="author">'.$rows[$i]["authorName"].'</p>';
-                                    echo "<p class=\"price\">"."E-book price: ".$rows[$i]["filePrice"]."$"."</p>";
-                        echo "<p class=\"price\">"."Physical price: ".$rows[$i]["physicalPrice"]."$"."</p>";
-                        echo '<span class="text-warning">'.displayRatingStars($rows[$i]["star"]).'</span>';
-                        echo "(".$rows[$i]["star"].")";
-                        echo '</div>
+                        </div>
+                        <div class='container-lg p-2 my-4' id='topPublisherPanel'>
+                              <div class='mx-3 bg-white rounded pb-3'>
+                                    <div class='mb-0 text-center p-3 d-flex justify-content-center align-items-center'>
+                                          <h4><img alt='Icon' src='/image/stonk.png' style="height:28px;width:28px;">&nbsp;Top Publishers</h4>
+                                    </div>
+                                    <div class='d-flex overflow-x-auto px-4 pb-2' id='publisherList'>
+                                    </div>
+                                    <hr>
+                                    <div class='container-lg px-2 position-relative'>
+                                          <div class='w-100 h-100 position-absolute align-items-center justify-content-between pe-4' id='slideNavigate1'>
+                                                <div class='slide-button-div'>
+                                                      <button aria-label="Left slide" id='slideLeft1' class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                                            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#828282" transform="rotate(180)">
+                                                                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                                  <g id="SVGRepo_iconCarrier">
+                                                                        <path d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z" fill="#828282"></path>
+                                                                  </g>
+                                                            </svg>
+                                                      </button>
+                                                </div>
+                                                <div class='slide-button-div'>
+                                                      <button aria-label="Right slide" id='slideRight1' class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                                            <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#828282">
+                                                                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                                  <g id="SVGRepo_iconCarrier">
+                                                                        <path d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z" fill="#828282"></path>
+                                                                  </g>
+                                                            </svg>
+                                                      </button>
+                                                </div>
+                                          </div>
+                                          <div class='mx-md-4 d-flex overflow-x-auto hideBrowserScrollbar' id='bookList'>
+                                          </div>
+                                    </div>
                               </div>
+                        </div>
+                        <div class=" modal fade" id="errorModal" tabindex="-1" aria-labelledby="Error modal">
+                              <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                          <div class="modal-header">
+                                                <h2 class="modal-title fs-5">Error!</h2>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                          </div>
+                                          <div class="modal-body d-flex flex-column">
+                                                <p id="error_message"></p>
+                                          </div>
+                                          <div class="modal-footer">
+                                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Confirm</button>
+                                          </div>
+                                    </div>
                               </div>
-                        </div>';
-                        echo '</a>
-                                    </div>'; //end col-9 col-md-4
-      echo '</div>';//end row
-    echo '</div>'; //end carousel item
-}
-
-    //end of carousel inner
-echo '</div>
-  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>';
-                  echo "</div>";  //container end
-                  
-            }
-            else{
-                  echo "Some error occured!";
-            }
-      ?>
-      
-            <?php
-            echo '<div class="container border border-dark rounded bgr-col my-3">';
-            echo '<div class="row justify-content-center align-items-center g-2 m-3 p-1">';
-            echo '<p class="h1 col-9 col-md-9">Our collection</p>';
-            echo '<a 
-                        name=""
-                        id=""
-                        class="btn btn-primary align-items-center w-25 mx-auto m-3 col-9 col-md-3"
-                        href="book"
-                        role="button"
-                        style="font-size: 20px;"
-                        >Learn more</a>';
-            echo '</div>';//end div row
-                  echo '<hr>';
-                  for ($i = 1; $i <= $elem->num_rows; $i++) {
-                        if ($i % 3 == 1) {
-                              echo '<div class="row justify-content-center align-items-center g-2 m-3 py-3">';
-                        }
-                        echo '<div class="col-9 col-md-4">';
-                        $row = $elem->fetch_assoc();
-                        // $row["pic"] = "src=\"https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row["pic"])) . "\"";
-                        $imagePath = "https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row['pic']));
-                                                      echo '<div class="card w-75 mx-auto d-block ">';
-                                                            echo "<a href=\"book/book-detail?bookID=".normalizeURL(rawurlencode($row["id"]))."\">"; 
-                                                            echo '<img src="' . $imagePath . '" class="card-img-top" style="height: 28rem;" alt="...">';
-                                                            echo "<div class=\"card-body\">";
-                                                                  echo "<h5 class=\"card-title\">"."Book: ".$row["name"]."</h5>";
-                                                                  echo "<p class=\"author\">".$row["authorName"]."</p>";
-                                                                  echo "<p class=\"price\">"."E-book price: ".$row["filePrice"]."$"."</p>";
-                                                                  echo "<p class=\"price\">"."Physical price: ".$row["physicalPrice"]."$"."</p>";
-                                                                  echo '<span class="text-warning">'.displayRatingStars($row["star"]).'</span>';
-                                                                  echo "(".$row["star"].")";
-                                                                  
-                                                            echo "</div>";
-                                                      echo "</a>";
-                                                      echo "</div>";
-      
-                        echo '</div>';
-                        if ($i % 3 == 0 || $i == $elem->num_rows) {
-                              echo '</div>';
-                        }
-                        }
-                        
-                        echo '</div>';
-                        
-            ?>
-                  </div>
+                        </div>
             </section>
             <?php
             require_once __DIR__ . '/../../layout/footer.php';
             ?>
             <script src="/javascript/customer/menu_after_load.js"></script>
+            <script src="/javascript/customer/home/script.js"></script>
+            <script src="/tool/js/ratingStars.js"></script>
+            <script src="/tool/js/encoder.js"></script>
       </body>
 
       </html>

@@ -7,7 +7,6 @@ create procedure addCustomer(
     in dob date,
     in phone varchar(10),
     in address text,
-    in cardNumber varchar(16),
     in email varchar(255),
     in password varchar(255),
     in refEmail varchar(255),
@@ -22,7 +21,7 @@ begin
     if refEmail is not null then
 		select customer.id into refID from customer join appUser on appUser.id=customer.id where appUser.email=refEmail;
     end if;
-    insert into customer(id,cardNumber,referrer) values(concat('CUSTOMER',counter),cardNumber,refID);
+    insert into customer(id,referrer) values(concat('CUSTOMER',counter),refID);
 end//
 delimiter ;
 
@@ -32,7 +31,6 @@ create procedure addBook(
 	in name varchar(255),
     in edition int,
     in isbn varchar(13),
-    in ageRestriction int,
     in publisher varchar(255),
     in publishDate date,
     in description text,
@@ -46,7 +44,7 @@ begin
 	declare counter int default 0;
 	select cast(substr(id,5) as unsigned) into counter from book ORDER BY cast(substr(id,5) as unsigned) DESC LIMIT 1;
     set counter=counter+1;
-    insert into book values(concat('BOOK',counter),name,edition,isbn,ageRestriction,0,publisher,publishDate,true,concat('BOOK',counter,'/',imagePath),description);
+    insert into book values(concat('BOOK',counter),name,edition,isbn,0,publisher,publishDate,true,concat('BOOK',counter,'/',imagePath),description);
     insert into physicalCopy values(concat('BOOK',counter),physicalPrice,inStock);
     insert into fileCopy values(concat('BOOK',counter),filePrice,concat('BOOK',counter,'/',pdfPath));
     select concat('BOOK',counter) as id;
@@ -449,5 +447,29 @@ begin
     end while;
     
     update customerOrder set status=true,purchaseTime=now(),orderCode=code where id=orderID;
+end//
+delimiter ;
+
+drop procedure if exists getDiscountBooks;
+delimiter //
+create procedure getDiscountBooks()
+begin
+	declare eventID varchar(20) default null;
+    
+    select combined.id into eventID from (
+	select distinct discount.id,eventDiscount.discount,1 as cardinal from eventDiscount join discount on discount.id=eventDiscount.id and discount.status=true where eventDiscount.applyForAll=true and eventDiscount.startDate<=curdate() and eventDiscount.endDate>=curdate()
+	union
+	select distinct discount.id,eventDiscount.discount,2 as cardinal from eventDiscount join discount on discount.id=eventDiscount.id and discount.status=true join eventApply on eventDiscount.applyForAll=false and eventDiscount.id=eventApply.eventID where eventDiscount.startDate<=curdate() and eventDiscount.endDate>=curdate()
+	) as combined order by combined.discount desc,combined.cardinal,combined.id limit 1;
+    
+    if eventID is not null then
+		select discount,startDate,endDate from eventDiscount where id=eventID;
+    end if;
+    
+    if eventID is not null and (select applyForAll from eventDiscount where id=eventID) then
+		select id,name,edition,imagePath from book order by name,edition,id limit 10;
+    elseif eventID is not null and not(select applyForAll from eventDiscount where id=eventID) then
+		select book.id,name,edition,imagePath from book join eventApply on eventApply.bookID=book.id and eventApply.eventID=eventID order by name,edition,id limit 10;
+    end if;
 end//
 delimiter ;

@@ -348,10 +348,10 @@ function findOrder()
                                     <td class='align-middle'>$${ data.query_result[1][i].totalCost }</td>
                                     <td class='align-middle'>$${ data.query_result[1][i].totalDiscount }</td>
                                     <td class='align-middle col-4'>
-                                    <div class='d-flex flex-column books'>`;
+                                    <div class='d-flex flex-column books pe-3'>`;
 
                               for (let j = 0; j < data.query_result[1][i].books.length; j++)
-                                    temp += `<p class='my-2'>${ data.query_result[1][i].books[j].name } - ${ data.query_result[1][i].books[j].edition } edition</p>`;
+                                    temp += `<p class='my-2 text-nowrap'>${ data.query_result[1][i].books[j].name } - ${ data.query_result[1][i].books[j].edition } edition</p>`;
 
                               temp += '</div></td>'
 
@@ -429,11 +429,10 @@ async function orderDetail(code, time, price, discount)
                               {
                                     let temp = '';
                                     temp += `<td class='align-middle'>${ i + 1 }</td>`
-                                    temp += `<td class='align-middle'><img src="${ data.query_result[i].imagePath }" alt=\"book image\" class=\"book_image\"></img></td>`;
+                                    temp += `<td class='align-middle'><img src="${ data.query_result[i].imagePath }" alt=\"Book image\" class=\"book_image\"></img></td>`;
                                     temp += `<td class=\"col-2 align-middle\">${ data.query_result[i].name }</td>`;
                                     temp += `<td class=\"align-middle\">${ data.query_result[i].edition }</td>`;
                                     temp += `<td class=\"align-middle text-nowrap\">${ data.query_result[i].isbn }</td>`;
-                                    temp += `<td class=\"align-middle\">${ data.query_result[i].ageRestriction }</td>`;
 
                                     {
                                           let div = `<div class='d-flex flex-column'>`;
@@ -529,11 +528,10 @@ async function orderDetail(code, time, price, discount)
                               {
                                     let temp = '';
                                     temp += `<td class='align-middle'>${ i + 1 }</td>`
-                                    temp += `<td class='align-middle'><img src="${ data.query_result[i].imagePath }" alt=\"book image\" class=\"book_image\"></img></td>`;
+                                    temp += `<td class='align-middle'><img src="${ data.query_result[i].imagePath }" alt=\"Book image\" class=\"book_image\"></img></td>`;
                                     temp += `<td class=\"col-2 align-middle\">${ data.query_result[i].name }</td>`;
                                     temp += `<td class=\"align-middle\">${ data.query_result[i].edition }</td>`;
                                     temp += `<td class=\"align-middle text-nowrap\">${ data.query_result[i].isbn }</td>`;
-                                    temp += `<td class=\"align-middle\">${ data.query_result[i].ageRestriction }</td>`;
 
                                     {
                                           let div = `<div class='d-flex flex-column'>`;
@@ -612,4 +610,6 @@ async function orderDetail(code, time, price, discount)
       $('#addressInput').prop('disabled', true);
 
       $('#orderModal').modal('show');
+
+      $('div[role="tooltip"]').remove();
 }

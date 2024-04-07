@@ -12,7 +12,7 @@ if ($return_status_code === 400) {
       require_once __DIR__ . '/../../../error/403.php';
 } else if ($return_status_code === 200) {
       unset($_SESSION['update_book_id']);
-      
+
       require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
       require_once __DIR__ . '/../../../config/db_connection.php';
       require_once __DIR__ . '/../../../tool/php/converter.php';
@@ -111,11 +111,8 @@ if ($return_status_code === 400) {
                                     <hr class='mx-2'>
                               </div>
                               <div class='w-100 flex-grow-1 mb-2 d-flex flex-column'>
-                                    <div class='d-flex px-4'>
-                                          <p class='fw-medium'>Current Accummulated Points:&nbsp;</p>
-                                          <p id="current_point" class='text-success'></p>
-                                    </div>
-                                    <div class='px-4'>
+                                    <p class='fw-medium px-2'>Current Accummulated Points:&nbsp;<span id="current_point" class='text-success'></span></p>
+                                    <div class='px-2'>
                                           <form class="d-flex align-items-center w-100 search_form mt-2" role="search" id="search_order_form">
                                                 <button title='search order' class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
                                                       <svg fill="#000000" width="20px" height="20px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="1.568">
@@ -127,7 +124,7 @@ if ($return_status_code === 400) {
                                                       </svg>
                                                 </button>
 
-                                                <input id="search_order" class="form-control me-2" type="search" placeholder="Search by order code" aria-label="Search">
+                                                <input id="search_order" class="form-control me-2" type="search" placeholder="Search order by order code" aria-label="Search for orders">
                                           </form>
 
                                           <label for="orderDateInput" class="form-label fw-medium mt-3">Order Date:</label>
@@ -185,7 +182,7 @@ if ($return_status_code === 400) {
                               <div class='w-100 flex-grow-1 p-2 flex-column flex-lg-row d-flex'>
                                     <div class="col-lg-5 col-12">
                                           <div class='w-100 d-flex flex-column h-100 justify-content-center'>
-                                                <img class='custom_image w-100 mx-auto' id="userImage" alt="user image" data-initial-src="<?php if ($result['imagePath'])
+                                                <img class='custom_image w-100 mx-auto' id="userImage" alt="User image" data-initial-src="<?php if ($result['imagePath'])
                                                                                                                                                 echo "https://{$_SERVER['HTTP_HOST']}/data/user/customer/" . normalizeURL(rawurlencode($result['imagePath']));
                                                                                                                                           else echo '/image/default_male.jpeg'; ?>">
                                                 </img>
@@ -234,7 +231,7 @@ if ($return_status_code === 400) {
                               </div>
                         </form>
                   </div>
-                  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="Error modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -250,7 +247,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="confirmPersonalModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="confirmPersonalModal" tabindex="-1" aria-labelledby="Confirm change info modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -267,7 +264,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="confirmPasswordModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="confirmPasswordModal" tabindex="-1" aria-labelledby="Confirm change password modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -284,7 +281,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="Change success modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -300,7 +297,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="Order detail modal">
                         <div class="modal-dialog modal-dialog-centered modal-xl-custom modal-dialog-scrollable">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -336,7 +333,6 @@ if ($return_status_code === 400) {
                                                                               <th scope="col">Name</th>
                                                                               <th scope="col">Edition</th>
                                                                               <th scope="col">ISBN-13</th>
-                                                                              <th scope="col" class='text-nowrap'>Age Restriction</th>
                                                                               <th scope="col">Author</th>
                                                                               <th scope="col">Category</th>
                                                                               <th scope="col">Publisher</th>
@@ -366,7 +362,6 @@ if ($return_status_code === 400) {
                                                                               <th scope="col">Name</th>
                                                                               <th scope="col">Edition</th>
                                                                               <th scope="col">ISBN-13</th>
-                                                                              <th scope="col" class='text-nowrap'>Age Restriction</th>
                                                                               <th scope="col">Author</th>
                                                                               <th scope="col">Category</th>
                                                                               <th scope="col">Publisher</th>

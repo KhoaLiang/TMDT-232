@@ -24,42 +24,42 @@ INSERT INTO admin (`id`) VALUES ('ADMIN1');
 INSERT INTO admin (`id`) VALUES ('ADMIN2');
 
 -- Insert `customer` table
-insert into customer (id,referrer,point,cardNumber) values('CUSTOMER1',null,27.31,'1142369875'),('CUSTOMER2','CUSTOMER1',27.87,'1245369870'),('CUSTOMER3','CUSTOMER1',27.87,'4100335874');
-insert into customer (id,referrer,point,cardNumber,status,deleteTime) values('CUSTOMER4','CUSTOMER1',0,null,true,null),('CUSTOMER5',null,0,null,true,null),('CUSTOMER6',null,0,null,true,null),('CUSTOMER7',null,0,null,true,null),('CUSTOMER8',null,0,null,true,null),('CUSTOMER9',null,0,null,false,'2024-01-31 13:00:00'),
-('CUSTOMER10',null,0,null,false,null),('CUSTOMER11',null,0,null,false,null),('CUSTOMER12',null,0,null,false,null),('CUSTOMER13',null,0,null,false,null),('CUSTOMER14',null,0,null,false,null);
+insert into customer (id,referrer,point) values('CUSTOMER1',null,27.31),('CUSTOMER2','CUSTOMER1',27.87),('CUSTOMER3','CUSTOMER1',27.87);
+insert into customer (id,referrer,point,status,deleteTime) values('CUSTOMER4','CUSTOMER1',0,true,null),('CUSTOMER5',null,0,true,null),('CUSTOMER6',null,0,true,null),('CUSTOMER7',null,0,true,null),('CUSTOMER8',null,0,true,null),('CUSTOMER9',null,0,false,'2024-01-31 13:00:00'),
+('CUSTOMER10',null,0,false,null),('CUSTOMER11',null,0,false,null),('CUSTOMER12',null,0,false,null),('CUSTOMER13',null,0,false,null),('CUSTOMER14',null,0,false,null);
 
 -- Insert `book` table
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK1', 'The Joy of PHP', '1', '9781522792147', '3', '4', 'CreateSpace Independent Publishing Platform', '2012-12-13', '1','demo/BOOK1/The Joy of PHP.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK2', 'Models: Attract Women Through Honesty', '3', '9781463750350', '13', '4.7', 'CreateSpace Independent Publishing Platform', '2012-12-30', '1','demo/BOOK2/Models Attract Women Through Honesty.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK3', 'Lord of Goblins, Vol. 1 Definitive Edition (Lord of Goblins)', '1', '9798889930075', '3', '4.5', 'CreateSpace Independent Publishing Platform', '2023-6-8', '1','demo/BOOK3/Lord of Goblins, Vol. 1 Definitive Edition (Lord of Goblins).png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK4', 'The Hitchhiker\'s Guide to the Galaxy', '50', '9780575096925', '3', '4.2', 'Pan Macmillan', '1979-10-12', '1','demo/BOOK4/The Hitchhiker\'s Guide to the Galaxy.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK5', 'The Time Machine', 1, '9780141975863', '12', 4.3, 'Penguin Classics', '1895-01-01', '1','demo/BOOK5/The Time Machine.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK6', 'Pride and Prejudice', 3, '9780143424680', '12', 4.6, 'Penguin Classics', '1813-01-01', '1','demo/BOOK6/Pride and Prejudice.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK7', 'To Kill a Mockingbird', 50, '9780143284923', '10', 4.7, 'HarperCollins', '1960-07-01', '1','demo/BOOK7/To Kill a Mockingbird.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK8', 'The Alchemist', 11, '9780671035193', '13', 4.2, 'HarperCollins', '1988-08-01', '1','demo/BOOK8/The Alchemist.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK9', 'The Handmaid\'s Tale', 40, '9780312455030', '16', 4.5, 'Penguin Random House', '1985-07-01', '1','demo/BOOK9/The Handmaid\'s Tale.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK10', 'Sapiens: A Brief History of Humankind', 2, '9780316247110', '13', 4.4, 'Penguin Random House', '2014-02-01', '1','demo/BOOK10/Sapiens A Brief History of Humankind.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK11', 'Dracula', 2, '9780062862684', '13', 4.1, 'Penguin Classics', '1897-05-01', '1','demo/BOOK11/Dracula.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK12', 'One Hundred Years of Solitude', 50, '9780385082786', '16', 4.8, 'Vintage Books', '1967-05-01', '1','demo/BOOK12/One Hundred Years of Solitude.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK13', 'The Martian', 3, '9780552165605', '10', 4.5, 'Crown Books', '2011-09-01', '1','demo/BOOK13/The Martian.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK14', 'The Fault in Our Stars', 4, '9780312360557', '12', 4.6, 'Penguin Books', '2012-01-01', '1','demo/BOOK14/The Fault in Our Stars.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK15', 'Things Fall Apart', 3, '9780385470940', '13', 4.3, 'Anchor Books', '1958-08-01', '1','demo/BOOK15/Things Fall Apart.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK16', 'Murder on the Orient Express', 5, '9780062862700', '12', 4.4, 'HarperCollins', '1934-01-01', '1','demo/BOOK16/Murder on the Orient Express.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK17', 'Dune', 3, '9781631170673', '13', 4.7, 'BOOM! Studios', '2020-01-01', '1','demo/BOOK17/Dune.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK18', 'The Lord of the Rings', 7, '9780395074673', '12', 4.9, 'Houghton Mifflin Harcourt', '1954-09-02', '1','demo/BOOK18/The Lord of the Rings.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK19', 'The Handmaid\'s Tale', 5, '9781524795031', '16', 4.3, 'Tundra Books', '2019-09-01', '1','demo/BOOK19/The Handmaid\'s Tale.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK20', 'Sapiens: A Brief History of Humankind', 7, '9780525522176', '13', 4.2, 'Zest Books', '2020-10-01', '1','demo/BOOK20/Sapiens A Brief History of Humankind.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK21', 'The Count of Monte Cristo', 5, '9780140435567', '13', 4.5, 'Penguin Classics', '1844-08-01', '1','demo/BOOK21/The Count of Monte Cristo.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK22', 'Frankenstein', 14, '9780143538887', '10', 4.4, 'SparkNotes', '1818-01-01', '1','demo/BOOK22/Frankenstein.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK23', 'The Hitchhiker\'s Guide to the Galaxy', 7, '9781623095605', '12', 4.7, 'Titan Comics', '2019-08-01', '1','demo/BOOK23/The Hitchhiker\'s Guide to the Galaxy.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK24', '1984', 8, '9780743274920', '16', 4.8, 'Penguin Classics', '1949-06-08', '1','demo/BOOK24/1984.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK25', 'The God of Small Things', 6, '9780312642677', '16', 4.6, 'Vintage Books', '1997-08-01', '1','demo/BOOK25/The God of Small Things.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK26', 'Echoes of Asgard', '3', '9781524598230', '12', '4.6', 'Candlewick Press', '2008-10-01', '1','demo/BOOK26/Echoes of Asgard.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK27', 'Money Magic', '4', '9780312357891', '13', '4.5', 'Little, Brown and Company', '2007-03-01', '1','demo/BOOK27/Money Magic.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK28', 'Code Red', '1', '9781416590217', '14', '4.7', 'HarperCollins Publishers', '2009-07-01', '1','demo/BOOK28/Code Red.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK29', 'Whisper in the Wilds', '3', '9780765384107', '10', '4.4', 'Macmillan Children\'s Publishing Group', '2004-05-01', '1','demo/BOOK29/Whisper in the Wilds.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK30', 'The Girl with the Timekeeper\'s Heart', '4', '9781442347092', '13', '4.6', 'Simon & Schuster Children\'s', '2006-11-01', '1','demo/BOOK30/The Girl with the Timekeeper\'s Heart.png');
-INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `ageRestriction`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK31', 'Lord of Goblins, Vol. 2', '3', '9780765384297', '13', '4.5', 'MoonQuill', '2023-04-30', '1','demo/BOOK31/Lord of Goblins, Vol. 2.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK1', 'The Joy of PHP', '1', '9781522792147', '4', 'CreateSpace Independent Publishing Platform', '2012-12-13', '1','demo/BOOK1/The Joy of PHP.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK2', 'Models: Attract Women Through Honesty', '3', '9781463750350', '4.7', 'CreateSpace Independent Publishing Platform', '2012-12-30', '1','demo/BOOK2/Models Attract Women Through Honesty.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK3', 'Lord of Goblins, Vol. 1 Definitive Edition (Lord of Goblins)', '1', '9798889930075', '4.5', 'CreateSpace Independent Publishing Platform', '2023-6-8', '1','demo/BOOK3/Lord of Goblins, Vol. 1 Definitive Edition (Lord of Goblins).png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK4', 'The Hitchhiker\'s Guide to the Galaxy', '50', '9780575096925', '4.2', 'Pan Macmillan', '1979-10-12', '1','demo/BOOK4/The Hitchhiker\'s Guide to the Galaxy.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK5', 'The Time Machine', 1, '9780141975863', 4.3, 'Penguin Classics', '1895-01-01', '1','demo/BOOK5/The Time Machine.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK6', 'Pride and Prejudice', 3, '9780143424680', 4.6, 'Penguin Classics', '1813-01-01', '1','demo/BOOK6/Pride and Prejudice.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK7', 'To Kill a Mockingbird', 50, '9780143284923', 4.7, 'HarperCollins', '1960-07-01', '1','demo/BOOK7/To Kill a Mockingbird.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK8', 'The Alchemist', 11, '9780671035193', 4.2, 'HarperCollins', '1988-08-01', '1','demo/BOOK8/The Alchemist.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK9', 'The Handmaid\'s Tale', 40, '9780312455030', 4.5, 'Penguin Random House', '1985-07-01', '1','demo/BOOK9/The Handmaid\'s Tale.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK10', 'Sapiens: A Brief History of Humankind', 2, '9780316247110', 4.4, 'Penguin Random House', '2014-02-01', '1','demo/BOOK10/Sapiens A Brief History of Humankind.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK11', 'Dracula', 2, '9780062862684', 4.1, 'Penguin Classics', '1897-05-01', '1','demo/BOOK11/Dracula.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK12', 'One Hundred Years of Solitude', 50, '9780385082786', 4.8, 'Vintage Books', '1967-05-01', '1','demo/BOOK12/One Hundred Years of Solitude.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK13', 'The Martian', 3, '9780552165605', 4.5, 'Crown Books', '2011-09-01', '1','demo/BOOK13/The Martian.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK14', 'The Fault in Our Stars', 4, '9780312360557', 4.6, 'Penguin Books', '2012-01-01', '1','demo/BOOK14/The Fault in Our Stars.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK15', 'Things Fall Apart', 3, '9780385470940', 4.3, 'Anchor Books', '1958-08-01', '1','demo/BOOK15/Things Fall Apart.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK16', 'Murder on the Orient Express', 5, '9780062862700', 4.4, 'HarperCollins', '1934-01-01', '1','demo/BOOK16/Murder on the Orient Express.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK17', 'Dune', 3, '9781631170673', 4.7, 'BOOM! Studios', '2020-01-01', '1','demo/BOOK17/Dune.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK18', 'The Lord of the Rings', 7, '9780395074673', 4.9, 'Houghton Mifflin Harcourt', '1954-09-02', '1','demo/BOOK18/The Lord of the Rings.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK19', 'The Handmaid\'s Tale', 5, '9781524795031', 4.3, 'Tundra Books', '2019-09-01', '1','demo/BOOK19/The Handmaid\'s Tale.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK20', 'Sapiens: A Brief History of Humankind', 7, '9780525522176', 4.2, 'Zest Books', '2020-10-01', '1','demo/BOOK20/Sapiens A Brief History of Humankind.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK21', 'The Count of Monte Cristo', 5, '9780140435567', 4.5, 'Penguin Classics', '1844-08-01', '1','demo/BOOK21/The Count of Monte Cristo.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK22', 'Frankenstein', 14, '9780143538887', 4.4, 'SparkNotes', '1818-01-01', '1','demo/BOOK22/Frankenstein.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK23', 'The Hitchhiker\'s Guide to the Galaxy', 7, '9781623095605', 4.7, 'Titan Comics', '2019-08-01', '1','demo/BOOK23/The Hitchhiker\'s Guide to the Galaxy.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK24', '1984', 8, '9780743274920', 4.8, 'Penguin Classics', '1949-06-08', '1','demo/BOOK24/1984.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK25', 'The God of Small Things', 6, '9780312642677', 4.6, 'Vintage Books', '1997-08-01', '1','demo/BOOK25/The God of Small Things.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK26', 'Echoes of Asgard', '3', '9781524598230', '4.6', 'Candlewick Press', '2008-10-01', '1','demo/BOOK26/Echoes of Asgard.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK27', 'Money Magic', '4', '9780312357891', '4.5', 'Little, Brown and Company', '2007-03-01', '1','demo/BOOK27/Money Magic.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK28', 'Code Red', '1', '9781416590217', '4.7', 'HarperCollins Publishers', '2009-07-01', '1','demo/BOOK28/Code Red.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK29', 'Whisper in the Wilds', '3', '9780765384107', '4.4', 'Macmillan Children\'s Publishing Group', '2004-05-01', '1','demo/BOOK29/Whisper in the Wilds.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK30', 'The Girl with the Timekeeper\'s Heart', '4', '9781442347092', '4.6', 'Simon & Schuster Children\'s', '2006-11-01', '1','demo/BOOK30/The Girl with the Timekeeper\'s Heart.png');
+INSERT INTO `bookstore`.`book` (`id`, `name`, `edition`, `isbn`, `avgRating`, `publisher`, `publishDate`, `status`, `imagePath`) VALUES ('BOOK31', 'Lord of Goblins, Vol. 2', '3', '9780765384297', '4.5', 'MoonQuill', '2023-04-30', '1','demo/BOOK31/Lord of Goblins, Vol. 2.png');
 
 -- Insert `author` table
 INSERT INTO `bookstore`.`author` (`bookID`, `authorIdx`, `authorName`) VALUES ('BOOK1', '1', 'Alan Forbes');
@@ -281,7 +281,7 @@ insert into eventApply(eventID,bookID) values('E_DISCOUNT5','BOOK4'),('E_DISCOUN
 
 insert into customerOrder(id,purchaseTime,status,totalCost,totalDiscount,customerID,orderCode) values('ORDER1',SUBTIME(now(),'00:05:00'),true,253.92,115.95,'CUSTOMER1','YIHENYO7SZVT4MNQ'),
 ('ORDER2',SUBTIME(now(),'00:02:30'),true,19.19,8.79,'CUSTOMER1','RKZM1Y4KS5OKU7OG'),
-('ORDER3',null,false,420.09,239.77,'CUSTOMER1',null);
+('ORDER3',null,false,400.9,230.98,'CUSTOMER1',null);
 
 insert into physicalOrder values('ORDER1','211 Ly Thuong Kiet'),('ORDER3','211 Ly Thuong Kiet');
 insert into fileOrder values('ORDER1'),('ORDER2'),('ORDER3');
@@ -292,16 +292,14 @@ insert into physicalOrderContain(orderID,bookID,amount) values('ORDER3','BOOK4',
 
 insert into fileOrderContain(orderID,bookID) values('ORDER1','BOOK8'),('ORDER1','BOOK1');
 insert into fileOrderContain(orderID,bookID) values('ORDER2','BOOK10'),('ORDER2','BOOK21');
-insert into fileOrderContain(orderID,bookID) values('ORDER3','BOOK10'),('ORDER3','BOOK21');
-insert into fileOrderContain(orderID,bookID) values('ORDER3','BOOK5'),('ORDER3','BOOK7');
 
 insert into discountApply(orderID,discountID) values('ORDER1','E_DISCOUNT1'),('ORDER1','E_DISCOUNT2'),('ORDER1','E_DISCOUNT4'),('ORDER1','R_DISCOUNT1');
 insert into discountApply(orderID,discountID) values('ORDER2','E_DISCOUNT1'),('ORDER2','R_DISCOUNT1');
-insert into discountApply(orderID,discountID) values('ORDER3','E_DISCOUNT2'),('ORDER3','E_DISCOUNT4'),('ORDER3','E_DISCOUNT1'),('ORDER3','R_DISCOUNT1');
+insert into discountApply(orderID,discountID) values('ORDER3','E_DISCOUNT2'),('ORDER3','E_DISCOUNT4'),('ORDER3','R_DISCOUNT1');
 
 insert into customerOrder(id,purchaseTime,status,totalCost,totalDiscount,customerID,orderCode) values('ORDER4',SUBTIME(now(),'00:10:00'),true,259.11,110.76,'CUSTOMER2','B59VDRO7X0QI6NHH'),
 ('ORDER5',SUBTIME(now(),'00:07:30'),true,19.59,8.39,'CUSTOMER2','0CII886CCA8ZS18O'),
-('ORDER6',null,false,428.66,231.2,'CUSTOMER2',NULL);
+('ORDER6',null,false,409.08,222.8,'CUSTOMER2',NULL);
 
 insert into physicalOrder values('ORDER4','211 Ly Thuong Kiet'),('ORDER6','211 Ly Thuong Kiet');
 insert into fileOrder values('ORDER4'),('ORDER5'),('ORDER6');
@@ -312,15 +310,14 @@ insert into physicalOrderContain(orderID,bookID,amount) values('ORDER6','BOOK4',
 
 insert into fileOrderContain(orderID,bookID) values('ORDER4','BOOK8'),('ORDER4','BOOK1');
 insert into fileOrderContain(orderID,bookID) values('ORDER5','BOOK10'),('ORDER5','BOOK21');
-insert into fileOrderContain(orderID,bookID) values('ORDER6','BOOK10'),('ORDER6','BOOK21');
 
 insert into discountApply(orderID,discountID) values('ORDER4','E_DISCOUNT1'),('ORDER4','E_DISCOUNT2'),('ORDER4','E_DISCOUNT4');
 insert into discountApply(orderID,discountID) values('ORDER5','E_DISCOUNT1');
-insert into discountApply(orderID,discountID) values('ORDER6','E_DISCOUNT2'),('ORDER6','E_DISCOUNT4'),('ORDER6','E_DISCOUNT1');
+insert into discountApply(orderID,discountID) values('ORDER6','E_DISCOUNT2'),('ORDER6','E_DISCOUNT4');
 
 insert into customerOrder(id,purchaseTime,status,totalCost,totalDiscount,customerID,orderCode) values('ORDER7',SUBTIME(now(),'00:15:00'),true,259.11,110.76,'CUSTOMER3','N7RJ593EYRVHKPED'),
 ('ORDER8',SUBTIME(now(),'00:01:30'),true,19.59,8.39,'CUSTOMER3','Y6ATT0B5BV3B7R8O'),
-('ORDER9',null,false,428.66,231.2,'CUSTOMER3',null);
+('ORDER9',null,false,409.08,222.8,'CUSTOMER3',null);
 
 insert into physicalOrder values('ORDER7','211 Ly Thuong Kiet'),('ORDER9','211 Ly Thuong Kiet');
 insert into fileOrder values('ORDER7'),('ORDER8'),('ORDER9');
@@ -331,8 +328,7 @@ insert into physicalOrderContain(orderID,bookID,amount) values('ORDER9','BOOK4',
 
 insert into fileOrderContain(orderID,bookID) values('ORDER7','BOOK8'),('ORDER7','BOOK1');
 insert into fileOrderContain(orderID,bookID) values('ORDER8','BOOK10'),('ORDER8','BOOK21');
-insert into fileOrderContain(orderID,bookID) values('ORDER9','BOOK10'),('ORDER9','BOOK21');
 
 insert into discountApply(orderID,discountID) values('ORDER7','E_DISCOUNT1'),('ORDER7','E_DISCOUNT2'),('ORDER7','E_DISCOUNT4');
 insert into discountApply(orderID,discountID) values('ORDER8','E_DISCOUNT1');
-insert into discountApply(orderID,discountID) values('ORDER9','E_DISCOUNT2'),('ORDER9','E_DISCOUNT4'),('ORDER9','E_DISCOUNT1');
+insert into discountApply(orderID,discountID) values('ORDER9','E_DISCOUNT2'),('ORDER9','E_DISCOUNT4');

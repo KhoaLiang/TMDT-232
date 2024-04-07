@@ -53,7 +53,7 @@ if ($return_status_code === 400) {
                                           </svg>
                                     </button>
 
-                                    <input id="search_customer" class="form-control me-2" type="search" placeholder="Search by name, email, phone number or card number" aria-label="Search">
+                                    <input id="search_customer" class="form-control me-2" type="search" placeholder="Search customer by name, email or phone number" aria-label="Search for customers">
                               </form>
                         </div>
                         <div class="mt-2">
@@ -88,7 +88,6 @@ if ($return_status_code === 400) {
                                                 <th scope="col">Address</th>
                                                 <th scope="col">Gender</th>
                                                 <th scope="col" class='text-nowrap'>Accumulated Points</th>
-                                                <th scope="col">Card Number</th>
                                                 <th scope="col">Action</th>
                                           </tr>
                                     </thead>
@@ -115,7 +114,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="Error modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -131,7 +130,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="Confirm deactivate modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -148,7 +147,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="activateModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="activateModal" tabindex="-1" aria-labelledby="Confirm activate modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -165,7 +164,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="Confirm deletion modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -182,7 +181,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="deleteNotifyModal1" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="deleteNotifyModal1" tabindex="-1" aria-labelledby="Delete request sent modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -198,7 +197,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="deleteNotifyModal2" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="deleteNotifyModal2" tabindex="-1" aria-labelledby="Customer deleted modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">
@@ -214,7 +213,7 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
-                  <div class="modal fade" id="deleteCancelNotifyModal" tabindex="-1" aria-labelledby="modalLabel">
+                  <div class="modal fade" id="deleteCancelNotifyModal" tabindex="-1" aria-labelledby="Deletion process cancelled modal">
                         <div class="modal-dialog modal-dialog-centered">
                               <div class="modal-content">
                                     <div class="modal-header">

@@ -26,8 +26,8 @@ if ($return_status_code === 400) {
             <link rel="stylesheet" href="/css/preset_style.css">
 
             <meta name="author" content="Nghia Duong">
-            <meta name="description" content="Home page of NQK bookstore">
-            <title>NQK Shop</title>
+            <meta name="description" content="Home page of NQK bookstore for admins">
+            <title>Overall Statistics</title>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
@@ -40,7 +40,6 @@ if ($return_status_code === 400) {
             ?>
             <section id="page">
                   <div class='w-100 h-100 d-flex flex-column'>
-                        <h1 class='mx-auto mt-2 text-center'>Welcome Admin</h1>
                         <div class='w-100 mt-5 d-flex flex-column'>
                               <h4 class='mx-auto text-center'>This Week Best Selling Books</h4>
                               <div class='bookCarouselSlides'>
@@ -70,10 +69,6 @@ if ($return_status_code === 400) {
                                                                   <div class="card-text d-flex">
                                                                         <p>Publisher:&nbsp;</p>
                                                                         <p id='book_publisher_1'>N/A</p>
-                                                                  </div>
-                                                                  <div class="card-text d-flex">
-                                                                        <p>Age Restriction:&nbsp;</p>
-                                                                        <p id='book_age_1'>N/A</p>
                                                                   </div>
                                                                   <div class="card-text d-flex">
                                                                         <p>Sold:&nbsp;</p>
@@ -108,10 +103,6 @@ if ($return_status_code === 400) {
                                                                         <p id='book_publisher_2'>N/A</p>
                                                                   </div>
                                                                   <div class="card-text d-flex">
-                                                                        <p>Age Restriction:&nbsp;</p>
-                                                                        <p id='book_age_2'>N/A</p>
-                                                                  </div>
-                                                                  <div class="card-text d-flex">
                                                                         <p>Sold:&nbsp;</p>
                                                                         <p id='book_sold_2' class='fw-medium'>N/A</p>
                                                                   </div>
@@ -142,10 +133,6 @@ if ($return_status_code === 400) {
                                                                   <div class="card-text d-flex">
                                                                         <p>Publisher:&nbsp;</p>
                                                                         <p id='book_publisher_3'>N/A</p>
-                                                                  </div>
-                                                                  <div class="card-text d-flex">
-                                                                        <p>Age Restriction:&nbsp;</p>
-                                                                        <p id='book_age_3'>N/A</p>
                                                                   </div>
                                                                   <div class="card-text d-flex">
                                                                         <p>Sold:&nbsp;</p>
@@ -180,10 +167,6 @@ if ($return_status_code === 400) {
                                                                         <p id='book_publisher_4'>N/A</p>
                                                                   </div>
                                                                   <div class="card-text d-flex">
-                                                                        <p>Age Restriction:&nbsp;</p>
-                                                                        <p id='book_age_4'>N/A</p>
-                                                                  </div>
-                                                                  <div class="card-text d-flex">
                                                                         <p>Sold:&nbsp;</p>
                                                                         <p id='book_sold_4' class='fw-medium'>N/A</p>
                                                                   </div>
@@ -214,10 +197,6 @@ if ($return_status_code === 400) {
                                                                   <div class="card-text d-flex">
                                                                         <p>Publisher:&nbsp;</p>
                                                                         <p id='book_publisher_5'>N/A</p>
-                                                                  </div>
-                                                                  <div class="card-text d-flex">
-                                                                        <p>Age Restriction:&nbsp;</p>
-                                                                        <p id='book_age_5'>N/A</p>
                                                                   </div>
                                                                   <div class="card-text d-flex">
                                                                         <p>Sold:&nbsp;</p>
