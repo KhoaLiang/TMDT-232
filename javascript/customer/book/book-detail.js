@@ -29,9 +29,13 @@ $('#add_to_cart').on('click', function(event) {
         success: function(response) {
             // Handle the response...
             console.log(response);
+            
             if (response.includes("This customer has already bought this book!")) {
-            alert('You have already bought this book!');
-        }  else alert('The book has been added to your cart.');
+                alert('You have already bought this book!');
+            }  
+            else {
+                alert('The book has been added to your cart.');
+            }
         }
     });
 });

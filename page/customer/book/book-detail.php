@@ -274,10 +274,10 @@ echo '</div>';//end reting-container
                                     // </label>
                                     // </div>';
                                     echo '<input type="radio" class="btn-check" name="bookType" id="ebook" value="ebook" autocomplete="off">
-                                    <label class="btn btn-outline-primary mt-3" for="ebook">E-book</label>
+                                    <label class="btn btn-outline-danger mt-3" for="ebook">E-book</label>
 
                                     <input type="radio" id="hardcover" name="bookType" value="hardcover" class="btn-check ">
-                                    <label class="btn btn-outline-primary mt-3" for="hardcover">Hardcover</label>';
+                                    <label class="btn btn-outline-danger mt-3" for="hardcover">Hardcover</label>';
                                      echo '<div
                                           name=""
                                           id="add_to_cart"
@@ -290,9 +290,9 @@ echo '</div>';//end reting-container
                                           >Add E-book Copy</div>';//add to cart button for e-book
                                     
                                     echo '<div id="Choose-physical" style="display: none;">';
-                                    echo '<p class="h5 mt-4 ">Amount of Hardcovers to buy: </p>';
+                                    //echo '<p class="h5 mt-4 ">Amount of Hardcovers to buy: </p>';
                                     echo '<div class="col-12 col-md-4 col-xxl-3 mt-3">
-                                          <div class="input-group mt-1">
+                                          <div class="input-group mt-1" style="display: none;">
                                                 <div class="input-group-prepend">
                                                       <button class="btn btn-outline-danger" type="button" id="button-decrease">-</button>
                                                 </div>
