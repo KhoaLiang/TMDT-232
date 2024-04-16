@@ -76,10 +76,6 @@ document.getElementById('avg-rating').addEventListener('mouseover', function() {
     document.getElementById('rating-container').style.display = 'block';
 });
 
-document.getElementById('avg-rating').addEventListener('mouseout', function() {
-    document.getElementById('rating-container').style.display = 'none';
-});
-
 document.getElementById('rating-container').addEventListener('mouseover', function() {
     document.getElementById('rating-container').style.display = 'block';
 });
@@ -165,7 +161,7 @@ function checkAmmount() {
         // console.log('In stock:', inStock);
         // console.log($('#quantity').get(0));
 
-        //clearCustomValidity($('#quantity').get(0));
+        clearCustomValidity($('#quantity').get(0));
 
         if (amount < 0) {
             alert('Book amount can not be negative!');
@@ -174,10 +170,11 @@ function checkAmmount() {
             alert('Book amount cannot be zero!');
             return;
         } else if (amount > inStock) {
-            //reportCustomValidity($('#quantity').get(0), "Book amount exceeds in stock amount!");
+            reportCustomValidity($('#quantity').get(0), "Book amount exceeds in stock amount!");
             // var input = $('#quantity').get(0);
             // input.setCustomValidity('Book amount exceeds in stock amount!');
-            alert('Book amount exceeds in stock amount!');
+            //alert('Book amount exceeds in stock amount!');
+            console.log('Amount > inStock');
             return;
         }
     }

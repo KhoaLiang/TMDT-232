@@ -162,7 +162,7 @@ if ($return_status_code === 400) {
                        opacity: 1;
                   }
                   .rating .bi {
-                        font-size: 2em;
+                        font-size: 1em;
                         color: gray;
                         cursor: pointer;
                   }
@@ -171,7 +171,7 @@ if ($return_status_code === 400) {
                         color: gold;
                   }
                   .rating1 .bi {
-                        font-size: 2em;
+                        font-size: 1em;
                         color: gray;
                         cursor: pointer;
                   }
@@ -192,13 +192,47 @@ if ($return_status_code === 400) {
                   transition: box-shadow .3s ease;
                   }
                   .Orange {
-                  color: orange;
+                  color: black;
+                  }
+                  .btn-outline-danger {
+                  --bs-btn-color: #dc3545;
+                  --bs-btn-border-color: black;
+                  --bs-btn-hover-color: #b8b6b6;
                   }
                   .btn-check:checked+.btn{
-                        color: var(--bs-btn-active-color);
-                        background-color: #e2621e;
-                        border-color: var(--bs-btn-active-border-color);
+                        color: #f70000;
+                        background-color: #fff;
+                        border-color: #ff5800;
+                  }
+                        
+                  @media (max-width: 576px) { 
+                        .img-size{
+                              width: 220px;
                         }
+                  }
+                  @media (min-width: 576px) { 
+                        .img-size{
+                              width: 220px;
+                        }
+                  }
+
+                  /* // Medium devices (tablets, 768px and up) */
+                  @media (min-width: 768px) {
+                        .img-size{
+                              width: 250px;
+                        }
+                  }
+
+                  /* // Large devices (desktops, 992px and up) */
+                  @media (min-width: 992px) { 
+                        .img-size{
+                              width: 300px;
+                        }
+                  }
+                  .btn-equal-width {
+                  width: 40px;  /* Adjust this value as needed */
+                  }
+                  
             </style>
             <title>Book detail</title>
       </head>
@@ -218,7 +252,7 @@ if ($return_status_code === 400) {
                         echo'</div>';
                               echo '<div class="row justify-content-center align-items-center g-2 m-3">';
                                     echo '<div class="col-11 col-md-5 d-flex flex-column justify-content-center align-items-center">';
-                                    echo '<img src="' . $imagePath . '" class="card-img-top w-50 rounded" alt="...">';
+                                    echo '<img src="' . $imagePath . '" class="card-img-top rounded img-size" alt="...">';
 
                                     echo '</div>'; //end col-11
                                     echo '<div class="col-11 col-md-7"> ';
@@ -237,37 +271,18 @@ if ($return_status_code === 400) {
                                           echo '<p class="h6">' . $book['edition'] . 'th edition</p>';
                                     }
                                     echo '<p class=" mt-3">ISBN: ' . $book['isbn'] . '</p>';
-                                    echo '<p class=" author">Author: ' . $book['authorName'] . '</p>';
+                                    echo '<p class="">Author: ' . $book['authorName'] . '</p>';
                                     echo '<p class="">Category: ' . $book['category_names'] . '</p>';
                                     echo '<p class="">Publisher: ' . $book['publisher'] . '</p>';
                                     echo '<p class="">Publish date: ' . date('F j, Y', strtotime($book['publishDate'])) . '</p>';
-                                    if($book["discount"] > 0){
-                                                echo '<p class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
-                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                                <g id="SVGRepo_iconCarrier">
-                                                      <path d="M3.9889 14.6604L2.46891 13.1404C1.84891 12.5204 1.84891 11.5004 2.46891 10.8804L3.9889 9.36039C4.2489 9.10039 4.4589 8.59038 4.4589 8.23038V6.08036C4.4589 5.20036 5.1789 4.48038 6.0589 4.48038H8.2089C8.5689 4.48038 9.0789 4.27041 9.3389 4.01041L10.8589 2.49039C11.4789 1.87039 12.4989 1.87039 13.1189 2.49039L14.6389 4.01041C14.8989 4.27041 15.4089 4.48038 15.7689 4.48038H17.9189C18.7989 4.48038 19.5189 5.20036 19.5189 6.08036V8.23038C19.5189 8.59038 19.7289 9.10039 19.9889 9.36039L21.5089 10.8804C22.1289 11.5004 22.1289 12.5204 21.5089 13.1404L19.9889 14.6604C19.7289 14.9204 19.5189 15.4304 19.5189 15.7904V17.9403C19.5189 18.8203 18.7989 19.5404 17.9189 19.5404H15.7689C15.4089 19.5404 14.8989 19.7504 14.6389 20.0104L13.1189 21.5304C12.4989 22.1504 11.4789 22.1504 10.8589 21.5304L9.3389 20.0104C9.0789 19.7504 8.5689 19.5404 8.2089 19.5404H6.0589C5.1789 19.5404 4.4589 18.8203 4.4589 17.9403V15.7904C4.4589 15.4204 4.2489 14.9104 3.9889 14.6604Z" stroke="#ff0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                      <path d="M9 15L15 9" stroke="#ff0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                      <path d="M14.4945 14.5H14.5035" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                      <path d="M9.49451 9.5H9.50349" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                                </g>
-                                          </svg> '.$book["discount"].'%</p>';
-                                    }
-                                    if($book["discount"] > 0){
-                                          echo '<p class="price " id="ebook-price" style="display: none;">E-book price: <span style="text-decoration: line-through;">' . $book["filePrice"] . '$</span> ' .round($book["filePrice"] - $book["filePrice"] * $book["discount"] / 100, 2). '$</p>';
-                                          echo '<p class="price " id="hardcover-price" style="display: none;">Hardcover price: <span style="text-decoration: line-through;">' . $book["physicalPrice"] . '$</span> ' .round($book["physicalPrice"] - $book["physicalPrice"] * $book["discount"] / 100, 2). '$</p>';
-                                          }
-                                          else {
-                                          echo '<p class="price " id="ebook-price" style="display: none;"> E-book price: '.$book["filePrice"].'$</p>';
-                                          echo '<p class="price " id="hardcover-price" style="display: none;"> Hardcover price: '.$book["physicalPrice"].'$</p>';
-                                          }
-                                    echo '<div> <span class="text-warning h5" id="avg-rating">'.displayRatingStars($book['star']).'('.$book['star'].')</span>';
-                                                           echo "</div>";
+                                    //rating section
+                                    echo '<div> <span class="text-warning h6" id="avg-rating">'.displayRatingStars($book['star']).'</span>';
+                                                           echo  ' ('.$book['star'].')</div>';
 
                                     echo '<div id="rating-container" style="display: none;">';
                                     //rating test
                                     echo ' <div class="rating">
-                                    <span class="h5">Rate the book: </span>
+                                    <span class="h6">Rate the book: </span>
                                     <i class="bi bi-star" data-value="1" data-book-id="'.$book['id'].'" data-user-id="'. $_SESSION['id'].'"></i>
                                     <i class="bi bi-star" data-value="2" data-book-id="'.$book['id'].'" data-user-id="'. $_SESSION['id'].'"></i>
                                     <i class="bi bi-star" data-value="3" data-book-id="'.$book['id'].'" data-user-id="'. $_SESSION['id'].'"></i>
@@ -279,7 +294,9 @@ if ($return_status_code === 400) {
                               //       <span id="rating-holder">'.GetRating($conn, $book['id'], $_SESSION['id']).' </span>
                               //       <div id="rating-response"></div>';
                               //echo '</div>'; //rating test ends
-echo '</div>';//end reting-container
+                                    echo '</div>';//end rating-container
+
+                                    
                                     // echo '<div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
                                     // <label class="btn btn-outline-primary">
                                     //       <input type="radio" id="ebook" name="bookType" value="ebook"> E-book
@@ -292,57 +309,123 @@ echo '</div>';//end reting-container
                                     if (isset($_SESSION['id'])) {
                                     //select type tp buy
                                     echo '<input type="radio" class="btn-check" name="bookType" id="ebook" value="ebook" autocomplete="off">
-                                    <label class="btn btn-outline-danger Orange btn-lg mt-3" for="ebook">E-book</label>
+                                    <label class="btn btn-outline-danger Orange mt-3 me-3" for="ebook">E-book</label>
 
                                     <input type="radio" id="hardcover" name="bookType" value="hardcover" class="btn-check ">
-                                    <label class="btn btn-outline-danger Orange btn-lg mt-3" for="hardcover">Hardcover</label>';
+                                    <label class="btn btn-outline-danger Orange mt-3" for="hardcover">Hardcover</label>';
                                     
+                                    //price section
+                                    if($book["discount"] > 0){
+                                          echo '<strong class="price mt-3 fs-5" id="ebook-price" style="display: none;">
+                                          Price: <span style="text-decoration: line-through;">$' . $book["filePrice"] . '</span> $' .round($book["filePrice"] - $book["filePrice"] * $book["discount"] / 100, 2). '
+                                          <span class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
+                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                <g id="SVGRepo_iconCarrier">
+                                                      <path d="M3.9889 14.6604L2.46891 13.1404C1.84891 12.5204 1.84891 11.5004 2.46891 10.8804L3.9889 9.36039C4.2489 9.10039 4.4589 8.59038 4.4589 8.23038V6.08036C4.4589 5.20036 5.1789 4.48038 6.0589 4.48038H8.2089C8.5689 4.48038 9.0789 4.27041 9.3389 4.01041L10.8589 2.49039C11.4789 1.87039 12.4989 1.87039 13.1189 2.49039L14.6389 4.01041C14.8989 4.27041 15.4089 4.48038 15.7689 4.48038H17.9189C18.7989 4.48038 19.5189 5.20036 19.5189 6.08036V8.23038C19.5189 8.59038 19.7289 9.10039 19.9889 9.36039L21.5089 10.8804C22.1289 11.5004 22.1289 12.5204 21.5089 13.1404L19.9889 14.6604C19.7289 14.9204 19.5189 15.4304 19.5189 15.7904V17.9403C19.5189 18.8203 18.7989 19.5404 17.9189 19.5404H15.7689C15.4089 19.5404 14.8989 19.7504 14.6389 20.0104L13.1189 21.5304C12.4989 22.1504 11.4789 22.1504 10.8589 21.5304L9.3389 20.0104C9.0789 19.7504 8.5689 19.5404 8.2089 19.5404H6.0589C5.1789 19.5404 4.4589 18.8203 4.4589 17.9403V15.7904C4.4589 15.4204 4.2489 14.9104 3.9889 14.6604Z" stroke="#ff0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                      <path d="M9 15L15 9" stroke="#ff0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                      <path d="M14.4945 14.5H14.5035" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                      <path d="M9.49451 9.5H9.50349" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                </g>
+                                          </svg> '.$book["discount"].'%</span>
+                                          </strong>';
+                                          echo '<strong class="price mt-3 fs-5" id="hardcover-price" style="display: none;">
+                                          Price: <span style="text-decoration: line-through;">$' . $book["physicalPrice"] . '</span> $' .round($book["physicalPrice"] - $book["physicalPrice"] * $book["discount"] / 100, 2). ' 
+                                          <span class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
+                                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                <g id="SVGRepo_iconCarrier">
+                                                      <path d="M3.9889 14.6604L2.46891 13.1404C1.84891 12.5204 1.84891 11.5004 2.46891 10.8804L3.9889 9.36039C4.2489 9.10039 4.4589 8.59038 4.4589 8.23038V6.08036C4.4589 5.20036 5.1789 4.48038 6.0589 4.48038H8.2089C8.5689 4.48038 9.0789 4.27041 9.3389 4.01041L10.8589 2.49039C11.4789 1.87039 12.4989 1.87039 13.1189 2.49039L14.6389 4.01041C14.8989 4.27041 15.4089 4.48038 15.7689 4.48038H17.9189C18.7989 4.48038 19.5189 5.20036 19.5189 6.08036V8.23038C19.5189 8.59038 19.7289 9.10039 19.9889 9.36039L21.5089 10.8804C22.1289 11.5004 22.1289 12.5204 21.5089 13.1404L19.9889 14.6604C19.7289 14.9204 19.5189 15.4304 19.5189 15.7904V17.9403C19.5189 18.8203 18.7989 19.5404 17.9189 19.5404H15.7689C15.4089 19.5404 14.8989 19.7504 14.6389 20.0104L13.1189 21.5304C12.4989 22.1504 11.4789 22.1504 10.8589 21.5304L9.3389 20.0104C9.0789 19.7504 8.5689 19.5404 8.2089 19.5404H6.0589C5.1789 19.5404 4.4589 18.8203 4.4589 17.9403V15.7904C4.4589 15.4204 4.2489 14.9104 3.9889 14.6604Z" stroke="#ff0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                      <path d="M9 15L15 9" stroke="#ff0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                      <path d="M14.4945 14.5H14.5035" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                      <path d="M9.49451 9.5H9.50349" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                                </g>
+                                          </svg> '.$book["discount"].'%</span>
+                                          </strong>';
+                                          }
+                                          else {
+                                          echo '<strong class="price mt-3 fs-5" id="ebook-price" style="display: none;"> Price: $'.$book["filePrice"].'</strong>';
+                                          echo '<strong class="price mt-3 fs-5" id="hardcover-price" style="display: none;"> Price: $'.$book["physicalPrice"].'</strong>';
+                                          }
+
                                     //add to cart button for E-book
                                     echo '<div
                                           name=""
                                           id="add_to_cart"
-                                          class="btn btn-outline-primary col-12 col-md-4 col-xxl-3 mt-3"
+                                          class="btn btn-primary col-12 col-md-4 col-xxl-3 mt-3"
                                           style="display: none;"
                                           href="#"
                                           role="button"
                                           data-book-id="' . $book['id'] . '"
                                           data-user-id="' . $_SESSION['id'] . '"
-                                          >Add E-book Copy</div>';//add to cart button for e-book
+                                          >
+                                          <i class="bi bi-cart4"></i>
+                                          Add to cart
+                                          </div>';//add to cart button for e-book
                                     
                                     //add to cart button for Hardcover
                                     echo '<div id="Choose-physical" style="display: none;">';
                                     //echo '<p class="h5 mt-4 ">Amount of Hardcovers to buy: </p>';
-                                    echo '<div class="col-12 col-md-4 col-xxl-3 mt-3">
-                                          <div class="input-group mt-1">
-                                                <div class="input-group-prepend">
-                                                      <button onclick="checkAmmount()" class="btn btn-outline-danger" type="button" id="button-decrease">-</button>
-                                                </div>
-                                                <input
-                                                      onchange="checkAmmount()"
-                                                      type="number"
-                                                      id="quantity"
-                                                      min="1"
-                                                      value="1"
-                                                      class="form-control text-center"
-                                                >
-                                                <div class="input-group-append">
-                                                      <button onclick="checkAmmount()" class="btn btn-outline-success" type="button" id="button-increase">+</button>
-                                                </div>
-                                                </div>
-                                          </div>
-                                          <a
+                                    // echo '<div class="col-12 col-md-3 col-xxl-2 mt-3">
+                                    //             <div class="input-group mt-1">
+                                    //                   <div class="input-group-prepend">
+                                    //                         <button onclick="checkAmmount()" class="btn btn-secondary" type="button" id="button-decrease">-</button>
+                                    //                   </div>
+                                    //                   <input
+                                    //                         onchange="checkAmmount()"
+                                    //                         type="number"
+                                    //                         id="quantity"
+                                    //                         min="1"
+                                    //                         value="1"
+                                    //                         class="form-control text-center"
+                                    //                   >
+                                    //                   <div class="input-group-append">
+                                    //                         <button onclick="checkAmmount()" class="btn btn-secondary" type="button" id="button-increase">+</button>
+                                    //                   </div>
+                                    //             </div>
+                                    //       </div>';
+
+                                    //       echo '<div class="mt-2">';    
+                                    //       echo '<span class="h6">In stock: </span>';
+                                    //       echo '<span id="inStock">'.$bookInStock['inStock'].'</span>';
+                                    //       echo '</div>'; 
+                                    echo '<div class="row mt-3">';
+                                          echo '<div class="col-6 col-md-4 col-xxl-3">';
+                                          echo '<div class="input-group mt-1">';
+                                          echo '<div class="input-group-prepend">';
+                                          echo '<button onclick="checkAmmount()" class="btn btn-outline-success btn-equal-width" type="button" id="button-decrease">-</button>';
+                                          echo '</div>';
+
+
+                                          echo '<input onchange="checkAmmount()" type="number" id="quantity" min="1" value="1" class="form-control text-center">';
+
+                                          
+                                          echo '<div class="input-group-append">';
+                                          echo '<button onclick="checkAmmount()" class="btn btn-outline-success btn-equal-width" type="button" id="button-increase">+</button>';
+                                          echo '</div>';
+                                          echo '</div>';
+                                          echo '</div>';
+                                          echo '<div class="col-6 col-md-3 col-xxl-3">';
+                                          echo '<div class="mt-2">';    
+                                          echo '<span class="h6">In stock: </span>';
+                                          echo '<span id="inStock">'.$bookInStock['inStock'].'</span>';
+                                          echo '</div>';
+                                          echo '</div>';
+                                    echo '</div>';
+
+                                          echo'<a
                                           name=""
                                           id="add_to_cart_physical"
-                                          class="btn btn-outline-primary col-12 col-md-4 col-xxl-3 mt-3"
+                                          class="btn btn-primary col-12 col-md-4 col-xxl-3 mt-3"
                                           href="#"
                                           role="button"
                                           data-book-id="' . $book['id'] . '"
                                           data-user-id="' . $_SESSION['id'] . '"
-                                          >Add Hardcovers</a>';
-                                    echo '<div>';    
-                                    echo '<span class="h6 mt-3">In stock: </span>';
-                                    echo '<span id="inStock">'.$bookInStock['inStock'].'</span>';
-                                    echo '</div>';    
+                                          >
+                                          <i class="bi bi-cart4"></i>
+                                          Add to cart
+                                          </a>';
+                                       
 
                                     echo '</div>';//end Choose physical
                                     } else {
