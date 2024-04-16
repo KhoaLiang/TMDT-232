@@ -702,7 +702,7 @@ function checkAmmount(id, update = false)
       const inStock = parseInt($(`#in_stock_${ id }`).text());
 
       clearCustomValidity($(`#book_ammount_${ id }`).get(0));
-
+      //console.log($(`#book_ammount_${ id }`).get(0));
       if (amount < 0)
       {
             reportCustomValidity($(`#book_ammount_${ id }`).get(0), "Book amount can not be negative!");

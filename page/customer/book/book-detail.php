@@ -3,7 +3,6 @@
 use Dotenv\Parser\Value;
 
 require_once __DIR__ . '/../../../tool/php/role_check.php';
-require_once __DIR__ . '/../../../tool/php/login_check.php';
 require_once __DIR__ . '/../../../tool/php/ratingStars.php';
 require_once __DIR__ . '/../../../tool/php/comment.php';
 require_once __DIR__ . '/../../../ajax_service/customer/book/rating.php';
@@ -27,35 +26,42 @@ if ($return_status_code === 400) {
                   $bookID = $_GET['id'];
                   // Connect to MySQL
                   $conn = mysqli_connect($db_host, $db_user, $db_password, $db_database, $db_port);
-                  $stmt = $conn->prepare('WITH RankedBooks AS (
-  SELECT book.id, book.name,
-         author.authorName,  book.edition,
-            book.isbn,
-            book.publisher,
-            book.publishDate,
-            book.description,
-            book.imagePath,
-         fileCopy.price AS filePrice,
-         physicalCopy.price AS physicalPrice,
-         book.imagePath AS pic,
-         book.avgRating AS star,
-         eventapply.eventID,
-         COALESCE(eventdiscount.discount, 0) AS discount,
-         ROW_NUMBER() OVER (PARTITION BY book.id ORDER BY discount DESC) AS discount_rank
-  FROM book
-  INNER JOIN author ON book.id = author.bookID
-  INNER JOIN fileCopy ON book.id = fileCopy.id
-  INNER JOIN physicalCopy ON book.id = physicalCopy.id
-  LEFT JOIN eventapply ON book.id = eventapply.bookID
-  LEFT JOIN eventdiscount ON eventapply.eventID = eventdiscount.ID
-)
-SELECT *
-FROM RankedBooks
-WHERE discount_rank = 1');
+                  $query = "WITH RankedBooks AS (
+                  SELECT book.id, book.name,
+                        author.authorName, book.edition,
+                        book.isbn, book.publisher, book.publishDate,
+                        book.description, book.imagePath,
+                        fileCopy.price AS filePrice,
+                        physicalCopy.price AS physicalPrice,
+                        book.imagePath AS pic,
+                        book.avgRating AS star,
+                        eventapply.eventID,
+                        COALESCE(eventdiscount.discount, 0) AS discount,
+                        ROW_NUMBER() OVER (PARTITION BY book.id ORDER BY discount DESC) AS discount_rank
+                  FROM book
+                  INNER JOIN author ON book.id = author.bookID
+                  INNER JOIN fileCopy ON book.id = fileCopy.id
+                  INNER JOIN physicalCopy ON book.id = physicalCopy.id
+                  LEFT JOIN eventapply ON book.id = eventapply.bookID
+                  LEFT JOIN eventdiscount ON eventapply.eventID = eventdiscount.ID
+                  ),
+                  BookCategories AS (
+                  SELECT bookID, GROUP_CONCAT(category.name SEPARATOR ', ') AS category_names
+                  FROM belong
+                  INNER JOIN category ON belong.categoryID = category.id
+                  GROUP BY bookID
+                  )
+                  SELECT RankedBooks.*, BookCategories.category_names
+                  FROM RankedBooks
+                  INNER JOIN BookCategories ON RankedBooks.id = BookCategories.bookID
+                  WHERE RankedBooks.discount_rank = 1";
+
+                  $stmt = $conn->prepare($query);
                   $stmt->execute();
                   $result = $stmt->get_result();
                   // $book = $result->fetch_assoc();
-                  
+                  $result2 = $conn->query("SELECT * from physicalCopy where id='$bookID'");
+                  $bookInStock = $result2->fetch_assoc();
             } catch (Exception $e) {
                   http_response_code(500);
                   require_once __DIR__ . '/../../../error/500.php';
@@ -185,6 +191,14 @@ WHERE discount_rank = 1');
                   .btn-outline-primary {
                   transition: box-shadow .3s ease;
                   }
+                  .Orange {
+                  color: orange;
+                  }
+                  .btn-check:checked+.btn{
+                        color: var(--bs-btn-active-color);
+                        background-color: #e2621e;
+                        border-color: var(--bs-btn-active-border-color);
+                        }
             </style>
             <title>Book detail</title>
       </head>
@@ -208,7 +222,7 @@ WHERE discount_rank = 1');
 
                                     echo '</div>'; //end col-11
                                     echo '<div class="col-11 col-md-7"> ';
-                                    echo '<h1>' . $book['name'] . '</h2>';
+                                    echo '<h1>' . $book['name'] . '</h1>';
                                     if($book['edition'] == 1){
                                           echo '<p class="h6">' . $book['edition'] . 'rst edition</p>';
                                     }
@@ -222,10 +236,11 @@ WHERE discount_rank = 1');
                                     else{
                                           echo '<p class="h6">' . $book['edition'] . 'th edition</p>';
                                     }
-                                    echo '<p class="h5 mt-3">ISBN: ' . $book['isbn'] . '</p>';
-                                    echo '<p class="h5 author">Author: ' . $book['authorName'] . '</p>';
-                                    echo '<p class="h5">Publisher: ' . $book['publisher'] . '</p>';
-                                    echo '<p class="h5">Publish date: ' . $book['publishDate'] . '</p>';
+                                    echo '<p class=" mt-3">ISBN: ' . $book['isbn'] . '</p>';
+                                    echo '<p class=" author">Author: ' . $book['authorName'] . '</p>';
+                                    echo '<p class="">Category: ' . $book['category_names'] . '</p>';
+                                    echo '<p class="">Publisher: ' . $book['publisher'] . '</p>';
+                                    echo '<p class="">Publish date: ' . date('F j, Y', strtotime($book['publishDate'])) . '</p>';
                                     if($book["discount"] > 0){
                                                 echo '<p class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
                                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -239,15 +254,15 @@ WHERE discount_rank = 1');
                                           </svg> '.$book["discount"].'%</p>';
                                     }
                                     if($book["discount"] > 0){
-                                          echo '<p class="price h4" id="ebook-price" style="display: none;">E-book price: <span style="text-decoration: line-through;">' . $book["filePrice"] . '$</span> ' .round($book["filePrice"] - $book["filePrice"] * $book["discount"] / 100, 2). '$</p>';
-                                          echo '<p class="price h4" id="hardcover-price" style="display: none;">Hardcover price: <span style="text-decoration: line-through;">' . $book["physicalPrice"] . '$</span> ' .round($book["physicalPrice"] - $book["physicalPrice"] * $book["discount"] / 100, 2). '$</p>';
+                                          echo '<p class="price " id="ebook-price" style="display: none;">E-book price: <span style="text-decoration: line-through;">' . $book["filePrice"] . '$</span> ' .round($book["filePrice"] - $book["filePrice"] * $book["discount"] / 100, 2). '$</p>';
+                                          echo '<p class="price " id="hardcover-price" style="display: none;">Hardcover price: <span style="text-decoration: line-through;">' . $book["physicalPrice"] . '$</span> ' .round($book["physicalPrice"] - $book["physicalPrice"] * $book["discount"] / 100, 2). '$</p>';
                                           }
                                           else {
-                                          echo '<p class="price h4" id="ebook-price" style="display: none;"> E-book price: '.$book["filePrice"].'$</p>';
-                                          echo '<p class="price h4" id="hardcover-price" style="display: none;"> Hardcover price: '.$book["physicalPrice"].'$</p>';
+                                          echo '<p class="price " id="ebook-price" style="display: none;"> E-book price: '.$book["filePrice"].'$</p>';
+                                          echo '<p class="price " id="hardcover-price" style="display: none;"> Hardcover price: '.$book["physicalPrice"].'$</p>';
                                           }
-                                    echo '<div> <span class="text-warning h3" id="avg-rating">'.displayRatingStars($book['star']).'</span>';
-                                                           echo "(".$book['star'].") </div>";
+                                    echo '<div> <span class="text-warning h5" id="avg-rating">'.displayRatingStars($book['star']).'('.$book['star'].')</span>';
+                                                           echo "</div>";
 
                                     echo '<div id="rating-container" style="display: none;">';
                                     //rating test
@@ -273,12 +288,17 @@ echo '</div>';//end reting-container
                                     //       <input type="radio" id="hardcover" name="bookType" value="hardcover"> Hardcover
                                     // </label>
                                     // </div>';
+                                    
+                                    if (isset($_SESSION['id'])) {
+                                    //select type tp buy
                                     echo '<input type="radio" class="btn-check" name="bookType" id="ebook" value="ebook" autocomplete="off">
-                                    <label class="btn btn-outline-danger mt-3" for="ebook">E-book</label>
+                                    <label class="btn btn-outline-danger Orange btn-lg mt-3" for="ebook">E-book</label>
 
                                     <input type="radio" id="hardcover" name="bookType" value="hardcover" class="btn-check ">
-                                    <label class="btn btn-outline-danger mt-3" for="hardcover">Hardcover</label>';
-                                     echo '<div
+                                    <label class="btn btn-outline-danger Orange btn-lg mt-3" for="hardcover">Hardcover</label>';
+                                    
+                                    //add to cart button for E-book
+                                    echo '<div
                                           name=""
                                           id="add_to_cart"
                                           class="btn btn-outline-primary col-12 col-md-4 col-xxl-3 mt-3"
@@ -289,14 +309,16 @@ echo '</div>';//end reting-container
                                           data-user-id="' . $_SESSION['id'] . '"
                                           >Add E-book Copy</div>';//add to cart button for e-book
                                     
+                                    //add to cart button for Hardcover
                                     echo '<div id="Choose-physical" style="display: none;">';
                                     //echo '<p class="h5 mt-4 ">Amount of Hardcovers to buy: </p>';
                                     echo '<div class="col-12 col-md-4 col-xxl-3 mt-3">
-                                          <div class="input-group mt-1" style="display: none;">
+                                          <div class="input-group mt-1">
                                                 <div class="input-group-prepend">
-                                                      <button class="btn btn-outline-danger" type="button" id="button-decrease">-</button>
+                                                      <button onclick="checkAmmount()" class="btn btn-outline-danger" type="button" id="button-decrease">-</button>
                                                 </div>
                                                 <input
+                                                      onchange="checkAmmount()"
                                                       type="number"
                                                       id="quantity"
                                                       min="1"
@@ -304,7 +326,7 @@ echo '</div>';//end reting-container
                                                       class="form-control text-center"
                                                 >
                                                 <div class="input-group-append">
-                                                      <button class="btn btn-outline-success" type="button" id="button-increase">+</button>
+                                                      <button onclick="checkAmmount()" class="btn btn-outline-success" type="button" id="button-increase">+</button>
                                                 </div>
                                                 </div>
                                           </div>
@@ -317,8 +339,17 @@ echo '</div>';//end reting-container
                                           data-book-id="' . $book['id'] . '"
                                           data-user-id="' . $_SESSION['id'] . '"
                                           >Add Hardcovers</a>';
+                                    echo '<div>';    
+                                    echo '<span class="h6 mt-3">In stock: </span>';
+                                    echo '<span id="inStock">'.$bookInStock['inStock'].'</span>';
+                                    echo '</div>';    
 
                                     echo '</div>';//end Choose physical
+                                    } else {
+                                    echo '<a href="/authentication"
+                                          role="button" class="btn btn-outline-danger mt-3">Login to buy</a>';
+                                    }
+                                     
                                     echo '</div>';
                               echo'</div>';
                               echo '<div class="row justify-content-center align-items-center g-2 mt-3">';
@@ -327,7 +358,7 @@ echo '</div>';//end reting-container
                                     
 
                                     echo '<p class="h5 mt-3">Description: </p>';
-                                    echo '<p class="h6 text-justify">' . $book['description'] . '</p>';
+                                    echo '<p class="text-justify">' . $book['description'] . '</p>';
                                     echo'</div>';
                               echo'</div>';
 
@@ -385,6 +416,7 @@ echo '</div>';//end reting-container
             ?>
             <script src="/javascript/customer/menu_after_load.js"></script>
             <script src="/javascript/customer/book/book-detail.js"></script>
+            <script src="/tool/js/input_validity.js"></script>
       </body>
 
       </html>

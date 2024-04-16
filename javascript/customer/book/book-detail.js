@@ -156,3 +156,28 @@ document.querySelector('.rating').addEventListener('mouseleave', function() {
         star.classList.add('bi-star');
     });
 });
+
+function checkAmmount() {
+        const amount = parseInt($('#quantity').val());
+        const inStock = parseInt($('#inStock').text());
+
+        // console.log('Amount:', amount);
+        // console.log('In stock:', inStock);
+        // console.log($('#quantity').get(0));
+
+        //clearCustomValidity($('#quantity').get(0));
+
+        if (amount < 0) {
+            alert('Book amount can not be negative!');
+            return;
+        } else if (amount === 0) {
+            alert('Book amount cannot be zero!');
+            return;
+        } else if (amount > inStock) {
+            //reportCustomValidity($('#quantity').get(0), "Book amount exceeds in stock amount!");
+            // var input = $('#quantity').get(0);
+            // input.setCustomValidity('Book amount exceeds in stock amount!');
+            alert('Book amount exceeds in stock amount!');
+            return;
+        }
+    }
