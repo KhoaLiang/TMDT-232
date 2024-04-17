@@ -106,10 +106,18 @@ if ($return_status_code === 400) {
             require_once __DIR__ . '/../../../head_element/meta.php';
             ?>
             <link rel="stylesheet" href="/css/preset_style.css">
-            <!-- <link rel="stylesheet" href="../../css/customer/book/book-detail.css"> -->
+            <!-- <link rel="stylesheet1" href="../../css/customer/book/book-detail.css"> -->
+            <link rel="stylesheet1" href="/css/customer/book/book-detail.css">
             <meta name="author" content="Anh Khoa">
             <meta name="description" content="Book detail page of NQK bookstore">
             <style>
+                  /* Hide the radio buttons */
+                  input[type="radio"] {
+                        
+                  }
+                  input[type="number"] {
+                  -moz-appearance: textfield !important;
+                  }
                   .author {
                         color: gray;
                   }
@@ -182,10 +190,7 @@ if ($return_status_code === 400) {
                   .round{
                         border-radius: 10px;
                   }
-                  /* Hide the radio buttons */
-                  input[type="radio"] {
-                        
-                  }
+                  
 
                   /* Style the labels */
                   .btn-outline-primary {
@@ -237,11 +242,6 @@ if ($return_status_code === 400) {
                   -webkit-appearance: none !important;
                   margin: 0;
                   }
-
-                  input[type="number"] {
-                  -moz-appearance: textfield !important;
-                  }
-                  
             </style>
             <title>Book detail</title>
       </head>
@@ -309,7 +309,7 @@ if ($return_status_code === 400) {
                                           <span class="text-warning h6" id="avg-rating"><?php echo displayRatingStars($bStar);?></span>
                                           <?php echo  ' ('.$bStar.')'; ?>
                                     </div>
-
+                                    <!-- delete when rating + comment feature is done -->
                                     <div id="rating-container" style="display: none;">
                                           <!-- //rating test -->
                                           <div class="rating">

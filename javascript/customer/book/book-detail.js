@@ -85,7 +85,7 @@ document.getElementById('rating-container').addEventListener('mouseout', functio
 });
 
 
-
+// delete when rating + comment feature is done
 document.querySelectorAll('.rating .bi').forEach((star, index, starList) => {
     star.addEventListener('mouseover', function() {
         // Change this star and all previous stars to filled stars
@@ -144,7 +144,7 @@ document.querySelectorAll('.rating .bi').forEach((star, index, starList) => {
 });
 
 
-
+// delete when rating + comment feature is done
 // Reset stars to empty when mouse leaves the rating div
 document.querySelector('.rating').addEventListener('mouseleave', function() {
     document.querySelectorAll('.rating .bi').forEach(star => {
