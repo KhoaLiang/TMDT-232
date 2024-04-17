@@ -1,193 +1,65 @@
-document.getElementsByName('bookType').forEach((elem) => {
-    elem.addEventListener('change', function() {
-        if (this.value === 'ebook') {
-            document.getElementById('add_to_cart').style.display = 'block';
-            document.getElementById('Choose-physical').style.display = 'none';
-            document.getElementById('ebook-price').style.display = 'block';
-            document.getElementById('hardcover-price').style.display = 'none';
-        } else if (this.value === 'hardcover') {
-            document.getElementById('Choose-physical').style.display = 'block';
-            document.getElementById('add_to_cart').style.display = 'none';
-            document.getElementById('ebook-price').style.display = 'none';
-            document.getElementById('hardcover-price').style.display = 'block';
+let mode = null;
+
+$(document).ready(function ()
+{
+    setInterval(function ()
+    {
+        //checkInStock();
+    }, 10000);
+
+    $('#addToCartForm').submit(function (e)
+    {
+        e.preventDefault();
+    });
+
+    $('#ebook').on('change', function (e)
+    {
+        if (e.target.checked)
+        {
+            mode = 1;
+            $('#addToCartBtn').prop('disabled', false);
+        }
+    });
+
+    $('#hardcover').on('change', function (e)
+    {
+        if (e.target.checked)
+        {
+            mode = 2;
+            $('#addToCartBtn').prop('disabled', false);
         }
     });
 });
 
-$('#add_to_cart').on('click', function(event) {
-    event.preventDefault();
+function adjustAmount(isIncrease)
+{
+    if (isIncrease)
+        $(`#book_ammount`).val(parseInt($(`#book_ammount`).val()) + 1);
+    else
+        $(`#book_ammount`).val(parseInt($(`#book_ammount`).val()) - 1);
 
-    var bookId = $(this).data('book-id');
-    var userId = $(this).data('user-id');
-    
-    // Now you can use bookId and userId in your AJAX request or any other logic...
-    console.log('Book ID:', bookId, 'User ID:', userId);
-    $.ajax({
-        url: '/ajax_service/customer/book/add_to_cart.php',
-        type: 'POST',
-        data: { book_id: bookId, user_id: userId },
-        success: function(response) {
-            // Handle the response...
-            console.log(response);
-            
-            if (response.includes("This customer has already bought this book!")) {
-                alert('You have already bought this book!');
-            }  
-            else {
-                alert('The book has been added to your cart.');
-            }
-        }
-    });
-});
+    checkAmmount();
+}
 
-$('#add_to_cart_physical').on('click', function(event) {
-    event.preventDefault();
+function checkAmmount()
+{
+    const amount = parseInt($(`#book_ammount`).val());
+    const inStock = parseInt($(`#in_stock`).text());
 
-    var bookId = $(this).data('book-id');
-    var userId = $(this).data('user-id');
-    var quantity = $('#quantity').val();
-    alert('The books has been added to your cart.');
-    // Now you can use bookId, userId, and quantity in your AJAX request or any other logic...
-    console.log('Book ID:', bookId, 'User ID:', userId, 'Quantity of physical copies to cart:', quantity);
-    $.ajax({
-        url: '/ajax_service/customer/book/add_to_cart_physical.php',
-        type: 'POST',
-        data: { book_id: bookId, user_id: userId, quantity: quantity},
-        success: function(response) {
-            // Handle the response...
-            console.log(response);
-        }
-    });
-});
+    clearCustomValidity($(`#book_ammount`).get(0));
 
-document.getElementById('button-decrease').addEventListener('click', function() {
-    var quantity = document.getElementById('quantity');
-    if (quantity.value > 1) {
-        quantity.value--;
+    if (amount < 0)
+    {
+        reportCustomValidity($(`#book_ammount`).get(0), "Book amount can not be negative!");
+        return;
+    } else if (amount === 0)
+    {
+        reportCustomValidity($(`#book_ammount`).get(0), "Book amount can not be zero!");
+        return;
     }
-});
-
-document.getElementById('button-increase').addEventListener('click', function() {
-    var quantity = document.getElementById('quantity');
-    quantity.value++;
-});
-
-document.getElementById('avg-rating').addEventListener('mouseover', function() {
-    document.getElementById('rating-container').style.display = 'block';
-});
-
-document.getElementById('rating-container').addEventListener('mouseover', function() {
-    document.getElementById('rating-container').style.display = 'block';
-});
-
-document.getElementById('rating-container').addEventListener('mouseout', function() {
-    document.getElementById('rating-container').style.display = 'none';
-});
-
-
-// delete when rating + comment feature is done
-document.querySelectorAll('.rating .bi').forEach((star, index, starList) => {
-    star.addEventListener('mouseover', function() {
-        // Change this star and all previous stars to filled stars
-        for (let i = 0; i <= index; i++) {
-            starList[i].classList.remove('bi-star');
-            starList[i].classList.add('bi-star-fill');
-        }
-        // Change all next stars to empty stars
-        for (let i = index + 1; i < starList.length; i++) {
-            starList[i].classList.remove('bi-star-fill');
-            starList[i].classList.add('bi-star');
-        }
-    });
-
-    star.addEventListener('click', function() {
-    const rating = this.getAttribute('data-value');
-    const ratingHolder = document.getElementById('rating-holder');
-    const bookId = this.getAttribute('data-book-id');
-    const userId = this.getAttribute('data-user-id');
-    const ratingResponse = document.getElementById('rating-response');
-    // Clear the rating holder
-    //ratingHolder.innerHTML = '';
-
-    // Add the filled stars to the rating holder
-    // for (let i = 0; i < rating; i++) {
-    //     const star = document.createElement('i');
-    //     star.className = 'bi bi-star-fill';
-    //     ratingHolder.appendChild(star);
-    // }
-        // Send the rating to the server
-        $.ajax({
-            url: '/ajax_service/customer/book/rating.php',
-            type: 'POST',
-            data: { rating: rating, book_id: bookId, user_id: userId },
-            success: function(response) {
-                console.log(rating, bookId, userId);
-                console.log(response);
-                ratingResponse.innerHTML = response;
-                if (response.trim() === 'Rating saved successfully.') {
-                    ratingHolder.innerHTML = '';
-
-                    //Add the filled stars to the rating holder
-                    for (let i = 0; i < rating; i++) {
-                        const star = document.createElement('i');
-                        star.className = 'bi bi-star-fill';
-                        ratingHolder.appendChild(star);
-                    }
-                }
-            },
-            error: function(error) {
-                console.error('Error:', error);
-                
-            }
-        });
-    });
-});
-
-
-// delete when rating + comment feature is done
-// Reset stars to empty when mouse leaves the rating div
-document.querySelector('.rating').addEventListener('mouseleave', function() {
-    document.querySelectorAll('.rating .bi').forEach(star => {
-        star.classList.remove('bi-star-fill');
-        star.classList.add('bi-star');
-    });
-});
-
-function checkAmmount() {
-        const amount = parseInt($('#quantity').val());
-        const inStock = parseInt($('#inStock').text());
-
-        // console.log('Amount:', amount);
-        // console.log('In stock:', inStock);
-        // console.log($('#quantity').get(0));
-
-        clearCustomValidity($('#quantity').get(0));
-
-        if (amount < 0) {
-            alert('Book amount can not be negative!');
-            return;
-        } else if (amount === 0) {
-            alert('Book amount cannot be zero!');
-            return;
-        } else if (amount > inStock) {
-            reportCustomValidity($('#quantity').get(0), "Book amount exceeds in stock amount!");
-            // var input = $('#quantity').get(0);
-            // input.setCustomValidity('Book amount exceeds in stock amount!');
-            //alert('Book amount exceeds in stock amount!');
-            console.log('Amount > inStock');
-            return;
-        }
+    else if (amount > inStock)
+    {
+        reportCustomValidity($(`#book_ammount`).get(0), "Book amount exceeds in stock amount!");
+        return;
     }
-
-function checkInStock(bookID){
-    $.ajax({
-        url: '/ajax_service/customer/book/check_in_stock.php',
-        type: 'POST',
-        data: { book_id: bookID },
-        success: function(response) {
-            console.log('Book currently instock:',response.trim());
-            var inStock = JSON.parse(response.trim());
-            $('#inStock').text(inStock);
-        }
-    });
 }

@@ -1,0 +1,32 @@
+.text-justify {
+    text-align: justify;
+}
+
+.img-size {
+    max-width: 350px;
+}
+
+.customBtn {
+    border: 1px solid black;
+}
+
+.ammount_input {
+    width: 60px;
+}
+
+input[type="radio"]:checked+label {
+    border: 1px solid rgb(255, 72, 0) !important;
+    color: rgb(255, 72, 0) !important;
+}
+
+@media (max-width: 767px) {
+    .img-size {
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 991px) {
+    .img-size {
+        max-width: 300px;
+    }
+}
