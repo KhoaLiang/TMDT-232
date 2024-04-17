@@ -180,7 +180,7 @@ if ($return_status_code === 400) {
                         color: gold;
                   }
                   .round{
-                        border-radius: 20px;
+                        border-radius: 10px;
                   }
                   /* Hide the radio buttons */
                   input[type="radio"] {
@@ -277,11 +277,11 @@ if ($return_status_code === 400) {
                         <div class="row justify-content-center align-items-center g-2 mt-3">
                         </div>
                               <div class="row justify-content-center align-items-center g-2 m-3">
-                                    <div class="col-11 col-md-5 d-flex flex-column justify-content-center align-items-center">
+                                    <div class="col-12 col-md-5 d-flex flex-column justify-content-center align-items-center">
                                     <img src="<?php echo $imagePath; ?>" class="card-img-top rounded img-size" alt="...">
                                     <!-- //end col-11 -->
                                     </div> 
-                                    <div class="col-11 col-md-7">
+                                    <div class="col-12 col-md-7">
                                     <h1><?php echo $bName; ?></h1>
                                     <?php
                                     if($bEdition == 1){
@@ -442,7 +442,7 @@ if ($return_status_code === 400) {
 
 
                               <div class="row justify-content-center align-items-center g-2 mt-3">
-                                    <div class="col-11">
+                                    <div class="col-12 px-3">
                                     <p class="h5 mt-3">Description: </p>
                                     <p class="text-justify"><?php echo $bDescription; ?></p>
                                     </div>
@@ -451,8 +451,9 @@ if ($return_status_code === 400) {
                               
                         </div>
 
+                        <div class="container bg-light round mt-3">
                         <?php
-                        echo '<div class="container bg-light round">';
+                        
                         //comment section
                               if(isset($_SESSION['id'])){
                               echo '<form method="POST" class="comment-input" action="'.setComment($conn, $bookID).'">
@@ -461,7 +462,7 @@ if ($return_status_code === 400) {
                                           
                                           <input type="hidden" name="bookID" value="'.$bookID.'">
                                           <section style="background-color: #eee;">
-                                                <div class="container my-5 py-5">
+                                                <div class="container">
                                                       <div class="row d-flex justify-content-center">
                                                             <div class="col-md-12 col-lg-10 col-xl-8">
                                                                   <div class="card">
@@ -487,8 +488,10 @@ if ($return_status_code === 400) {
                         getComment($conn, $bookID);
                         //comment section ends
                         //var_dump($_SESSION);
-                        echo '</div>';//end 2nd container  
-                        ?>          
+                        
+                        ?>     
+                        <!-- ';//end 2nd container    -->
+                        </div>    
             </section>
             
             <?php
