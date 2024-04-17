@@ -269,66 +269,67 @@ if ($return_status_code === 400) {
                   $bFilePrice = $book['filePrice'];
                   $bPhysicalPrice = $book['physicalPrice'];
                   $bInStock = $bookInStock['inStock'];
-
-                        echo ' <div class="container bg-light round">';
-                        echo '<div class="row justify-content-center align-items-center g-2 mt-3">';
-                        echo'</div>';
-                              echo '<div class="row justify-content-center align-items-center g-2 m-3">';
-                                    echo '<div class="col-11 col-md-5 d-flex flex-column justify-content-center align-items-center">';
-                                    echo '<img src="' . $imagePath . '" class="card-img-top rounded img-size" alt="...">';
-
-                                    echo '</div>'; //end col-11
-                                    echo '<div class="col-11 col-md-7"> ';
-                                    echo '<h1>' . $book['name'] . '</h1>';
-                                    if($book['edition'] == 1){
-                                          echo '<p class="h6">' . $book['edition'] . 'rst edition</p>';
+                  }
+                  
+            }
+            ?>
+            <div class="container bg-light round">
+                        <div class="row justify-content-center align-items-center g-2 mt-3">
+                        </div>
+                              <div class="row justify-content-center align-items-center g-2 m-3">
+                                    <div class="col-11 col-md-5 d-flex flex-column justify-content-center align-items-center">
+                                    <img src="<?php echo $imagePath; ?>" class="card-img-top rounded img-size" alt="...">
+                                    <!-- //end col-11 -->
+                                    </div> 
+                                    <div class="col-11 col-md-7">
+                                    <h1><?php echo $bName; ?></h1>
+                                    <?php
+                                    if($bEdition == 1){
+                                          echo '<p class="h6">' . $bEdition . 'rst edition</p>';
                                     }
                                     
-                                    elseif($book['edition'] == 2){
-                                          echo '<p class="h6">' . $book['edition'] . 'nd edition</p>';
+                                    elseif($bEdition == 2){
+                                          echo '<p class="h6">' . $bEdition . 'nd edition</p>';
                                     }
-                                    elseif($book['edition'] == 3){
-                                          echo '<p class="h6">' . $book['edition'] . 'rd edition</p>';
+                                    elseif($bEdition == 3){
+                                          echo '<p class="h6">' . $bEdition . 'rd edition</p>';
                                     }
                                     else{
-                                          echo '<p class="h6">' . $book['edition'] . 'th edition</p>';
+                                          echo '<p class="h6">' . $bEdition . 'th edition</p>';
                                     }
-                                    echo '<p class=" mt-3">ISBN: ' . $book['isbn'] . '</p>';
-                                    echo '<p class="">Author: ' . $book['authorName'] . '</p>';
-                                    echo '<p class="">Category: ' . $book['category_names'] . '</p>';
-                                    echo '<p class="">Publisher: ' . $book['publisher'] . '</p>';
-                                    echo '<p class="" style="margin-bottom: 5px;">Publish date: ' . date('F j, Y', strtotime($book['publishDate'])) . '</p>';
-                                    //rating section
-                                    echo '<div> <span class="text-warning h6" id="avg-rating">'.displayRatingStars($book['star']).'</span>';
-                                                           echo  ' ('.$book['star'].')</div>';
 
-                                    echo '<div id="rating-container" style="display: none;">';
-                                    //rating test
-                                    echo ' <div class="rating">
-                                    <span class="h6">Rate the book: </span>
-                                    <i class="bi bi-star" data-value="1" data-book-id="'.$book['id'].'" data-user-id="'. $_SESSION['id'].'"></i>
-                                    <i class="bi bi-star" data-value="2" data-book-id="'.$book['id'].'" data-user-id="'. $_SESSION['id'].'"></i>
-                                    <i class="bi bi-star" data-value="3" data-book-id="'.$book['id'].'" data-user-id="'. $_SESSION['id'].'"></i>
-                                    <i class="bi bi-star" data-value="4" data-book-id="'.$book['id'].'" data-user-id="'. $_SESSION['id'].'"></i>
-                                    <i class="bi bi-star" data-value="5" data-book-id="'.$book['id'].'" data-user-id="'. $_SESSION['id'].'"></i>
-                              </div>';
-                              // echo '<div class="rating1" >
-                              //       <span class="h5">My rating: </span>
-                              //       <span id="rating-holder">'.GetRating($conn, $book['id'], $_SESSION['id']).' </span>
-                              //       <div id="rating-response"></div>';
-                              //echo '</div>'; //rating test ends
-                                    echo '</div>';//end rating-container
+                                    ?>
+                                    <p class=" mt-3">ISBN: <?php echo $bISBN; ?></p>
+                                    <p class=" mt-3">Author: <?php echo $bAuthor; ?></p>
+                                    <p class=" mt-3">Category: <?php echo $bCategory; ?></p>
+                                    <p class=" mt-3">Publisher: <?php echo $bPublisher; ?></p>
+                                    <p class=" mt-3">Publish date: <?php echo date('F j, Y', strtotime($bPublishDate)); ?></p>
+                                    <!-- //rating section -->
+                                    <div> 
+                                          <span class="text-warning h6" id="avg-rating"><?php echo displayRatingStars($bStar);?></span>
+                                          <?php echo  ' ('.$bStar.')'; ?>
+                                    </div>
 
+                                    <div id="rating-container" style="display: none;">
+                                          <!-- //rating test -->
+                                          <div class="rating">
+                                                <span class="h6">Rate the book: </span>
+                                                <i class="bi bi-star" data-value="1" data-book-id="<?php echo $bookID; ?>" data-user-id="<?php echo $_SESSION['id']; ?>"></i>
+                                                <i class="bi bi-star" data-value="2" data-book-id="<?php echo $bookID; ?>" data-user-id="<?php echo $_SESSION['id']; ?>"></i>
+                                                <i class="bi bi-star" data-value="3" data-book-id="<?php echo $bookID; ?>" data-user-id="<?php echo $_SESSION['id']; ?>"></i>
+                                                <i class="bi bi-star" data-value="4" data-book-id="<?php echo $bookID; ?>" data-user-id="<?php echo $_SESSION['id']; ?>"></i>
+                                                <i class="bi bi-star" data-value="5" data-book-id="<?php echo $bookID; ?>" data-user-id="<?php echo $_SESSION['id']; ?>"></i>
+                                          </div>
+
+                                          <!-- // echo '<div class="rating1" >
+                                          //       <span class="h5">My rating: </span>
+                                          //       <span id="rating-holder">'.GetRating($conn, $book['id'], $_SESSION['id']).' </span>
+                                          //       <div id="rating-response"></div>'; -->
+                                          <!-- //rating test ends -->
+                                          <!-- //end rating-container -->
+                                    </div>
                                     
-                                    // echo '<div class="btn-group btn-group-toggle mt-3" data-toggle="buttons">
-                                    // <label class="btn btn-outline-primary">
-                                    //       <input type="radio" id="ebook" name="bookType" value="ebook"> E-book
-                                    // </label>
-                                    // <label class="btn btn-outline-primary">
-                                    //       <input type="radio" id="hardcover" name="bookType" value="hardcover"> Hardcover
-                                    // </label>
-                                    // </div>';
-                                    
+                                    <?php
                                     if (isset($_SESSION['id'])) {
                                     //select type tp buy
                                     echo '<input type="radio" class="btn-check" name="bookType" id="ebook" value="ebook" autocomplete="off">
@@ -337,10 +338,17 @@ if ($return_status_code === 400) {
                                     <input type="radio" id="hardcover" name="bookType" value="hardcover" class="btn-check ">
                                     <label class="btn btn-outline-danger Orange mt-3" for="hardcover">Hardcover</label>';
                                     
-                                    //price section
-                                    if($book["discount"] > 0){
+                                    } else {
+                                    echo '<a href="/authentication"
+                                          role="button" class="btn btn-outline-danger mt-3">Login to buy</a>';
+                                    }
+
+                        ?>
+                        <!-- //price section -->
+                        <?php
+                                    if($bDiscount > 0){
                                           echo '<strong class="price mt-3 fs-5" id="ebook-price" style="display: none;">
-                                          Price: &nbsp;<span style="text-decoration: line-through;">$' . $book["filePrice"] . '</span>&nbsp; $' .round($book["filePrice"] - $book["filePrice"] * $book["discount"] / 100, 2). '&nbsp;
+                                          Price: &nbsp;<span style="text-decoration: line-through;">$' . $bFilePrice . '</span>&nbsp; $' .round($bFilePrice - $bFilePrice * $bDiscount / 100, 2). '&nbsp;
                                           <span class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
                                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -350,10 +358,10 @@ if ($return_status_code === 400) {
                                                       <path d="M14.4945 14.5H14.5035" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                                                       <path d="M9.49451 9.5H9.50349" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                                                 </g>
-                                          </svg> '.$book["discount"].'%</span>
+                                          </svg> '.$bDiscount.'%</span>
                                           </strong>';
                                           echo '<strong class="price mt-3 fs-5" id="hardcover-price" style="display: none;">
-                                          Price: &nbsp;<span style="text-decoration: line-through;">$' . $book["physicalPrice"] . '</span> &nbsp; $' .round($book["physicalPrice"] - $book["physicalPrice"] * $book["discount"] / 100, 2). ' &nbsp;
+                                          Price: &nbsp;<span style="text-decoration: line-through;">$' . $bPhysicalPrice . '</span> &nbsp; $' .round($bPhysicalPrice - $bPhysicalPrice * $bDiscount / 100, 2). ' &nbsp;
                                           <span class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
                                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -363,16 +371,16 @@ if ($return_status_code === 400) {
                                                       <path d="M14.4945 14.5H14.5035" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                                                       <path d="M9.49451 9.5H9.50349" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                                                 </g>
-                                          </svg> '.$book["discount"].'%</span>
+                                          </svg> '.$bDiscount.'%</span>
                                           </strong>';
                                           }
                                           else {
-                                          echo '<strong class="price mt-3 fs-5" id="ebook-price" style="display: none;"> Price: &nbsp;$'.$book["filePrice"].'</strong>';
-                                          echo '<strong class="price mt-3 fs-5" id="hardcover-price" style="display: none;"> Price: &nbsp;$'.$book["physicalPrice"].'</strong>';
+                                          echo '<strong class="price mt-3 fs-5" id="ebook-price" style="display: none;"> Price: &nbsp;$'.$bPhysicalPrice.'</strong>';
+                                          echo '<strong class="price mt-3 fs-5" id="hardcover-price" style="display: none;"> Price: &nbsp;$'.$bPhysicalPrice.'</strong>';
                                           }
-
-                                    //add to cart button for E-book
-                                    echo '<div
+                                    ?>
+                                    <!-- //add to cart button for E-book -->
+                                    <div
                                           name=""
                                           id="add_to_cart"
                                           class="btn btn-primary col-12 col-md-4 col-xxl-3 mt-3"
@@ -384,35 +392,36 @@ if ($return_status_code === 400) {
                                           >
                                           <i class="bi bi-cart4"></i>
                                           Add to cart
-                                          </div>';//add to cart button for e-book
+                                          <!-- //add to cart button for e-book -->
+                                          </div>
                                     
-                                    //add to cart button for Hardcover
-                                    echo '<div id="Choose-physical" style="display: none;">';
-                                    echo '<div class="row mt-3">';
-                                          echo '<div class="col-6 col-md-4 col-xxl-2">';
-                                          echo '<div class="input-group mt-1">';
-                                          echo '<div class="input-group-prepend">';
-                                          echo '<button onclick="checkAmmount()" class="btn btn-outline-dark btn-sm btn-equal-width" type="button" id="button-decrease">-</button>';
-                                          echo '</div>';
+                                    <!-- //add to cart button for Hardcover -->
+                                    <div id="Choose-physical" style="display: none;">
+                                    <div class="row mt-3">
+                                          <div class="col-6 col-md-4 col-xxl-2">
+                                          <div class="input-group mt-1">
+                                          <div class="input-group-prepend">
+                                          <button onclick="checkAmmount()" class="btn btn-outline-dark btn-sm btn-equal-width" type="button" id="button-decrease">-</button>
+                                          </div>
 
 
-                                          echo '<input onchange="checkAmmount()" type="number" id="quantity" min="1" value="1" class="form-control text-center border border-black" style="height: 30px;">';
+                                          <input onchange="checkAmmount()" type="number" id="quantity" min="1" value="1" class="form-control text-center border border-black" style="height: 30px;">
 
                                           
-                                          echo '<div class="input-group-append">';
-                                          echo '<button onclick="checkAmmount()" class="btn btn-outline-dark btn-sm btn-equal-width" type="button" id="button-increase">+</button>';
-                                          echo '</div>';
-                                          echo '</div>';
-                                          echo '</div>';
-                                          echo '<div class="col-6 col-md-3 col-xxl-3">';
-                                          echo '<div class="mt-2">';    
-                                          echo '<span class="h6">In stock: </span>';
-                                          echo '<span id="inStock">'.$bookInStock['inStock'].'</span>';
-                                          echo '</div>';
-                                          echo '</div>';
-                                    echo '</div>';
+                                          <div class="input-group-append">
+                                          <button onclick="checkAmmount()" class="btn btn-outline-dark btn-sm btn-equal-width" type="button" id="button-increase">+</button>
+                                          </div>
+                                          </div>
+                                          </div>
+                                          <div class="col-6 col-md-3 col-xxl-3">
+                                          <div class="mt-2">    
+                                          <span class="h6">In stock: </span>
+                                          <span id="inStock"><?php echo $bInStock; ?></span>
+                                          </div>
+                                          </div>
+                                    </div>
 
-                                          echo'<a
+                                          <a
                                           name=""
                                           id="add_to_cart_physical"
                                           class="btn btn-primary col-12 col-md-4 col-xxl-3 mt-3"
@@ -423,33 +432,26 @@ if ($return_status_code === 400) {
                                           >
                                           <i class="bi bi-cart4"></i>
                                           Add to cart
-                                          </a>';
+                                          </a>
                                        
+                                    <!-- //end Choose physical -->
+                                    </div>
+                              </div>
+                        </div>
 
-                                    echo '</div>';//end Choose physical
-                                    } else {
-                                    echo '<a href="/authentication"
-                                          role="button" class="btn btn-outline-danger mt-3">Login to buy</a>';
-                                    }
-                                     
-                                    echo '</div>';
-                              echo'</div>';
-                              echo '<div class="row justify-content-center align-items-center g-2 mt-3">';
-                                    echo '<div class="col-11"> ';
 
-                                    
 
-                                    echo '<p class="h5 mt-3">Description: </p>';
-                                    echo '<p class="text-justify">' . $book['description'] . '</p>';
-                                    echo'</div>';
-                              echo'</div>';
-
-                              echo '<hr>';//break to separate book detail and comment section
+                              <div class="row justify-content-center align-items-center g-2 mt-3">
+                                    <div class="col-11">
+                                    <p class="h5 mt-3">Description: </p>
+                                    <p class="text-justify"><?php echo $bDescription; ?></p>
+                                    </div>
+                              </div>
                               
                               
-                        echo '</div>'; 
+                        </div>
 
-
+                        <?php
                         echo '<div class="container bg-light round">';
                         //comment section
                               if(isset($_SESSION['id'])){
@@ -485,11 +487,8 @@ if ($return_status_code === 400) {
                         getComment($conn, $bookID);
                         //comment section ends
                         //var_dump($_SESSION);
-                        echo '</div>';//end 2nd container
-                  }
-                  
-            }
-            ?>            
+                        echo '</div>';//end 2nd container  
+                        ?>          
             </section>
             
             <?php
