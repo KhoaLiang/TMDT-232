@@ -689,9 +689,22 @@ function removeBook()
 function adjustAmount(isIncrease, id)
 {
       if (isIncrease)
+      {
             $(`#book_ammount_${ id }`).val(parseInt($(`#book_ammount_${ id }`).val()) + 1);
+            const inStock = parseInt($(`#in_stock_${ id }`).text());
+            if (parseInt($(`#book_ammount_${ id }`).val()) > inStock)
+            {
+                  $(`#book_ammount_${ id }`).val(inStock);
+            }
+      }
       else
+      {
             $(`#book_ammount_${ id }`).val(parseInt($(`#book_ammount_${ id }`).val()) - 1);
+            if (parseInt($(`#book_ammount_${ id }`).val()) < 1)
+            {
+                  $(`#book_ammount_${ id }`).val(1);
+            }
+      }
 
       checkAmmount(id, true);
 }
