@@ -230,7 +230,16 @@ if ($return_status_code === 400) {
                         }
                   }
                   .btn-equal-width {
-                  width: 40px;  /* Adjust this value as needed */
+                  width: 30px;  /* Adjust this value as needed */
+                  }
+                  input[type="number"]::-webkit-inner-spin-button,
+                  input[type="number"]::-webkit-outer-spin-button {
+                  -webkit-appearance: none !important;
+                  margin: 0;
+                  }
+
+                  input[type="number"] {
+                  -moz-appearance: textfield !important;
                   }
                   
             </style>
@@ -247,6 +256,20 @@ if ($return_status_code === 400) {
                   while ($book = $result->fetch_assoc()) {
                   if($bookID == $book['id']){
                   $imagePath = "https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($book['imagePath']));
+                  $bName = $book['name'];
+                  $bEdition = $book['edition'];
+                  $bISBN = $book['isbn'];
+                  $bAuthor = $book['authorName'];
+                  $bCategory = $book['category_names'];
+                  $bPublisher = $book['publisher'];
+                  $bPublishDate = $book['publishDate'];
+                  $bDescription = $book['description'];
+                  $bStar = $book['star'];
+                  $bDiscount = $book['discount'];
+                  $bFilePrice = $book['filePrice'];
+                  $bPhysicalPrice = $book['physicalPrice'];
+                  $bInStock = $bookInStock['inStock'];
+
                         echo ' <div class="container bg-light round">';
                         echo '<div class="row justify-content-center align-items-center g-2 mt-3">';
                         echo'</div>';
@@ -274,7 +297,7 @@ if ($return_status_code === 400) {
                                     echo '<p class="">Author: ' . $book['authorName'] . '</p>';
                                     echo '<p class="">Category: ' . $book['category_names'] . '</p>';
                                     echo '<p class="">Publisher: ' . $book['publisher'] . '</p>';
-                                    echo '<p class="">Publish date: ' . date('F j, Y', strtotime($book['publishDate'])) . '</p>';
+                                    echo '<p class="" style="margin-bottom: 5px;">Publish date: ' . date('F j, Y', strtotime($book['publishDate'])) . '</p>';
                                     //rating section
                                     echo '<div> <span class="text-warning h6" id="avg-rating">'.displayRatingStars($book['star']).'</span>';
                                                            echo  ' ('.$book['star'].')</div>';
@@ -317,7 +340,7 @@ if ($return_status_code === 400) {
                                     //price section
                                     if($book["discount"] > 0){
                                           echo '<strong class="price mt-3 fs-5" id="ebook-price" style="display: none;">
-                                          Price: <span style="text-decoration: line-through;">$' . $book["filePrice"] . '</span> $' .round($book["filePrice"] - $book["filePrice"] * $book["discount"] / 100, 2). '
+                                          Price: &nbsp;<span style="text-decoration: line-through;">$' . $book["filePrice"] . '</span>&nbsp; $' .round($book["filePrice"] - $book["filePrice"] * $book["discount"] / 100, 2). '&nbsp;
                                           <span class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
                                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -330,7 +353,7 @@ if ($return_status_code === 400) {
                                           </svg> '.$book["discount"].'%</span>
                                           </strong>';
                                           echo '<strong class="price mt-3 fs-5" id="hardcover-price" style="display: none;">
-                                          Price: <span style="text-decoration: line-through;">$' . $book["physicalPrice"] . '</span> $' .round($book["physicalPrice"] - $book["physicalPrice"] * $book["discount"] / 100, 2). ' 
+                                          Price: &nbsp;<span style="text-decoration: line-through;">$' . $book["physicalPrice"] . '</span> &nbsp; $' .round($book["physicalPrice"] - $book["physicalPrice"] * $book["discount"] / 100, 2). ' &nbsp;
                                           <span class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
                                                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -344,8 +367,8 @@ if ($return_status_code === 400) {
                                           </strong>';
                                           }
                                           else {
-                                          echo '<strong class="price mt-3 fs-5" id="ebook-price" style="display: none;"> Price: $'.$book["filePrice"].'</strong>';
-                                          echo '<strong class="price mt-3 fs-5" id="hardcover-price" style="display: none;"> Price: $'.$book["physicalPrice"].'</strong>';
+                                          echo '<strong class="price mt-3 fs-5" id="ebook-price" style="display: none;"> Price: &nbsp;$'.$book["filePrice"].'</strong>';
+                                          echo '<strong class="price mt-3 fs-5" id="hardcover-price" style="display: none;"> Price: &nbsp;$'.$book["physicalPrice"].'</strong>';
                                           }
 
                                     //add to cart button for E-book
@@ -356,7 +379,7 @@ if ($return_status_code === 400) {
                                           style="display: none;"
                                           href="#"
                                           role="button"
-                                          data-book-id="' . $book['id'] . '"
+                                          data-book-id="' . $bookID . '"
                                           data-user-id="' . $_SESSION['id'] . '"
                                           >
                                           <i class="bi bi-cart4"></i>
@@ -365,43 +388,19 @@ if ($return_status_code === 400) {
                                     
                                     //add to cart button for Hardcover
                                     echo '<div id="Choose-physical" style="display: none;">';
-                                    //echo '<p class="h5 mt-4 ">Amount of Hardcovers to buy: </p>';
-                                    // echo '<div class="col-12 col-md-3 col-xxl-2 mt-3">
-                                    //             <div class="input-group mt-1">
-                                    //                   <div class="input-group-prepend">
-                                    //                         <button onclick="checkAmmount()" class="btn btn-secondary" type="button" id="button-decrease">-</button>
-                                    //                   </div>
-                                    //                   <input
-                                    //                         onchange="checkAmmount()"
-                                    //                         type="number"
-                                    //                         id="quantity"
-                                    //                         min="1"
-                                    //                         value="1"
-                                    //                         class="form-control text-center"
-                                    //                   >
-                                    //                   <div class="input-group-append">
-                                    //                         <button onclick="checkAmmount()" class="btn btn-secondary" type="button" id="button-increase">+</button>
-                                    //                   </div>
-                                    //             </div>
-                                    //       </div>';
-
-                                    //       echo '<div class="mt-2">';    
-                                    //       echo '<span class="h6">In stock: </span>';
-                                    //       echo '<span id="inStock">'.$bookInStock['inStock'].'</span>';
-                                    //       echo '</div>'; 
                                     echo '<div class="row mt-3">';
-                                          echo '<div class="col-6 col-md-4 col-xxl-3">';
+                                          echo '<div class="col-6 col-md-4 col-xxl-2">';
                                           echo '<div class="input-group mt-1">';
                                           echo '<div class="input-group-prepend">';
-                                          echo '<button onclick="checkAmmount()" class="btn btn-outline-success btn-equal-width" type="button" id="button-decrease">-</button>';
+                                          echo '<button onclick="checkAmmount()" class="btn btn-outline-dark btn-sm btn-equal-width" type="button" id="button-decrease">-</button>';
                                           echo '</div>';
 
 
-                                          echo '<input onchange="checkAmmount()" type="number" id="quantity" min="1" value="1" class="form-control text-center">';
+                                          echo '<input onchange="checkAmmount()" type="number" id="quantity" min="1" value="1" class="form-control text-center border border-black" style="height: 30px;">';
 
                                           
                                           echo '<div class="input-group-append">';
-                                          echo '<button onclick="checkAmmount()" class="btn btn-outline-success btn-equal-width" type="button" id="button-increase">+</button>';
+                                          echo '<button onclick="checkAmmount()" class="btn btn-outline-dark btn-sm btn-equal-width" type="button" id="button-increase">+</button>';
                                           echo '</div>';
                                           echo '</div>';
                                           echo '</div>';
@@ -419,7 +418,7 @@ if ($return_status_code === 400) {
                                           class="btn btn-primary col-12 col-md-4 col-xxl-3 mt-3"
                                           href="#"
                                           role="button"
-                                          data-book-id="' . $book['id'] . '"
+                                          data-book-id="' . $bookID . '"
                                           data-user-id="' . $_SESSION['id'] . '"
                                           >
                                           <i class="bi bi-cart4"></i>
@@ -490,8 +489,7 @@ if ($return_status_code === 400) {
                   }
                   
             }
-                  ?>
-            
+            ?>            
             </section>
             
             <?php
@@ -500,6 +498,11 @@ if ($return_status_code === 400) {
             <script src="/javascript/customer/menu_after_load.js"></script>
             <script src="/javascript/customer/book/book-detail.js"></script>
             <script src="/tool/js/input_validity.js"></script>
+            <script>
+                  setInterval(function() {
+                  checkInStock('<?php echo $bookID;?>');
+                  }, 10000);
+            </script>
       </body>
 
       </html>

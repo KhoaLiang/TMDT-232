@@ -178,3 +178,16 @@ function checkAmmount() {
             return;
         }
     }
+
+function checkInStock(bookID){
+    $.ajax({
+        url: '/ajax_service/customer/book/check_in_stock.php',
+        type: 'POST',
+        data: { book_id: bookID },
+        success: function(response) {
+            console.log('Book currently instock:',response.trim());
+            var inStock = JSON.parse(response.trim());
+            $('#inStock').text(inStock);
+        }
+    });
+}
