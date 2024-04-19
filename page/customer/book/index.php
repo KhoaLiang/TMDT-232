@@ -70,99 +70,10 @@ WHERE discount_rank = 1');
             require_once __DIR__ . '/../../../head_element/meta.php';
             ?>
             <link rel="stylesheet" href="/css/preset_style.css">
+            <link rel="stylesheet" href="/css/customer/book/book-list.css">
             <title>Book list</title>
             <style>
-                  .card:hover {
-                        transform: scale(1.1);
-                  } 
-                  .card {
-                        margin: 1rem;
-                  }
-                  .author {
-                        color: gray;
-                  }
-                  .pic {
-                        height: 28rem;
-                        width: 100%;
-                  }
-                  a{
-                        text-decoration: none;
-                        color: black;
-                  }
-            .heading-decord{
-                  font-weight: bold;
-                  padding: 20px;
-            }
-            #Discount_Button.on {
-                  box-shadow: 0 0 10px #fff; /* White glow */
-                  background-color: red; /* Faint white background */
-                  color: #fff; /* White text */
-            }
-            #Best-Seller_Button.on {
-                  box-shadow: 0 0 10px #fff; /* White glow */
-                  background-color: #ffc107; /* Faint white background */
-                  color: #fff; /* White text */
-            }
-            .Nav-list{
-                  margin-top: 0;
-                  margin-left: 5px;
-                  list-style: none;
-                  margin-bottom: 0px;
-            }
-            .Nav-header{
-                  margin-bottom: 0;
-                  list-style: none;
-                  font-weight: bold;
-            }
-            .no-padding{
-                  padding-left: 0rem;
-            }
-            .hidden {
-                  display: none;
-            }
-            .show-more{
-                  color: #F7941E;
-                  font-weight: bold;
-                  font-size: 14px;
-                  font-family: Arial, Helvetica, sans-serif;
-                  cursor: pointer;
-                  user-select: none;
-                  padding-left: 1rem;
-                  margin-top: 10px;
-            }
-            .search-form{
-                  padding-left: 1rem;
-            }
-            .btn-icon {
-                  background: none;
-                  border: none;
-                  padding: 0;
-            }
-            
-            #toggleButton{
-                        display: none;
-            }
-            @media (max-width: 575.98px) { 
-                  #toggleButton{
-                        display: block;
-                        margin-left: 85%;
-                  }
-            }
-            @media (min-width: 767.98px) { .card-body {
-                  max-height: 205px; /* Adjust this value as needed */
-                  overflow: auto; /* Add a scrollbar if the content is too long */
-                  } 
-                  .card-body::-webkit-scrollbar {
-                  display: none;
-                  }
-                  .to-the-left{
-                        margin-left: 40px;
                   
-                  }
-            }
-            #search-input {
-                  border: none;
-            }
             </style>
       </head>
 
