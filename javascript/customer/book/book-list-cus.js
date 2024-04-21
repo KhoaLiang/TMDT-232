@@ -11,6 +11,7 @@ $(document).ready(function() {
     var listItemsPub = document.querySelectorAll('#Publisher-list li');
     var selectedPub = "";
 
+    //the main fetch book funciton
     function fetchBooks() {
         $.ajax({
             url: '/ajax_service/customer/book/item-per-page.php',
@@ -87,7 +88,7 @@ $(document).ready(function() {
         });
     }
 
-    
+    //when search for the category
     $('#Category-search').on('input', function(){
         var SearchedCategory = $('#Category-search').val();
         $('#Category-list').empty();
@@ -129,6 +130,7 @@ $(document).ready(function() {
             }
         });
     });
+    //when search for the author
     $('#Author-search').on('input', function(){
         var SearchedAuth = $('#Author-search').val();
         $('#Author-list').empty();
@@ -172,6 +174,7 @@ $(document).ready(function() {
             }
         });
     });
+    //when search for the publisher
     $('#Publisher-search').on('input', function(){
         var SearchedPub = $('#Publisher-search').val();
         $('#Publisher-list').empty();
@@ -217,7 +220,7 @@ $(document).ready(function() {
         });
     });
 
-
+    //when selecting the the category from the side pannel
     listItems.forEach(function(item) {
         item.addEventListener('click', function() {
             selectedCategory = this.textContent;
@@ -239,7 +242,7 @@ $(document).ready(function() {
             this.classList.add('glow');
         });
     });
-
+    //when selecting the the author from the side pannel
     listItemsAuth.forEach(function(item) {
         item.addEventListener('click', function() {
             selectedAuthor = this.textContent;
@@ -261,6 +264,7 @@ $(document).ready(function() {
             this.classList.add('glow');
         });
     });
+    //when selecting the the publisher from the side pannel
     listItemsPub.forEach(function(item) {
         item.addEventListener('click', function() {
             selectedPub = this.textContent;
@@ -282,7 +286,47 @@ $(document).ready(function() {
             this.classList.add('glow');
         });
     });
-    
+    //url process
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('select')) {
+        console.log("Select:", urlParams.get('select'));
+        if(urlParams.get('select') == "discount"){
+            Display = "Discount";
+            itemsPerPage = $('#itemsPerPage').val();
+            query = $('#search-input').val();
+            currentPage = 1; // Reset to first page when items per page changes
+            fetchBooks();
+        }
+        if(urlParams.get('select') == "sale"){
+            Display = "Best-Seller";
+            itemsPerPage = $('#itemsPerPage').val();
+            query = $('#search-input').val();
+            currentPage = 1; // Reset to first page when items per page changes
+            fetchBooks();
+        }
+    }
+    if (urlParams.has('category')) {
+        console.log("Category:", urlParams.get('category'));
+        if(urlParams.get('category') != null ){
+            selectedCategory = urlParams.get('category');
+            itemsPerPage = $('#itemsPerPage').val();
+            query = $('#search-input').val();
+            currentPage = 1; // Reset to first page when items per page changes
+            fetchBooks();
+        }
+    }
+    if (urlParams.has('publisher')) {
+        console.log("Publisher:", urlParams.get('publisher'));
+        if(urlParams.get('publisher') != null ){
+            selectedPub = urlParams.get('publisher');
+            itemsPerPage = $('#itemsPerPage').val();
+            query = $('#search-input').val();
+            currentPage = 1; // Reset to first page when items per page changes
+            fetchBooks();
+        }
+    }
+
+
     $('#itemsPerPage').change(function() {
         itemsPerPage = $(this).val();
         currentPage = 1; // Reset to first page when items per page changes

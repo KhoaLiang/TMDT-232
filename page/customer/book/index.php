@@ -25,6 +25,8 @@ if ($return_status_code === 400) {
                   require_once __DIR__ . '/../../../error/500.php';
                   exit;
             }
+            //hello Nghia, when you read this know that I remove most of the query in this file but I am too lazy to take this out and I think this wont cause much of a problem so I am leaving it here, best regards, Khoa :D
+            
             $cate = $conn->prepare('SELECT * FROM category LIMIT 5');
             $auth = $conn->prepare('SELECT * FROM author LIMIT 5');
             $pub = $conn->prepare('SELECT * FROM book LIMIT 5');
