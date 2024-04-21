@@ -6,6 +6,7 @@ require_once __DIR__ . '/../../../tool/php/role_check.php';
 require_once __DIR__ . '/../../../tool/php/ratingStars.php';
 require_once __DIR__ . '/../../../tool/php/comment.php';
 require_once __DIR__ . '/../../../ajax_service/customer/book/rating.php';
+//require_once __DIR__ . '/../../../page/customer/book/comment-more.php';
 
 $return_status_code = return_navigate_error();
 
@@ -106,6 +107,7 @@ if ($return_status_code === 400) {
             require_once __DIR__ . '/../../../head_element/meta.php';
             ?>
             <link rel="stylesheet" href="/css/preset_style.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
             <!-- <link rel="stylesheet" href="../../css/customer/book/book-detail.css"> -->
             <meta name="author" content="Anh Khoa">
             <meta name="description" content="Book detail page of NQK bookstore">
@@ -119,8 +121,8 @@ if ($return_status_code === 400) {
                   .comment-box{
                         margin-top: 20px;
                         padding: 20px;
-                        border: 1px solid #e6e6e6;
-                        border-radius: 5px;
+                        border-bottom: 2px solid #999999;
+                        /* border-radius: 5px; */
                         position: relative;
                   }
                   .comment-box p{
@@ -153,7 +155,8 @@ if ($return_status_code === 400) {
                   }
                   .delete-form button{
                         width: 40px;
-                        color: #282828;
+                        color: red;
+                        font-size: 18px;
                         background-color: hsl(0, 0%, 98%);
                         border: none;
                         opacity: 0.7;
@@ -457,35 +460,78 @@ if ($return_status_code === 400) {
                               echo '<form method="POST" class="comment-input" action="'.setComment($conn, $bookID).'">
                                           <input type="hidden" name="customerID" value="'.$_SESSION['id'].'">
                                           <input type="hidden" name="commentTime" value="'.date('Y-m-d H:i:s').'">
-                                          
                                           <input type="hidden" name="bookID" value="'.$bookID.'">
-                                          <section style="background-color: #eee;">
-                                                <div class="container my-5 py-5">
+                                          <section style="background-color: white;">
+                                                
                                                       <div class="row d-flex justify-content-center">
-                                                            <div class="col-md-12 col-lg-10 col-xl-8">
-                                                                  <div class="card">
-                                                                        <div class="card-footer py-3 border-0" style="background-color: #f8f9fa;">
+                                                            
+                                                                  <div class="card round" style="background-color: white; border: none">
+                                                                        <div class="card-footer py-3 border-0" style="background-color: white; border: none">
                                                                               <div class="d-flex flex-start w-100">
-
                                                                                     <div class="form-outline w-100">
                                                                                           <textarea name="content" class="form-control" id="textAreaExample1" rows="4" style="background: #fff;"></textarea>
-                                                                                          <label class="form-label" for="textAreaExample1">Message</label>
+                                                                                          <label class="form-label" for="textAreaExample1" style="font-size: 20px">Message</label>
                                                                                     </div>
                                                                               </div>
                                                                               <div class="float-end mt-2 pt-1">
-                                                                                    <button type="submit" name="commentSubmit" class="btn btn-primary btn-sm">Post comment</button>
+                                                                                    <button type="submit" name="commentSubmit" class="btn btn-primary btn-sm" style="font-size: 18px; padding: 10px 20px;">Post comment</button>
                                                                               </div>
                                                                         </div>
                                                                   </div>
-                                                            </div>
+                                                            
                                                       </div>
-                                                </div>
+                                                
                                           </section>
                                     </form>';
                               }
-                        getComment($conn, $bookID);
+                              //getComment($conn, $bookID);
+                              
+                              $sql = "SELECT * FROM commentcontent WHERE bookID = '$bookID' LIMIT 5 ";
+                              $result = $conn->query($sql);
+                              $sql2 = "SELECT COUNT(*) as total_comments FROM commentcontent WHERE bookID = '$bookID'";
+                              $result_new = $conn->query($sql2);
+                              $row2 = mysqli_fetch_assoc($result_new);
+                              $totalComments = $row2['total_comments'];
+                              echo '<div class="card-body text-center" style="background-color: white;">
+                              <h4 class="card-title" style="font-size: 40px;">Comments <span style="font-size: 20px;">(' . $totalComments . ' comments)</span></h4>';
+                              echo '</div>';
+                              while ($row = $result->fetch_assoc()) {
+                                  echo '<div class="comment-box"><p>';
+                                      echo "<span style='font-weight: 600; font-size: 15px; color: black'>" . $row['customerID'] . "</span>";
+                                      echo '<div class="rating1" >
+                                          <span id="rating-holder">'.GetRating($conn, $book['id'], $_SESSION['id']).' </span>
+                                          <div id="rating-response"></div>';
+                                      echo '</div>'; 
+                                      echo '<span style=" opacity: 0.6; font-style: italic; font-size: 12px;">' . date('Y-m-d H:i', strtotime($row['commentTime'])) . '</span><br><br>';
+                                      echo nl2br($row['content']."<br><br>");
+                                  echo '</p>';
+                                  if($_SESSION['id'] == $row['customerID']){
+                                      echo '
+                                  <form class="delete-form" method="POST" action="'.deleteComments($conn).'">
+                                      <input type="hidden" name="customerID" value="'.$row['customerID'].'">
+                                      <input type="hidden" name="commentIdx" value="'.$row['commentIdx'].'">
+                                      <input type="hidden" name="bookID" value="'.$bookID.'">
+                                      <button type="submit" name="deleteComment" onclick="return confirm(\'Are you sure you want to delete this comment?\');">
+                                          <i class="fas fa-trash-alt"></i> 
+                                      </button>
+                                  </form>';
+                                  }
+                                  $book_id=$bookID;
+                                  echo '</div>';
+                              }
+                              //getComment($conn, $bookID);      
                         //comment section ends
                         //var_dump($_SESSION);
+                        echo'<div class="collapse">';
+                                          getComment($conn, $bookID);  
+                              echo'</div>';
+
+                        echo '<br><div style="text-align: center;">
+                              <button type="button" class="btn btn-primary" id="toggleButton" onclick="toggleButtonText()" style="width: 200px; height: 50px; font-size: 18px; padding: 10px;">Show all comments</button>';
+                        echo '    </div>';
+
+
+
                         echo '</div>';//end 2nd container
                   }
                   
@@ -500,6 +546,21 @@ if ($return_status_code === 400) {
             <script src="/javascript/customer/menu_after_load.js"></script>
             <script src="/javascript/customer/book/book-detail.js"></script>
             <script src="/tool/js/input_validity.js"></script>
+            <script>
+            $(document).ready(function(){
+                  $(".btn-primary").click(function(){
+                  $(".collapse").collapse('toggle');
+            });
+            });
+            function toggleButtonText() {
+            var button = document.getElementById('toggleButton');
+            if (button.textContent === "Show all comments") {
+                  button.textContent = "Show less comments";
+            } else {
+                  button.textContent = "Show all comments";
+            }
+            }
+            </script>
       </body>
 
       </html>
