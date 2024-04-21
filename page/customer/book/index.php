@@ -25,34 +25,7 @@ if ($return_status_code === 400) {
                   require_once __DIR__ . '/../../../error/500.php';
                   exit;
             }
-            $elem = '';
-
-            $stmt = $conn->prepare('WITH RankedBooks AS (
-  SELECT book.id, book.name,
-         author.authorName,
-         fileCopy.price AS filePrice,
-         physicalCopy.price AS physicalPrice,
-         book.imagePath AS pic,
-         book.avgRating AS star,
-         eventapply.eventID,
-         COALESCE(eventdiscount.discount, 0) AS discount,
-         ROW_NUMBER() OVER (PARTITION BY book.id ORDER BY discount DESC) AS discount_rank
-  FROM book
-  INNER JOIN author ON book.id = author.bookID
-  INNER JOIN fileCopy ON book.id = fileCopy.id
-  INNER JOIN physicalCopy ON book.id = physicalCopy.id
-  LEFT JOIN eventapply ON book.id = eventapply.bookID
-  LEFT JOIN eventdiscount ON eventapply.eventID = eventdiscount.ID
-)
-SELECT *
-FROM RankedBooks
-WHERE discount_rank = 1');
-            // $stmt = $conn->prepare('select book.id, book.name, author.authorName, fileCopy.price as filePrice, physicalCopy.price as physicalPrice, book.imagePath as pic, book.avgRating as star from book inner join author on book.id = author.bookID
-            // join fileCopy on book.id = fileCopy.id
-            // join physicalCopy on book.id = physicalCopy.id');
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $cate = $conn->prepare('SELECT category.ID, category.name FROM category');
+            $cate = $conn->prepare('SELECT * FROM category LIMIT 5');
             $auth = $conn->prepare('SELECT author.authorName FROM author');
       } catch (Exception $e) {
             http_response_code(500);
@@ -89,7 +62,7 @@ WHERE discount_rank = 1');
             <li>Example book</li>
             </ul>
             -->
-      <div class="container-fluid w-75">
+      <div class="container-fluid w-75 mb-3">
             <br>
             <!-- <div id="TestBookList">
                   <p>Test Item perpage here</p>
@@ -109,46 +82,7 @@ WHERE discount_rank = 1');
                                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                           </div>
                                           <div class="modal-body">
-                                                <ul class="Nav-header no-padding">
-                                                      <li>Categories</li>
-                                                </ul>
-                                                <form class="d-flex search-form">
-                                                      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                                                </form>
-                                                <ul class="Nav-list" id="Category-list">
-                                                      <li>Fiction</li>
-                                                      <li>Non-Fiction</li>
-                                                      <li>Fantasy</li>
-                                                      <li>Science Fiction</li>
-                                                      <li>Horror</li>
-                                                      <li>Thriller</li>
-
-                                                </ul>
-
-
-
-                                                <ul class="Nav-header no-padding">
-                                                      <li>Publisher</li>
-                                                </ul>
-                                                <form class="d-flex search-form">
-                                                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                                                </form>
-                                                <ul class="Nav-list">
-                                                      <li>ABC</li>
-                                                      <li>DEF</li>
-                                                      <li>GHI</li>
-                                                      <li>JKL</li>
-                                                </ul>
-
-                                                <ul class="Nav-header no-padding">
-                                                      <li>Author</li>
-                                                </ul>
-
-                                                <ul class="Nav-list">
-                                                      <li>Frank Herbert</li>
-                                                      <li>Yuval Noah</li>
-                                                      <li>Bram</li>
-                                                </ul>
+                                                
                                           </div>
                                           <div class="modal-footer">
                                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -157,55 +91,56 @@ WHERE discount_rank = 1');
                               </div>
                         </div>
                         <!-- Desktop Side pannel -->
-                        <button class="btn btn-outline-dark" id="toggleButton">&#9776;</button>
-                        <div id="hideable">
-                              <ul class="Nav-header no-padding">
-                                    <li>Categories</li>
-                              </ul>
-                              <form class="d-flex search-form">
-                                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Category-search">
-                              </form>
-                              <ul class="Nav-list" id="Category-list">
-                                    <?php 
-                                          if ($cate) {
-                                                $success = $cate->execute();
-                                                if ($success) {
-                                                      $result1 = $cate->get_result();
-                                                      while ($row = $result1->fetch_assoc()) {
-                                                            // Process each row of data here...
-                                                            echo '<li>'. $row['name'] . '</li>';
-                                                      }
+                        <div id="Desktop-pannel">
+                              <div id="hideable">
+                                    <ul class="Nav-header no-padding">
+                                          <li>Categories</li>
+                                    </ul>
+                                    <form class="d-flex search-form">
+                                          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Category-search">
+                                    </form>
+                                    <ul class="Nav-list" id="Category-list">
+                                          <?php 
+                                                if ($cate) {
+                                                      $success = $cate->execute();
+                                                      if ($success) {
+                                                            $result1 = $cate->get_result();
+                                                            while ($row = $result1->fetch_assoc()) {
+                                                                  // Process each row of data here...
+                                                                  echo '<li>'. $row['name'] . '</li>';
+                                                            }
+                                                                  } else {
+                                                            echo "Error executing statement: " . $conn->error;
+                                                                  }     
                                                             } else {
-                                                      echo "Error executing statement: " . $conn->error;
-                                                            }     
-                                                      } else {
-                                                      echo "Error preparing statement: " . $conn->error;
-                                                      }
-                                    ?>
-                              </ul>
+                                                            echo "Error preparing statement: " . $conn->error;
+                                                            }
+                                          ?>
+                                    </ul>
 
-                              <ul class="Nav-header no-padding">
-                                    <li>Publisher</li>
-                              </ul>
-                              <form class="d-flex search-form">
-                                          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                              </form>
-                              <ul class="Nav-list">
-                                    <li>ABC</li>
-                                    <li>DEF</li>
-                                    <li>GHI</li>
-                                    <li>JKL</li>
-                              </ul>
+                                    <ul class="Nav-header no-padding">
+                                          <li>Publisher</li>
+                                    </ul>
+                                    <form class="d-flex search-form">
+                                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                                    </form>
+                                    <ul class="Nav-list">
+                                          <li>ABC</li>
+                                          <li>DEF</li>
+                                          <li>GHI</li>
+                                          <li>JKL</li>
+                                    </ul>
 
-                              <ul class="Nav-header no-padding">
-                                    <li>Author</li>
-                              </ul>
+                                    <ul class="Nav-header no-padding">
+                                          <li>Author</li>
+                                    </ul>
 
-                              <ul class="Nav-list">
-                                    <li>Frank Herbert</li>
-                                    <li>Yuval Noah</li>
-                                    <li>Bram</li>
-                              </ul>
+                                    <ul class="Nav-list">
+                                          <li>Frank Herbert</li>
+                                          <li>Yuval Noah</li>
+                                          <li>Bram</li>
+                                    </ul>
+                              </div>
                         </div>
                   </div>
                   
@@ -267,24 +202,21 @@ WHERE discount_rank = 1');
                         <div id="bookList">
                               
                         </div>
-
+                        <div class="row justify-content-center">
+                              <nav class=" col-12 col-md-2 m-2 page-nav" aria-label="Page navigation example">
+                                    <ul class="pagination">
+                                          <li class="page-item">
+                                                <a class="page-link" href="#"><</a>
+                                          </li>
+                                          <!-- Add as many page links as you need -->
+                                          <li class="page-item">
+                                                <a class="page-link" href="#">></a>
+                                          </li>
+                                    </ul>
+                              </nav> 
+                              
+                        </div>
                   </div>
-            </div>
-            
-            
-            <div class="row justify-content-center">
-                  <nav class=" col-12 col-md-2 m-2 page-nav" aria-label="Page navigation example">
-                        <ul class="pagination">
-                              <li class="page-item">
-                                    <a class="page-link" href="#"><</a>
-                              </li>
-                              <!-- Add as many page links as you need -->
-                              <li class="page-item">
-                                    <a class="page-link" href="#">></a>
-                              </li>
-                        </ul>
-                  </nav> 
-                  
             </div>
       </div>
             

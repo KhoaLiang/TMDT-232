@@ -23,7 +23,7 @@ $(document).ready(function() {
 
                 // Clear the current list of books
                 $('#bookList').empty();
-                console.log("it ran");
+                console.log("Fetched books", "Category: ", selectedCategory, "Items per page: ", itemsPerPage, "Page: ", currentPage, "Display: ", Display, "Query: ", query);
                 console.log(books);
                 var html = '';
                 for (var i = 0; i < books.length; i++) {
@@ -81,6 +81,48 @@ $(document).ready(function() {
         });
     }
 
+    
+    $('#Category-search').on('input', function(){
+        var SearchedCategory = $('#Category-search').val();
+        $('#Category-list').empty();
+        $.ajax({
+            url: '/ajax_service/customer/book/category-search.php',
+            type: 'GET',
+            data: {
+                SearchedCategory: SearchedCategory
+            },
+            success: function(response) {
+                var categories = JSON.parse(response);
+                var html = '';
+                for (var i = 0; i < categories.length; i++) {
+                    html += `<li>${categories[i].name}</li>`;
+                }
+                $('#Category-list').append(html);
+                listItems = document.querySelectorAll('#Category-list li');
+                console.log("Inside the ajax:", listItems);
+                listItems.forEach(function(item) {
+                item.addEventListener('click', function() {
+                        selectedCategory = this.textContent;
+                        selectedCategory = selectedCategory.replace("'", "\\'");
+                        console.log(selectedCategory);
+                        itemsPerPage = $('#itemsPerPage').val();
+                        query = $('#search-input').val();
+                        currentPage = 1; // Reset to first page when items per page changes
+                        fetchBooks();
+
+                        // Remove the glow class from all li elements
+                        listItems.forEach(function(item) {
+                            item.classList.remove('glow');
+                        });
+
+                        // Add the glow class to the clicked li element
+                        this.classList.add('glow');
+                    });
+                });
+            }
+        });
+    });
+
     listItems.forEach(function(item) {
         item.addEventListener('click', function() {
             selectedCategory = this.textContent;
@@ -99,11 +141,6 @@ $(document).ready(function() {
             // Add the glow class to the clicked li element
             this.classList.add('glow');
         });
-    });
-    $('#Category-search').on('input', function(event){
-        event.preventDefault();
-        var SearchedCategory = $('#Category-search').val();
-        $('#Category-list').empty();
     });
     
     $('#itemsPerPage').change(function() {
@@ -151,13 +188,13 @@ $(document).ready(function() {
 
     // Initial fetch
     fetchBooks();
-
-        document.getElementById('toggleButton').addEventListener('click', function() {
-        var hideableElement = document.getElementById('hideable');
-        if (hideableElement.style.display === "none") {
-            hideableElement.style.display = "block";
+    //when the screen is under 576px, the filter will be moved to the modal
+    $(window).on('resize', function() {
+        var win = $(this); // this = window
+        if (win.width() <= 576) {
+            $('#hideable').appendTo('.modal-body');
         } else {
-            hideableElement.style.display = "none";
+            $('#hideable').appendTo('#Desktop-pannel'); // replace #someElement with the id of the element where #hideable should be moved back to
         }
     });
 });
