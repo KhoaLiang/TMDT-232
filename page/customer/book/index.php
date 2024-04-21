@@ -90,61 +90,99 @@ WHERE discount_rank = 1');
             </ul>
             -->
       <div class="container-fluid w-75">
-            <div class="row justify-content-center">
-                  <div class="col-12 col-md-4 m-2">
-                        <!-- category form -->
-                              <select class="form-select " aria-label="Default select example" id="category">
-                        <option selected value="All_Category">All Category</option>
-                        <?php 
-                              if ($cate) {
-                                    $success = $cate->execute();
-                                    if ($success) {
-                                          $result1 = $cate->get_result();
-                                          while ($row = $result1->fetch_assoc()) {
-                                                // Process each row of data here...
-                                                echo '<option value="' . $row['ID'].'" >'. $row['name'] . '</option>';
-                                          }
-                                                } else {
-                                          echo "Error executing statement: " . $conn->error;
-                                                }     
-                                          } else {
-                                          echo "Error preparing statement: " . $conn->error;
-                                          }
-                        ?>
-                        </select>  
-                        <!-- end of catagory collum -->
-                  </div>
-            </div>
             <br>
             <!-- <div id="TestBookList">
                   <p>Test Item perpage here</p>
             </div> -->
-            <div class="row justify-content-center align-items-center">
+            <div class="row  align-items-center">
                   <div class="col-12 col-lg-3 col-xl-2 border border-3 bg-light p-3 align-self-start rounded" style=" margin-top: 0px;">
+                        <button type="button" class="btn-icon" data-bs-toggle="modal" data-bs-target="#exampleModal" id="modalToggleButton">
+                              <i class="fas fa-filter"></i>
+                              Filter
+                        </button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                              <div class="modal-dialog">
+                                    <div class="modal-content">
+                                          <div class="modal-header">
+                                          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                          </div>
+                                          <div class="modal-body">
+                                                <ul class="Nav-header no-padding">
+                                                      <li>Categories</li>
+                                                </ul>
+                                                <form class="d-flex search-form">
+                                                      <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                                                </form>
+                                                <ul class="Nav-list" id="Category-list">
+                                                      <li>Fiction</li>
+                                                      <li>Non-Fiction</li>
+                                                      <li>Fantasy</li>
+                                                      <li>Science Fiction</li>
+                                                      <li>Horror</li>
+                                                      <li>Thriller</li>
+
+                                                </ul>
+
+
+
+                                                <ul class="Nav-header no-padding">
+                                                      <li>Publisher</li>
+                                                </ul>
+                                                <form class="d-flex search-form">
+                                                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                                                </form>
+                                                <ul class="Nav-list">
+                                                      <li>ABC</li>
+                                                      <li>DEF</li>
+                                                      <li>GHI</li>
+                                                      <li>JKL</li>
+                                                </ul>
+
+                                                <ul class="Nav-header no-padding">
+                                                      <li>Author</li>
+                                                </ul>
+
+                                                <ul class="Nav-list">
+                                                      <li>Frank Herbert</li>
+                                                      <li>Yuval Noah</li>
+                                                      <li>Bram</li>
+                                                </ul>
+                                          </div>
+                                          <div class="modal-footer">
+                                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                          </div>
+                                    </div>
+                              </div>
+                        </div>
+                        <!-- Desktop Side pannel -->
                         <button class="btn btn-outline-dark" id="toggleButton">&#9776;</button>
                         <div id="hideable">
                               <ul class="Nav-header no-padding">
                                     <li>Categories</li>
                               </ul>
                               <form class="d-flex search-form">
-                                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Category-search">
                               </form>
                               <ul class="Nav-list" id="Category-list">
-                                    <li>Fiction</li>
-                                    <li>Non-Fiction</li>
-                                    <li>Fantasy</li>
-                                    <li>Science Fiction</li>
-                                    <li>Horror</li>
-                                    <li>Thriller</li>
-                                    <li class="hidden">Fiction</li>
-                                    <li class="hidden">Non-Fiction</li>
-                                    <li class="hidden">Fantasy</li>
-                                    <li class="hidden">Science Fiction</li>
-                                    <li class="hidden">Horror</li>
-                                    <li class="hidden">Thriller</li>
+                                    <?php 
+                                          if ($cate) {
+                                                $success = $cate->execute();
+                                                if ($success) {
+                                                      $result1 = $cate->get_result();
+                                                      while ($row = $result1->fetch_assoc()) {
+                                                            // Process each row of data here...
+                                                            echo '<li>'. $row['name'] . '</li>';
+                                                      }
+                                                            } else {
+                                                      echo "Error executing statement: " . $conn->error;
+                                                            }     
+                                                      } else {
+                                                      echo "Error preparing statement: " . $conn->error;
+                                                      }
+                                    ?>
                               </ul>
-
-                              <a class="show-more" id="showMore">Show more (+)</a>
 
                               <ul class="Nav-header no-padding">
                                     <li>Publisher</li>
