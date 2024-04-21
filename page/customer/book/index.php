@@ -26,7 +26,8 @@ if ($return_status_code === 400) {
                   exit;
             }
             $cate = $conn->prepare('SELECT * FROM category LIMIT 5');
-            $auth = $conn->prepare('SELECT author.authorName FROM author');
+            $auth = $conn->prepare('SELECT * FROM author LIMIT 5');
+            $pub = $conn->prepare('SELECT * FROM book LIMIT 5');
       } catch (Exception $e) {
             http_response_code(500);
             require_once __DIR__ . '/../../../error/500.php';
@@ -75,7 +76,7 @@ if ($return_status_code === 400) {
                         </button>
                         <!-- Modal -->
                         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                              <div class="modal-dialog">
+                              <div class="modal-dialog modal-dialog-scrollable">
                                     <div class="modal-content">
                                           <div class="modal-header">
                                           <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
@@ -93,6 +94,7 @@ if ($return_status_code === 400) {
                         <!-- Desktop Side pannel -->
                         <div id="Desktop-pannel">
                               <div id="hideable">
+                                    <!-- Category list -->
                                     <ul class="Nav-header no-padding">
                                           <li>Categories</li>
                                     </ul>
@@ -117,28 +119,55 @@ if ($return_status_code === 400) {
                                                             }
                                           ?>
                                     </ul>
-
+                                    <!-- Publisher list -->
                                     <ul class="Nav-header no-padding">
                                           <li>Publisher</li>
                                     </ul>
                                     <form class="d-flex search-form">
-                                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Publisher-search">
                                     </form>
-                                    <ul class="Nav-list">
-                                          <li>ABC</li>
-                                          <li>DEF</li>
-                                          <li>GHI</li>
-                                          <li>JKL</li>
+                                    <ul class="Nav-list" id="Publisher-list">
+                                           <?php 
+                                                if ($pub) {
+                                                      $success = $pub->execute();
+                                                      if ($success) {
+                                                            $result3 = $pub->get_result();
+                                                            while ($row2 = $result3->fetch_assoc()) {
+                                                                  // Process each row of data here...
+                                                                  echo '<li>'. $row2['publisher'] . '</li>';
+                                                            }
+                                                                  } else {
+                                                            echo "Error executing statement: " . $conn->error;
+                                                                  }     
+                                                            } else {
+                                                            echo "Error preparing statement: " . $conn->error;
+                                                            }
+                                          ?>
                                     </ul>
-
+                                    <!-- Author list -->
                                     <ul class="Nav-header no-padding">
                                           <li>Author</li>
                                     </ul>
-
-                                    <ul class="Nav-list">
-                                          <li>Frank Herbert</li>
-                                          <li>Yuval Noah</li>
-                                          <li>Bram</li>
+                                    <form class="d-flex search-form">
+                                                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" id="Author-search">
+                                    </form>
+                                    <ul class="Nav-list" id="Author-list">
+                                          <?php 
+                                                if ($auth) {
+                                                      $success = $auth->execute();
+                                                      if ($success) {
+                                                            $result2 = $auth->get_result();
+                                                            while ($row1 = $result2->fetch_assoc()) {
+                                                                  // Process each row of data here...
+                                                                  echo '<li>'. $row1['authorName'] . '</li>';
+                                                            }
+                                                                  } else {
+                                                            echo "Error executing statement: " . $conn->error;
+                                                                  }     
+                                                            } else {
+                                                            echo "Error preparing statement: " . $conn->error;
+                                                            }
+                                          ?>
                                     </ul>
                               </div>
                         </div>

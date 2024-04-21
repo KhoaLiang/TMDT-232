@@ -6,6 +6,10 @@ $(document).ready(function() {
     var query = $('#search-input').val();
     var listItems = document.querySelectorAll('#Category-list li');
     var selectedCategory ="";
+    var listItemsAuth = document.querySelectorAll('#Author-list li');
+    var selectedAuthor = "";
+    var listItemsPub = document.querySelectorAll('#Publisher-list li');
+    var selectedPub = "";
 
     function fetchBooks() {
         $.ajax({
@@ -16,7 +20,9 @@ $(document).ready(function() {
                 page: currentPage,
                 Display: Display,
                 query: query,
-                selectedCategory: selectedCategory
+                selectedCategory: selectedCategory,
+                selectedAuthor: selectedAuthor,
+                selectedPub: selectedPub
             },
             success: function(response) {
                 var books = JSON.parse(response);
@@ -108,6 +114,7 @@ $(document).ready(function() {
                         itemsPerPage = $('#itemsPerPage').val();
                         query = $('#search-input').val();
                         currentPage = 1; // Reset to first page when items per page changes
+                        selectedAuthor = ""; //Reset the author
                         fetchBooks();
 
                         // Remove the glow class from all li elements
@@ -122,6 +129,94 @@ $(document).ready(function() {
             }
         });
     });
+    $('#Author-search').on('input', function(){
+        var SearchedAuth = $('#Author-search').val();
+        $('#Author-list').empty();
+        console.log(SearchedAuth);
+        $.ajax({
+            url: '/ajax_service/customer/book/author-search.php',
+            type: 'GET',
+            data: {
+                SearchedAuth: SearchedAuth
+            },
+            success: function(response) {
+                var authors = JSON.parse(response);
+                console.log(authors);
+                var html = '';
+                for (var i = 0; i < authors.length; i++) {
+                    html += `<li>${authors[i].authorName}</li>`;
+                }
+                $('#Author-list').append(html);
+                listItemsAuth = document.querySelectorAll('#Author-list li');
+                console.log("Inside the ajax:", listItemsAuth);
+                listItemsAuth.forEach(function(item) {
+                    item.addEventListener('click', function() {
+                        selectedAuthor = this.textContent;
+                        selectedAuthor = selectedAuthor.replace("'", "\\'");
+                        console.log(selectedAuthor);
+                        itemsPerPage = $('#itemsPerPage').val();
+                        query = $('#search-input').val();
+                        currentPage = 1; // Reset to first page when items per page changes
+                        selectedCategory =""; //reset the category
+                        fetchBooks();
+
+                        // Remove the glow class from all li elements
+                        listItemsAuth.forEach(function(item) {
+                            item.classList.remove('glow');
+                        });
+
+                        // Add the glow class to the clicked li element
+                        this.classList.add('glow');
+                    });
+                });
+            }
+        });
+    });
+    $('#Publisher-search').on('input', function(){
+        var SearchedPub = $('#Publisher-search').val();
+        $('#Publisher-list').empty();
+        console.log(SearchedPub);
+        $.ajax({
+            url: '/ajax_service/customer/book/publisher-search.php',
+            type: 'GET',
+            data: {
+                SearchedPub: SearchedPub
+            },
+            success: function(response) {
+                var pubs = JSON.parse(response);
+                console.log(pubs);
+                var html = '';
+                for (var i = 0; i < pubs.length; i++) {
+                    html += `<li>${pubs[i].publisher}</li>`;
+                }
+                $('#Publisher-list').append(html);
+                listItemsPub = document.querySelectorAll('#Publisher-list li');
+                console.log("Inside the ajax:", listItemsPub);
+                listItemsPub.forEach(function(item) {
+                    item.addEventListener('click', function() {
+                        selectedPub = this.textContent;
+                        selectedPub = selectedPub.replace("'", "\\'");
+                        console.log(selectedPub);
+                        itemsPerPage = $('#itemsPerPage').val();
+                        query = $('#search-input').val();
+                        currentPage = 1; // Reset to first page when items per page changes
+                        selectedCategory =""; //reset the category
+                        selectedAuthor = ""; //reset the author
+                        fetchBooks();
+
+                        // Remove the glow class from all li elements
+                        listItemsPub.forEach(function(item) {
+                            item.classList.remove('glow');
+                        });
+
+                        // Add the glow class to the clicked li element
+                        this.classList.add('glow');
+                    });
+                });
+            }
+        });
+    });
+
 
     listItems.forEach(function(item) {
         item.addEventListener('click', function() {
@@ -131,10 +226,55 @@ $(document).ready(function() {
             itemsPerPage = $('#itemsPerPage').val();
             query = $('#search-input').val();
             currentPage = 1; // Reset to first page when items per page changes
+            selectedAuthor = ""; //Reset the author
+            selectedPub = ""; //Reset the publisher
             fetchBooks();
 
             // Remove the glow class from all li elements
             listItems.forEach(function(item) {
+                item.classList.remove('glow');
+            });
+
+            // Add the glow class to the clicked li element
+            this.classList.add('glow');
+        });
+    });
+
+    listItemsAuth.forEach(function(item) {
+        item.addEventListener('click', function() {
+            selectedAuthor = this.textContent;
+            selectedAuthor = selectedAuthor.replace("'", "\\'");
+            console.log(selectedAuthor);
+            itemsPerPage = $('#itemsPerPage').val();
+            query = $('#search-input').val();
+            currentPage = 1; // Reset to first page when items per page changes
+            selectedCategory =""; //reset the category
+            selectedPub = ""; //reset the publisher
+            fetchBooks();
+
+            // Remove the glow class from all li elements
+            listItemsAuth.forEach(function(item) {
+                item.classList.remove('glow');
+            });
+
+            // Add the glow class to the clicked li element
+            this.classList.add('glow');
+        });
+    });
+    listItemsPub.forEach(function(item) {
+        item.addEventListener('click', function() {
+            selectedPub = this.textContent;
+            selectedPub = selectedPub.replace("'", "\\'");
+            console.log(selectedPub);
+            itemsPerPage = $('#itemsPerPage').val();
+            query = $('#search-input').val();
+            currentPage = 1; // Reset to first page when items per page changes
+            selectedCategory =""; //reset the category
+            selectedAuthor = ""; //reset the author
+            fetchBooks();
+
+            // Remove the glow class from all li elements
+            listItemsPub.forEach(function(item) {
                 item.classList.remove('glow');
             });
 
