@@ -38,31 +38,32 @@ function setComment($conn, $bookID) {
     }
 }
 function getComment($conn, $bookID) {
-    $sql = "SELECT * FROM commentcontent WHERE bookID = '$bookID'  and commentIdx>5";
+    $sql = "SELECT * FROM commentcontent WHERE bookID = '$bookID'";
     $result = $conn->query($sql);
     while ($row = $result->fetch_assoc()) {
         echo '<div class="comment-box"><p>';
-        echo "<span style='font-weight: 600; font-size: 15px; color: black'>" . $row['customerID'] . "</span>";
-        echo '<div class="rating1" >
-            <span id="rating-holder">'.GetRating($conn, $bookID, $_SESSION['id']).' </span>
-            <div id="rating-response"></div>';
-        echo '</div>';
-        echo '<span style=" opacity: 0.6; font-style: italic; font-size: 12px;">' . date('Y-m-d H:i', strtotime($row['commentTime'])) . '</span><br><br>';
-        echo nl2br($row['content']."<br><br>");
+            echo $row['customerID']."<br>";
+            echo $row['commentTime']."<br>";
+            echo nl2br($row['content']."<br><br>");
         echo '</p>';
         if($_SESSION['id'] == $row['customerID']){
-        echo '
-            <form class="delete-form" method="POST" action="'.deleteComments($conn).'">
+            echo '<form class="edit-form" method="POST" action="edit-comment.php">
+            <input type="hidden" name="customerID" value="'.$row['customerID'].'">
+            <input type="hidden" name="commentIdx" value="'.$row['commentIdx'].'">
+            <input type="hidden" name="commentTime" value="'.$row['commentTime'].'">
+            <input type="hidden" name="bookID" value="'.$bookID.'">
+            <input type="hidden" name="content" value="'.$row['content'].'">
+            <button name="edit">Edit</button>
+        </form>
+        <form class="delete-form" method="POST" action="'.deleteComments($conn).'">
             <input type="hidden" name="customerID" value="'.$row['customerID'].'">
             <input type="hidden" name="commentIdx" value="'.$row['commentIdx'].'">
             <input type="hidden" name="bookID" value="'.$bookID.'">
-            <button type="submit" name="deleteComment" onclick="return confirm(\'Are you sure you want to delete this comment?\');">
-            <i class="fas fa-trash-alt"></i> 
-            </button>
-            </form>';
+            <button type="submit" name="deleteComment" onclick="if(confirm(\'Are you sure you want to delete this comment?\')) { this.form.submit(); location.reload(); } else {return false;}">Delete</button>
+        </form>';
         }
         echo '</div>';
-        };
+    }
 }
 
 function editComment($conn) {
