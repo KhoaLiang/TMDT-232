@@ -1,4 +1,4 @@
-### XAMPP version: 8.0.30 (Apache: 2.4.58, PHP: 8.0.30)
+nó### XAMPP version: 8.0.30 (Apache: 2.4.58, PHP: 8.0.30)
 
 ### MySQL version: 8.0.35
 
@@ -221,7 +221,7 @@ ServerAlias https://www.test.bookstore.com
 </VirtualHost>
 ```
 
-Replace `C:\example_path` with the directory of this project in your machine to finish setting up this step.<br>
+Replace `C:\example_path` with the directory of this project in your machine and <your email address> with your designated email address to finish setting up this step.<br>
 
 **Step 8:** Update Hosts File, open this file at this path `C:\Windows\System32\drivers\etc\hosts` (usually the case) as an administrator and add these lines at the bottom of the file
 
