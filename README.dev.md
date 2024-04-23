@@ -1,4 +1,4 @@
-nó### XAMPP version: 8.0.30 (Apache: 2.4.58, PHP: 8.0.30)
+### XAMPP version: 8.0.30 (Apache: 2.4.58, PHP: 8.0.30)
 
 ### MySQL version: 8.0.35
 
