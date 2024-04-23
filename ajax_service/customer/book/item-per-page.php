@@ -11,8 +11,6 @@ require_once __DIR__ . '/../../../tool/php/formatter.php';
     $Display = $_GET['Display'];
     $search = $_GET['query'];
     $selectedCategory = $_GET['selectedCategory'];
-    $selectedAuthor = $_GET['selectedAuthor'];
-    $selectedPub = $_GET['selectedPub'];
 
     // Calculate the offset
     $offset = ($page - 1) * $itemsPerPage;
@@ -206,7 +204,7 @@ SELECT *
 FROM SearchBooks
 WHERE SearchBooks.name LIKE  '%$search%' or SearchBooks.authorName LIKE '%$search%' or SearchBooks.isbn LIKE '%$search%'or SearchBooks.publisher LIKE '%$search%' LIMIT ? OFFSET ?");
 }
-if ($search === "" && $selectedCategory !== "" && $selectedAuthor === "" && $selectedPub === "") {
+if ($search === "" && $selectedCategory !== "") {
     $stmt = mysqli_prepare($conn, "WITH CatagorySelect as(
 WITH RankedBooks AS (
   SELECT book.id, book.name,
@@ -218,12 +216,12 @@ WITH RankedBooks AS (
          eventapply.eventID,
          COALESCE(eventdiscount.discount, 0) AS discount,
          ROW_NUMBER() OVER (PARTITION BY book.id ORDER BY discount DESC) AS discount_rank
-  FROM book
-  INNER JOIN author ON book.id = author.bookID
-  INNER JOIN fileCopy ON book.id = fileCopy.id
-  INNER JOIN physicalCopy ON book.id = physicalCopy.id
-  LEFT JOIN eventapply ON book.id = eventapply.bookID
-  LEFT JOIN eventdiscount ON eventapply.eventID = eventdiscount.ID
+  FROM bookstore.book
+  INNER JOIN bookstore.author ON book.id = author.bookID
+  INNER JOIN bookstore.fileCopy ON book.id = fileCopy.id
+  INNER JOIN bookstore.physicalCopy ON book.id = physicalCopy.id
+  LEFT JOIN bookstore.eventapply ON book.id = eventapply.bookID
+  LEFT JOIN bookstore.eventdiscount ON eventapply.eventID = eventdiscount.ID
 )
 SELECT *
 FROM RankedBooks
@@ -231,53 +229,9 @@ WHERE discount_rank = 1)
 
 SELECT *
 FROM CatagorySelect  
-	join belong on CatagorySelect.id = belong.bookID
-	join category on belong.categoryID = category.id
+	join bookstore.belong on CatagorySelect.id = belong.bookID
+	join bookstore.category on belong.categoryID = category.id
     Where category.name = '$selectedCategory' LIMIT ? OFFSET ?");
-}
-if ($search === "" && $selectedCategory === "" && $selectedAuthor !== "" && $selectedPub === "") {
-    $stmt = mysqli_prepare($conn, "WITH RankedBooks AS (
-  SELECT book.id, book.name,
-         author.authorName,
-         fileCopy.price AS filePrice,
-         physicalCopy.price AS physicalPrice,
-         book.imagePath AS pic,
-         book.avgRating AS star,
-         eventapply.eventID,
-         COALESCE(eventdiscount.discount, 0) AS discount,
-         ROW_NUMBER() OVER (PARTITION BY book.id ORDER BY discount DESC) AS discount_rank
-  FROM book
-  INNER JOIN author ON book.id = author.bookID
-  INNER JOIN fileCopy ON book.id = fileCopy.id
-  INNER JOIN physicalCopy ON book.id = physicalCopy.id
-  LEFT JOIN eventapply ON book.id = eventapply.bookID
-  LEFT JOIN eventdiscount ON eventapply.eventID = eventdiscount.ID
-)
-SELECT *
-FROM RankedBooks
-WHERE discount_rank = 1 AND RankedBooks.authorName ='$selectedAuthor' LIMIT ? OFFSET ?");
-}
-if ($search === "" && $selectedCategory === "" && $selectedAuthor === "" && $selectedPub !== "") {
-    $stmt = mysqli_prepare($conn, "WITH RankedBooks AS (
-  SELECT book.id, book.name, book.publisher,
-         author.authorName,
-         fileCopy.price AS filePrice,
-         physicalCopy.price AS physicalPrice,
-         book.imagePath AS pic,
-         book.avgRating AS star,
-         eventapply.eventID,
-         COALESCE(eventdiscount.discount, 0) AS discount,
-         ROW_NUMBER() OVER (PARTITION BY book.id ORDER BY discount DESC) AS discount_rank
-  FROM book
-  INNER JOIN author ON book.id = author.bookID
-  INNER JOIN fileCopy ON book.id = fileCopy.id
-  INNER JOIN physicalCopy ON book.id = physicalCopy.id
-  LEFT JOIN eventapply ON book.id = eventapply.bookID
-  LEFT JOIN eventdiscount ON eventapply.eventID = eventdiscount.ID
-)
-SELECT *
-FROM RankedBooks
-WHERE discount_rank = 1 AND RankedBooks.publisher ='$selectedPub' LIMIT ? OFFSET ?");
 }
     // Bind the limit and offset parameters
     mysqli_stmt_bind_param($stmt, 'ii', $itemsPerPage, $offset);

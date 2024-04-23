@@ -15,7 +15,7 @@ $(document).ready(async function ()
 
             pause = true;
 
-            payOrder()
+            $('#confirmModal').modal('show');
       });
 
       $('#deleteModal').on('hidden.bs.modal', function ()
@@ -61,7 +61,7 @@ $(document).ready(async function ()
 
 function placeOrder()
 {
-      if (!$('#fileList').children().length && !$('#physicalList').children().length)
+      if ($('#fileSection').css('display') === 'none' && $('#physicalSection').css('display') === 'none')
       {
             $('#errorModal').modal('show');
             $('#error_message').text('Your cart is empty!');
@@ -93,9 +93,88 @@ function placeOrder()
             }
       });
 
-      //if (signal) return;
+      if (signal) return;
 
-      return !signal;
+      if ($('#card-payment').is(':checked'))
+      {
+            if (!$('#visa-payment').is(':checked') && !$('#jcb-payment').is(':checked') && !$('#mastercard-payment').is(':checked'))
+            {
+                  $('#errorModal').modal('show');
+                  $('#error_message').text('Please select a card type!');
+                  return;
+            }
+
+            clearCustomValidity($(`#card-holder-name`).get(0));
+            if (!$('#card-holder-name').val())
+            {
+                  reportCustomValidity($(`#card-holder-name`).get(0), "Please fill in your card holder name!");
+                  return;
+            }
+
+            clearCustomValidity($(`#card-number`).get(0));
+            if (!$('#card-number').val())
+            {
+                  reportCustomValidity($(`#card-number`).get(0), "Please fill in your card number!");
+                  return;
+            }
+            else if ($('#card-number').val().length < 16)
+            {
+                  reportCustomValidity($(`#card-number`).get(0), "Card number must have 16 digits!");
+                  return;
+            }
+            else
+            {
+                  const regex = /^[0-9]{16}$/;
+                  const cardNumber = $('#card-number').val();
+                  if (!regex.test(cardNumber))
+                  {
+                        reportCustomValidity($(`#card-number`).get(0), "Card number contain non-numerical character(s)!");
+                        return;
+                  }
+            }
+
+            clearCustomValidity($(`#card-expiration`).get(0));
+            if (!$('#card-expiration').val())
+            {
+                  reportCustomValidity($(`#card-expiration`).get(0), "Please fill in your card expiration date!");
+                  return;
+            }
+            else
+            {
+                  const selected = new Date($('#card-expiration').val());
+                  const current = new Date();
+
+                  if (selected.getFullYear() < current.getFullYear() || (selected.getFullYear() === current.getFullYear() && selected.getMonth() <= current.getMonth()))
+                  {
+                        reportCustomValidity($(`#card-expiration`).get(0), "Your card has expired!");
+                        return;
+                  }
+            }
+
+            clearCustomValidity($(`#card-cvv`).get(0));
+            if (!$('#card-cvv').val())
+            {
+                  reportCustomValidity($(`#card-cvv`).get(0), "Please fill in your card CVV!");
+                  return;
+            }
+            else if ($('#card-cvv').val().length < 3)
+            {
+                  reportCustomValidity($(`#card-cvv`).get(0), "CVV must have 3 digits!");
+                  return;
+            }
+            else
+            {
+                  const regex = /^[0-9]{3}$/;
+                  const cvv = $('#card-cvv').val();
+                  if (!regex.test(cvv))
+                  {
+                        reportCustomValidity($(`#card-cvv`).get(0), "CVV contain non-numerical character(s)!");
+                        return;
+                  }
+            }
+      }
+
+      $('#cartForm').submit();
 }
 
 function updateInStock(id)
@@ -241,7 +320,7 @@ async function fetchFileOrder()
                         if (!Array.isArray(data.query_result) && data.query_result.detail.length)
                         {
                               $('#fileList').empty();
-                              // $('#fileSection').css('display', 'flex');
+                              $('#fileSection').css('display', 'flex');
 
                               let temp = '';
                               for (let i = 0; i < data.query_result.detail.length - 1; i++)
@@ -333,7 +412,7 @@ async function fetchFileOrder()
                         else
                         {
                               $('#fileList').empty();
-                              // $('#fileSection').css('display', 'none');
+                              $('#fileSection').css('display', 'none');
                         }
                   }
             },
@@ -376,7 +455,7 @@ async function fetchPhysicalOrder(isFirstTime)
                         {
                               $('#physicalList').empty();
                               $('#physicalDestination').prop('disabled', false);
-                              // $('#physicalSection').css('display', 'flex');
+                              $('#physicalSection').css('display', 'flex');
 
                               if (isFirstTime)
                                     $('#physicalDestination').val(data.query_result.destinationAddress);
@@ -501,7 +580,7 @@ async function fetchPhysicalOrder(isFirstTime)
                         {
                               $('#physicalList').empty();
                               $('#physicalDestination').prop('disabled', true).val('');
-                              // $('#physicalSection').css('display', 'none');
+                              $('#physicalSection').css('display', 'none');
                         }
                   }
             },
@@ -772,4 +851,16 @@ function payOrder()
                   }
             }
       });
+}
+
+function selectCardPayment(selected)
+{
+      if (selected)
+            $('#card_input').removeClass('none');
+      else
+      {
+            $('#card_input').addClass('none');
+      }
+      $('#jcb-payment,#visa-payment,#mastercard-payment').prop('checked', false);
+      $('#card-holder-name,#card-number,#card-expiration,#card-cvv').val('');
 }
