@@ -50,7 +50,7 @@ Step 5.3: `Add arguments (optional):` value will be the `delete_account.php` fil
 ### Steps to config the web server before running LOCALLY ONLY (apply for Windows OS, other OSes can be achieved with the same procedure):
 
 **Step 1:** Fetch the source code of this repository to your local machine (example path will be `C:\example_path` for better demonstation).<br><br>
-**Step 2:** Create a `.env` file based on `.env.example` file.<br><br>
+**Step 2:** Create a `.env` file base on `.env.example` file and set up your own values.<br><br>
 **Step 3:** Create a self-signed SSL certificate, go to `cert` directory by typing `cd cert` in the terminal and then type in this line `mkcert -key-file key.pem -cert-file cert.pem localhost 127.0.0.1 ::1 www.demo.bookstore.com www.test.bookstore.com [your_ip_address]` (`your_ip_address` is optional. This step is only used for development, production must not use this step)<br><br>
 **Step 4:** Create three log files named `error.log`, `access.log` and `ssl_request.log` in `C:\example_path\log`<br><br>
 **Step 5:** Locate the apache server installation directory (for example `C:\xampp\apache`)<br><br>
