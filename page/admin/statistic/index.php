@@ -55,11 +55,11 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                         <div class='container-fluid'>
-                              <h3 class='mt-4'>Sale By Category</h3>
+                              <h3 class='mt-4'>Sales By Category</h3>
                               <div class='w-100 overflow-auto mt-3'>
                                     <canvas id='category_chart'></canvas>
                               </div>
-                              <h3 class='mt-4'>Detail Book Sale</h3>
+                              <h3 class='mt-4'>Detail Book Sales</h3>
                               <div class='mt-2 d-flex align-items-center'>
                                     <form class="d-flex align-items-center w-100 search_form mt-2" role="search" id="search_book_form">
                                           <button title='submit search form' class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
