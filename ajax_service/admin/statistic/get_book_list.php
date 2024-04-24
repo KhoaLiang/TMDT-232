@@ -121,65 +121,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                   $stmt = null;
 
                   if ($category === '%%') {
-                        $stmt = $conn->prepare('(select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath,coalesce(combined.finalTotalSold,0) as totalSold
+                        $stmt = $conn->prepare('select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
                   from book join author on book.id=author.bookID
-                  join belong on belong.bookID=book.id
-                  join category on category.id=belong.categoryID
-                  left join (select bookID,sum(totalSold) as finalTotalSold from (
-select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-union
-select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-) as combined group by bookID) as combined on book.id=combined.bookID
-                  where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ? and category.name like ?
-                  order by totalSold desc,book.name,book.id limit ? offset ?)
-                  
-                  union
-                  
-                  (select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath,coalesce(combined.finalTotalSold,0) as totalSold
-                  from book join author on book.id=author.bookID
-                  left join (select bookID,sum(totalSold) as finalTotalSold from (
-select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-union
-select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-) as combined group by bookID) as combined on book.id=combined.bookID
                   where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ?
-                  order by totalSold desc,book.name,book.id limit ? offset ?)');
+                  order by book.name,book.id limit ? offset ?');
                         if (!$stmt) {
                               http_response_code(500);
-                              echo json_encode(['error' => 'Query `` preparation failed!']);
+                              echo json_encode(['error' => 'Query `select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
+                  from book join author on book.id=author.bookID
+                  where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ?
+                  order by book.name,book.id limit ? offset ?` preparation failed!']);
                               $conn->close();
                               exit;
                         }
-                        $stmt->bind_param('ssssisssssiissssissssii', $start, $end, $start, $end, $status, $search, $isbnSearch,  $publisher, $author, $category, $entry, $offset, $start, $end, $start, $end, $status, $search, $isbnSearch,  $publisher, $author, $entry, $offset);
+                        $stmt->bind_param('issssii', $status, $search, $isbnSearch, $publisher, $author, $entry, $offset);
                   } else {
-                        $stmt = $conn->prepare('(select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath,coalesce(combined.finalTotalSold,0) as totalSold
+                        $stmt = $conn->prepare('select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
                   from book join author on book.id=author.bookID
                   join belong on belong.bookID=book.id
                   join category on category.id=belong.categoryID
-                  left join (select bookID,sum(totalSold) as finalTotalSold from (
-select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-union
-select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-) as combined group by bookID) as combined on book.id=combined.bookID
                   where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ? and category.name like ?
-                  order by totalSold desc,book.name,book.id limit ? offset ?)');
+                  order by book.name,book.id limit ? offset ?');
                         if (!$stmt) {
                               http_response_code(500);
-                              echo json_encode(['error' => 'Query `(select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath,coalesce(combined.finalTotalSold,0) as totalSold
+                              echo json_encode(['error' => 'Query `select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
                   from book join author on book.id=author.bookID
                   join belong on belong.bookID=book.id
                   join category on category.id=belong.categoryID
-                  left join (select bookID,sum(totalSold) as finalTotalSold from (
-select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-union
-select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-) as combined group by bookID) as combined on book.id=combined.bookID
                   where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ? and category.name like ?
-                  order by totalSold desc,book.name,book.id limit ? offset ?)` preparation failed!']);
+                  order by book.name,book.id limit ? offset ?` preparation failed!']);
                               $conn->close();
                               exit;
                         }
-                        $stmt->bind_param('ssssisssssii', $start, $end, $start, $end, $status, $search, $isbnSearch,  $publisher, $author, $category, $entry, $offset);
+                        $stmt->bind_param('isssssii', $status, $search, $isbnSearch,  $publisher, $author, $category, $entry, $offset);
                   }
                   $isSuccess = $stmt->execute();
 
@@ -339,38 +313,38 @@ select bookID,count(*) as totalSold from fileOrderContain join customerOrder on 
                               }
                               $sub_stmt->close();
 
-                              //                               $sub_stmt = $conn->prepare("select sum(totalSold) as finalTotalSold from (
-                              // select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-                              // union
-                              // select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-                              // ) as combined where bookID=? group by bookID;");
-                              //                               if (!$sub_stmt) {
-                              //                                     http_response_code(500);
-                              //                                     echo json_encode(['error' => 'Query `select sum(totalSold) as finalTotalSold from (
-                              // select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-                              // union
-                              // select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
-                              // ) as combined where bookID=? group by bookID;` preparation failed!']);
-                              //                                     $conn->close();
-                              //                                     exit;
-                              //                               }
-                              //                               $sub_stmt->bind_param('sssss', $start, $end, $start, $end, $id);
-                              //                               $isSuccess = $sub_stmt->execute();
-                              //                               if (!$isSuccess) {
-                              //                                     http_response_code(500);
-                              //                                     echo json_encode(['error' => $sub_stmt->error]);
-                              //                                     $sub_stmt->close();
-                              //                                     $stmt->close();
-                              //                                     $conn->close();
-                              //                                     exit;
-                              //                               }
-                              //                               $sub_result = $sub_stmt->get_result();
-                              //                               $sub_result = $sub_result->fetch_assoc();
-                              //                               if ($sub_result)
-                              //                                     $queryResult[$idx]['totalSold'] = $sub_result['finalTotalSold'];
-                              //                               else
-                              //                                     $queryResult[$idx]['totalSold'] = 0;
-                              //                               $sub_stmt->close();
+                              $sub_stmt = $conn->prepare("select sum(totalSold) as finalTotalSold from (
+                              select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
+                              union
+                              select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
+                              ) as combined where bookID=? group by bookID;");
+                              if (!$sub_stmt) {
+                                    http_response_code(500);
+                                    echo json_encode(['error' => 'Query `select sum(totalSold) as finalTotalSold from (
+                              select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
+                              union
+                              select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and purchaseTime>=? and purchaseTime<=? group by bookID
+                              ) as combined where bookID=? group by bookID;` preparation failed!']);
+                                    $conn->close();
+                                    exit;
+                              }
+                              $sub_stmt->bind_param('sssss', $start, $end, $start, $end, $id);
+                              $isSuccess = $sub_stmt->execute();
+                              if (!$isSuccess) {
+                                    http_response_code(500);
+                                    echo json_encode(['error' => $sub_stmt->error]);
+                                    $sub_stmt->close();
+                                    $stmt->close();
+                                    $conn->close();
+                                    exit;
+                              }
+                              $sub_result = $sub_stmt->get_result();
+                              $sub_result = $sub_result->fetch_assoc();
+                              if ($sub_result)
+                                    $queryResult[$idx]['totalSold'] = $sub_result['finalTotalSold'];
+                              else
+                                    $queryResult[$idx]['totalSold'] = 0;
+                              $sub_stmt->close();
 
                               $idx++;
                         }
@@ -378,65 +352,35 @@ select bookID,count(*) as totalSold from fileOrderContain join customerOrder on 
                   $stmt->close();
 
                   if ($category === '%%') {
-                        $stmt = $conn->prepare('select count(*) as totalBook from(
-                        (select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
+                        $stmt = $conn->prepare('select count(distinct book.id) as totalBook
                   from book join author on book.id=author.bookID
-                  join belong on belong.bookID=book.id
-                  join category on category.id=belong.categoryID
-                  where book.status=? and (book.name like ? or book.isbn like ? or author.authorName like ?) and category.name like ?
-                  order by book.name,book.id)
-                  
-                  union
-                  
-                  (select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
-                  from book join author on book.id=author.bookID
-                  where book.status=? and (book.name like ? or book.isbn like ? or author.authorName like ?)
-                  order by book.name,book.id)
-                  ) as combined');
+                  where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ?');
                         if (!$stmt) {
                               http_response_code(500);
-                              echo json_encode(['error' => 'Query `select count(*) as totalBook from(
-                        (select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
+                              echo json_encode(['error' => 'Query `select count(distinct book.id) as totalBook
                   from book join author on book.id=author.bookID
-                  join belong on belong.bookID=book.id
-                  join category on category.id=belong.categoryID
-                  where book.status=? and (book.name like ? or book.isbn like ? or author.authorName like ?) and category.name like ?
-                  order by book.name,book.id)
-                  
-                  union
-                  
-                  (select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
-                  from book join author on book.id=author.bookID
-                  where book.status=? and (book.name like ? or book.isbn like ? or author.authorName like ?)
-                  order by book.name,book.id)
-                  ) as combined` preparation failed!']);
+                  where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ?` preparation failed!']);
                               $conn->close();
                               exit;
                         }
-                        $stmt->bind_param('issssisss', $status, $search, $isbnSearch, $search, $category, $status, $search, $isbnSearch, $search);
+                        $stmt->bind_param('issss', $status, $search, $isbnSearch, $publisher, $author);
                   } else {
-                        $stmt = $conn->prepare('select count(*) as totalBook from(
-                        (select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
+                        $stmt = $conn->prepare('select count(distinct book.id) as totalBook
                   from book join author on book.id=author.bookID
                   join belong on belong.bookID=book.id
                   join category on category.id=belong.categoryID
-                  where book.status=? and (book.name like ? or book.isbn like ? or author.authorName like ?) and category.name like ?
-                  order by book.name,book.id)
-                  ) as combined');
+                  where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ? and category.name like ?');
                         if (!$stmt) {
                               http_response_code(500);
-                              echo json_encode(['error' => 'Query `select count(*) as totalBook from(
-                        (select distinct book.id,book.name,book.edition,book.isbn,book.avgRating,book.publisher,book.publishDate,book.description,book.imagePath
+                              echo json_encode(['error' => 'Query `select count(distinct book.id) as totalBook
                   from book join author on book.id=author.bookID
                   join belong on belong.bookID=book.id
                   join category on category.id=belong.categoryID
-                  where book.status=? and (book.name like ? or book.isbn like ? or author.authorName like ?) and category.name like ?
-                  order by book.name,book.id)
-                  ) as combined` preparation failed!']);
+                  where book.status=? and (book.name like ? or book.isbn like ?) and book.publisher like ? and author.authorName like ? and category.name like ?` preparation failed!']);
                               $conn->close();
                               exit;
                         }
-                        $stmt->bind_param('issss', $status, $search, $isbnSearch, $search, $category);
+                        $stmt->bind_param('isssss', $status, $search, $isbnSearch, $publisher, $author, $category);
                   }
                   $isSuccess = $stmt->execute();
                   if (!$isSuccess) {
