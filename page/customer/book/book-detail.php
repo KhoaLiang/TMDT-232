@@ -224,11 +224,11 @@ if ($return_status_code === 400) {
                         text-align: justify;
                   }
                   .comment-box{
-                        margin-top: 20px;
                         padding: 20px;
                         border-bottom: 2px solid #999999;
                         /* border-radius: 5px; */
                         position: relative;
+                        background-color: white;
                   }
                   .comment-box p{
                         font-family: Arial, Helvetica, sans-serif;
@@ -238,24 +238,9 @@ if ($return_status_code === 400) {
                         font-weight: 100;
                        
                   }
-                  .edit-form {
-                        position: absolute;
-                        top: 0px;
-                        right: 0px;
-                  }
-                  .edit-form button{
-                        width: 40px;
-                        color: #282828;
-                        background-color: hsl(0, 0%, 98%);
-                        border: none;
-                        opacity: 0.7;
-                  }
-                  .edit-form button:hover{
-                       opacity: 1;
-                  }
                   .delete-form {
                         position: absolute;
-                        top: 0px;
+                        top: 20px;
                         right: 60px;
                   }
                   .delete-form button{
@@ -470,7 +455,7 @@ if ($return_status_code === 400) {
             
                               //comment section
                               if(isset($_SESSION['id'])){
-                                    echo '<form method="POST" class="comment-input" action="'.setComment($conn, $bookID).'">
+                                    echo '<form method="POST" class="comment-input" style="margin-block-end: 0em;" action="'.setComment($conn, $bookID).'">
                                                 <input type="hidden" name="customerID" value="'.$_SESSION['id'].'">
                                                 <input type="hidden" name="ratingTime" value="'.date('Y-m-d H:i:s').'">
                                                 <input type="hidden" name="bookID" value="'.$bookID.'">
@@ -492,7 +477,7 @@ if ($return_status_code === 400) {
                                                             </div>
                                                 </section>
                                           </form>';
-                                          echo '<div id="rating-container" style="margin-left:20px;">';
+                                          echo '<div id="rating-container" style="margin-left:20px; background-color: white;">';
                                           echo ' <div class="rating" style="font-size:25px;">
                                                 <span class="h6" style="font-size:25px;">Rate the book: </span>
                                                 <i class="bi bi-star" data-value="1" data-book-id="'.$bookID.'" data-user-id="'. $_SESSION['id'].'"></i>
