@@ -527,16 +527,16 @@ if ($return_status_code === 400) {
                                             echo '<span style=" opacity: 0.6; font-style: italic; font-size: 12px;">' . date('Y-m-d H:i', strtotime($row['ratingTime'])) . '</span><br><br>';
                                             echo nl2br($row['comment']."<br><br>");
                                         echo '</p>';
+					if(isset($_SESSION['id'])){
                                         if($_SESSION['id'] == $row['customerID']){
-                                            echo '
-                                        <form class="delete-form" method="POST" action="'.deleteComments($conn).'">
+                                            echo '<form class="delete-form" method="POST" action="'.deleteComments($conn).'">
                                             <input type="hidden" name="customerID" value="'.$row['customerID'].'">
                                             <input type="hidden" name="bookID" value="'.$bookID.'">
                                             <button type="submit" name="deleteComment" onclick="return confirm(\'Are you sure you want to delete this comment?\');">
                                                 <i class="fas fa-trash-alt"></i> 
                                             </button>
-                                        </form>';
-                                        }
+                                            </form>';
+                                        }}
                                         $book_id=$bookID;
                                         echo '</div>';
                                     }
