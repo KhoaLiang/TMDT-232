@@ -2,7 +2,7 @@ $(document).ready(() =>
 {
       const location = window.location.href;
 
-      if (location.includes('/admin/book') || location.includes('/admin/customer') || location.includes('/admin/coupon') || location.includes('/admin/category'))
+      if (location.includes('/admin/book') || location.includes('/admin/customer') || location.includes('/admin/coupon') || location.includes('/admin/category') || location.includes('/admin/request'))
       {
             $('#manage_dropdown_0').addClass('text-primary');
             if (window.innerWidth >= 992)
@@ -12,6 +12,7 @@ $(document).ready(() =>
             else if (location.includes('/admin/category')) $('#manage_dropdown_2').addClass('text-primary');
             else if (location.includes('/admin/customer')) $('#manage_dropdown_3').addClass('text-primary');
             else if (location.includes('/admin/coupon')) $('#manage_dropdown_4').addClass('text-primary');
+            else if (location.includes('/admin/request')) $('#manage_dropdown_5').addClass('text-primary');
       }
       else if (location.includes('/admin/statistic'))
       {

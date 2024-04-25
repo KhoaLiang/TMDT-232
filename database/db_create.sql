@@ -212,5 +212,6 @@ create table eventApply(
 create table request(
 	id INT AUTO_INCREMENT PRIMARY KEY,
     name varchar(255) not null,
-    author varchar(1000) not null
+    author varchar(1000) not null,
+    requestTime datetime not null default now()
 );
