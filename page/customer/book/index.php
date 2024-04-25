@@ -113,10 +113,10 @@ if ($return_status_code === 400) {
                         </div>
                   </div>
                   <div class='container-xxl my-3 px-1 px-xl-3'>
-                        <form class="bg-white rounded d-flex flex-column border border-2" id='newBookForm'>
+                        <form class="bg-white rounded d-flex flex-column border border-2 p-2" id='newBookForm'>
                               <h3 class='mx-auto mt-2'>Request new book</h3>
-                              <small class='mx-auto'>Is there a book you want to add to our store?</small>
-                              <small class='mx-auto'>Enter the name and author below and we will get it soon...</small>
+                              <small class='mx-auto text-center'>Is there a book you want to add to our store?</small>
+                              <small class='mx-auto text-center'>Enter the name and author below and we will get it soon...</small>
                               <div class='d-flex flex-column flex-md-row p-3'>
                                     <div class='flex-grow-1'>
                                           <label for="book_name" class="form-label">Book Name:<span class='fw-bold text-danger'>&nbsp;*</span></label>
