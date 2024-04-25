@@ -51,7 +51,7 @@ if ($return_status_code === 400) {
                                     <input type="date" class="form-control w-auto pointer" id="endDateInput" aria-describedby="End Date Input">
                               </div>
                               <div>
-                                    <button class='btn btn-sm mt-2 mt-md-0 btn-success' onclick="selectBookEntry(); getCategoryChart();">Get Statistics</button>
+                                    <button class='btn btn-sm mt-2 mt-md-0 btn-success' onclick="selectBookEntry(); getCategoryChart();">Set Period</button>
                               </div>
                         </div>
                         <div class='container-fluid'>
