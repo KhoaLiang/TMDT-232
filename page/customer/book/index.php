@@ -34,7 +34,7 @@ if ($return_status_code === 400) {
             <section id="page">
                   <div class="container-xxl my-3 px-1 px-xl-3">
                         <div class='d-flex'>
-                              <div class='d-none d-xl-block panel border border-2 me-4 bg-white p-3'>
+                              <div class='d-none d-xl-block panel border border-2 me-4 bg-white p-3 rounded'>
                                     <div>
                                           <h4>Category</h4>
                                           <input onchange='fetchCategoryList()' id='categorySearch' class="form-control" type="search" placeholder="Search" aria-label="Search by categories">
@@ -54,7 +54,7 @@ if ($return_status_code === 400) {
                                           </div>
                                     </div>
                               </div>
-                              <div class='flex-grow-1 border border-2 bg-white d-flex flex-column px-1 px-sm-2' id='listContainer'>
+                              <div class='flex-grow-1 border border-2 bg-white d-flex flex-column px-1 px-sm-2 rounded' id='listContainer'>
                                     <form class="d-flex align-items-center w-100 search_form mt-3" role="search" id="search_form">
                                           <button title='submit search form' class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
                                                 <svg fill="#000000" width="20px" height="20px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="1.568">
@@ -112,6 +112,27 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
+                  <div class='container-xxl my-3 px-1 px-xl-3'>
+                        <form class="bg-white rounded d-flex flex-column border border-2" id='newBookForm'>
+                              <h3 class='mx-auto'>Request new book</h3>
+                              <small class='mx-auto'>Is there a book you want to add to our store?</small>
+                              <small class='mx-auto'>Enter the name and author below and we will get it soon...</small>
+                              <div class='d-flex flex-column flex-md-row p-3'>
+                                    <div class='flex-grow-1'>
+                                          <label for="book_name" class="form-label">Book Name:<span class='fw-bold text-danger'>&nbsp;*</span></label>
+                                          <input type="text" class="form-control" id="book_name" placeholder="Enter book name">
+                                    </div>
+                                    <div class='ms-md-3 mt-3 mt-md-0 flex-grow-1'>
+                                          <label for="book_author" class="form-label">Author:<span class='fw-bold text-danger'>&nbsp;*</span></label>
+                                          <input type="text" class="form-control" id="book_author" placeholder="Enter author name">
+                                          <small class="form-text text-muted">You can enter multiple authors with each seperated by comma</small>
+                                    </div>
+                              </div>
+                              <div class='mb-3 mx-auto'>
+                                    <button type='submit' class='btn btn-light border border-1 border-secondary'>Submit</button>
+                              </div>
+                        </form>
+                  </div>
                   <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="modalLabel">
                         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
                               <div class="modal-content">
@@ -159,6 +180,22 @@ if ($return_status_code === 400) {
                               </div>
                         </div>
                   </div>
+                  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="modalLabel">
+                        <div class="modal-dialog modal-dialog-centered">
+                              <div class="modal-content">
+                                    <div class="modal-header">
+                                          <h2 class="modal-title fs-5">Success</h2>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body d-flex flex-column">
+                                          <p>Your request was successfully sent, thank you for your contribution!</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Confirm</button>
+                                    </div>
+                              </div>
+                        </div>
+                  </div>
             </section>
             <?php
             require_once __DIR__ . '/../../../layout/footer.php';
@@ -167,6 +204,7 @@ if ($return_status_code === 400) {
             <script src="/tool/js/ratingStars.js"></script>
             <script src="/javascript/customer/book/book-list.js"></script>
             <script src="/tool/js/encoder.js"></script>
+            <script src="/tool/js/input_validity.js"></script>
       </body>
 
       </html>

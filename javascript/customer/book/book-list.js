@@ -37,6 +37,12 @@ $(document).ready(function ()
         e.preventDefault();
         fetchBook();
     });
+
+    $('#newBookForm').submit(function (e)
+    {
+        e.preventDefault();
+        addNewBook();
+    });
 });
 
 function checkScreenWidth()
@@ -369,4 +375,60 @@ function adJustOffset(next)
     else
         offset--;
     fetchBook();
+}
+
+function addNewBook()
+{
+    const name = encodeData($('#book_name').val());
+    const author = encodeData($('#book_author').val());
+
+    if (name === '')
+    {
+        reportCustomValidity($('#book_name').get(0), 'Please enter book name!');
+        return;
+    } else if (name.length > 255)
+    {
+        reportCustomValidity($('#book_name').get(0), 'Book name is no longer than 255 characters!');
+        return;
+    }
+
+    if (author === '')
+    {
+        reportCustomValidity($('#book_author').get(0), 'Please enter author name!');
+        return;
+    }
+
+    $.ajax({
+        url: '/ajax_service/customer/book/request_new_book.php',
+        method: 'POST',
+        dataType: 'json',
+        data: { name, author },
+        success: function (data)
+        {
+            if (data.error)
+            {
+                $('#errorModal').modal('show');
+                $('#error_message').text(data.error);
+            }
+            else if (data.query_result)
+            {
+                $('#book_name').val('');
+                $('#book_author').val('');
+                $('#successModal').modal('show');
+            }
+        },
+        error: function (err)
+        {
+            console.error(err);
+            if (err.status >= 500)
+            {
+                $('#errorModal').modal('show');
+                $('#error_message').text('Server encountered error!');
+            } else
+            {
+                $('#errorModal').modal('show');
+                $('#error_message').text(err.responseJSON.error);
+            }
+        }
+    });
 }
