@@ -15,19 +15,155 @@
 }
 
 input[type="radio"]:checked+label {
-    border: 1px solid rgb(255, 72, 0) !important;
-    color: rgb(255, 72, 0) !important;
-    font-weight: bold;
+    border: none !important;
+    /* color: rgb(255, 72, 0) !important;
+    font-weight: bold; */
 }
 
-@media (max-width: 767px) {
-    .img-size {
-        max-width: 250px;
+
+
+.author {
+    color: gray;
+}
+.comment-box{
+    padding: 20px;
+    border-bottom: 2px solid #999999;
+    /* border-radius: 5px; */
+    position: relative;
+    background-color: white;
+}
+.comment-box p{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 16px;
+    color: #282828;
+    font-weight: 100;
+   
+}
+.delete-form {
+    position: absolute;
+    top: 20px;
+    right: 60px;
+}
+.delete-form button{
+    width: 40px;
+    color: red;
+    font-size: 18px;
+    background-color: hsl(0, 0%, 98%);
+    border: none;
+    opacity: 0.7;
+}
+.delete-form button:hover{
+   opacity: 1;
+}
+.rating .bi {
+    font-size: 1em;
+    color: gray;
+    cursor: pointer;
+}
+
+.rating .bi.bi-star-fill {
+    color: gold;
+}
+.rating1 .bi {
+    font-size: 1em;
+    color: gray;
+    cursor: pointer;
+}
+
+.rating1 .bi.bi-star-fill {
+    color: gold;
+}
+.round{
+    border-radius: 20px;
+}
+/* Hide the radio buttons */
+input[type="radio"] {
+    
+}
+
+/* Style the labels */
+.btn-outline-primary {
+transition: box-shadow .3s ease;
+}
+.Orange {
+color: black;
+}
+.btn-outline-danger {
+--bs-btn-color: #dc3545;
+--bs-btn-border-color: black;
+--bs-btn-hover-color: #b8b6b6;
+}
+.btn-check:checked+.btn{
+    color: #f70000;
+    background-color: #fff;
+    border-color: #ff5800;
+}
+    
+@media (max-width: 576px) { 
+    .img-size{
+          width: 220px;
+    }
+}
+@media (min-width: 576px) { 
+    .img-size{
+          width: 220px;
     }
 }
 
-@media (max-width: 991px) {
-    .img-size {
-        max-width: 300px;
+/* // Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+    .img-size{
+          width: 250px;
     }
+}
+
+/* // Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+    .img-size{
+          width: 300px;
+    }
+}
+.btn-equal-width {
+width: 40px;  /* Adjust this value as needed */
+}
+
+/* component */
+
+.star-rating {
+    border:none;
+    display:flex;
+    flex-direction: row-reverse;
+    font-size:1.8em;
+    justify-content:space-around;
+    padding:0 .2em;
+    text-align:center;
+    width:8em;
+  }
+  
+  .star-rating input {
+    display:none;
+  }
+  
+  .star-rating label {
+    color:#ccc;
+    cursor:pointer;
+  }
+  
+  .star-rating :checked ~ label {
+    color:#fc0;
+  }
+  
+  .star-rating label:hover,
+  .star-rating label:hover ~ label {
+    color:#f90;
+  }
+  
+  .rating-word {
+    margin-right: 10px; 
+    font-weight: 620;
+}
+.rate{
+    padding-top: 20px;
+    padding-left: 20px;
 }

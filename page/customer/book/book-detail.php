@@ -211,122 +211,11 @@ if ($return_status_code === 400) {
             require_once __DIR__ . '/../../../head_element/meta.php';
             ?>
             <link rel="stylesheet" href="/css/preset_style.css">
-            <link rel="stylesheet" href="/css/customer/book/book-detail.css">
+            <link rel="stylesheet" href="/css/customer/book/book-detail.css">      
             <meta name="page creator" content="Anh Khoa, Nghia Duong">
             <meta name="book author" content="<?php echo $bAuthor; ?>">
             <meta name="book name" content="<?php echo $bName; ?>">
             <meta name="description" content="<?php echo $bDescription; ?>">\
-            <style>
-                  .author {
-                        color: gray;
-                  }
-                  .text-justify{
-                        text-align: justify;
-                  }
-                  .comment-box{
-                        padding: 20px;
-                        border-bottom: 2px solid #999999;
-                        /* border-radius: 5px; */
-                        position: relative;
-                        background-color: white;
-                  }
-                  .comment-box p{
-                        font-family: Arial, Helvetica, sans-serif;
-                        font-size: 14px;
-                        line-height: 16px;
-                        color: #282828;
-                        font-weight: 100;
-                       
-                  }
-                  .delete-form {
-                        position: absolute;
-                        top: 20px;
-                        right: 60px;
-                  }
-                  .delete-form button{
-                        width: 40px;
-                        color: red;
-                        font-size: 18px;
-                        background-color: hsl(0, 0%, 98%);
-                        border: none;
-                        opacity: 0.7;
-                  }
-                  .delete-form button:hover{
-                       opacity: 1;
-                  }
-                  .rating .bi {
-                        font-size: 1em;
-                        color: gray;
-                        cursor: pointer;
-                  }
-
-                  .rating .bi.bi-star-fill {
-                        color: gold;
-                  }
-                  .rating1 .bi {
-                        font-size: 1em;
-                        color: gray;
-                        cursor: pointer;
-                  }
-
-                  .rating1 .bi.bi-star-fill {
-                        color: gold;
-                  }
-                  .round{
-                        border-radius: 20px;
-                  }
-                  /* Hide the radio buttons */
-                  input[type="radio"] {
-                        
-                  }
-
-                  /* Style the labels */
-                  .btn-outline-primary {
-                  transition: box-shadow .3s ease;
-                  }
-                  .Orange {
-                  color: black;
-                  }
-                  .btn-outline-danger {
-                  --bs-btn-color: #dc3545;
-                  --bs-btn-border-color: black;
-                  --bs-btn-hover-color: #b8b6b6;
-                  }
-                  .btn-check:checked+.btn{
-                        color: #f70000;
-                        background-color: #fff;
-                        border-color: #ff5800;
-                  }
-                        
-                  @media (max-width: 576px) { 
-                        .img-size{
-                              width: 220px;
-                        }
-                  }
-                  @media (min-width: 576px) { 
-                        .img-size{
-                              width: 220px;
-                        }
-                  }
-
-                  /* // Medium devices (tablets, 768px and up) */
-                  @media (min-width: 768px) {
-                        .img-size{
-                              width: 250px;
-                        }
-                  }
-
-                  /* // Large devices (desktops, 992px and up) */
-                  @media (min-width: 992px) { 
-                        .img-size{
-                              width: 300px;
-                        }
-                  }
-                  .btn-equal-width {
-                  width: 40px;  /* Adjust this value as needed */
-                  }
-                  
-            </style>
             <title><?php echo $bName; ?></title>
             <?php storeToken(); ?>
             <script>
@@ -448,13 +337,42 @@ if ($return_status_code === 400) {
                   </div>
 
                   <div class="container bg-light rounded mt-2 mb-3">
+                  
                         <?php
                               $bookID = sanitize(rawurldecode($_GET['id']));
-
                               $conn = mysqli_connect($db_host, $db_user, $db_password, $db_database, $db_port);
-            
-                              //comment section
                               if(isset($_SESSION['id'])){
+                                    $customerID=$_SESSION['id'];
+                                    $sql = "SELECT * FROM rating WHERE bookID = '$bookID' AND customerID = '$customerID'LIMIT 1";
+                                    $result = $conn->query($sql);
+                                    $row = $result->fetch_assoc();
+                                    if($row == null) {$rating=0;}
+                                    else {$rating=$row['star'];};
+                              }
+                        ?>
+                        
+                        <?php
+                              //rating section
+                              if(isset($_SESSION['id'])){
+                        ?>
+                        <div class="rate">
+                              <div class="star-rating">      
+                                    <input type="radio" id="star1" name="rating" value="5"  data-book-id="<?php echo $bookID?>" data-user-id="<?php echo $customerID?>" <?php if ($rating ==5) echo 'checked'; ?>>
+                                    <label for="star1" class="star" style="border: none;">&#9733;</label>      
+                                    <input type="radio" id="star2" name="rating" value="4"  data-book-id="<?php echo $bookID?>" data-user-id="<?php echo $customerID?>" <?php if ($rating ==4) echo 'checked'; ?>>
+                                    <label for="star2" class="star" style="border: none;">&#9733;</label>      
+                                    <input type="radio" id="star3" name="rating" value="3"  data-book-id="<?php echo $bookID?>" data-user-id="<?php echo $customerID?>" <?php if ($rating ==3) echo 'checked'; ?>>
+                                    <label for="star3" class="star"style="border: none;">&#9733;</label>  
+                                    <input type="radio" id="star4" name="rating" value="2"  data-book-id="<?php echo $bookID?>" data-user-id="<?php echo $customerID?>" <?php if ($rating ==2) echo 'checked'; ?>>
+                                    <label for="star4" class="star" style="border: none;">&#9733;</label>          
+                                    <input type="radio" id="star5" name="rating" value="1"  data-book-id="<?php echo $bookID?>" data-user-id="<?php echo $customerID?>" <?php if ($rating ==1) echo 'checked'; ?>>
+                                    <label for="star5" class="star" style="border: none;">&#9733;</label>
+                                    <span class="rating-word">Rating:</span>
+                              </div>
+                        </div> 
+                                    <?php  //end of rating section
+                              }           // post comment section
+                                    if(isset($_SESSION['id'])){
                                     echo '<form method="POST" class="comment-input" style="margin-block-end: 0em;" action="'.setComment($conn, $bookID).'">
                                                 <input type="hidden" name="customerID" value="'.$_SESSION['id'].'">
                                                 <input type="hidden" name="ratingTime" value="'.date('Y-m-d H:i:s').'">
@@ -466,33 +384,19 @@ if ($return_status_code === 400) {
                                                                                     <div class="d-flex flex-start w-100">
                                                                                           <div class="form-outline w-100">
                                                                                                 <textarea name="content" class="form-control" id="textAreaExample1" rows="4" style="background: #fff;"></textarea>
-                                                                                                <label class="form-label" for="textAreaExample1" style="font-size: 20px">Message</label>
                                                                                           </div>
                                                                                     </div>
                                                                                     <div class="float-end mt-2 pt-1">
-                                                                                          <button type="submit" name="commentSubmit" class="btn btn-primary btn-sm" style="font-size: 18px; padding: 10px 20px;">Post comment</button>
+                                                                                          <button type="submit" name="commentSubmit" class="btn btn-primary btn-sm" style="font-size: 18px; padding: 10px 20px;">Post</button>
                                                                                     </div>
                                                                               </div>
                                                                         </div>      
                                                             </div>
                                                 </section>
-                                          </form>';
-                                          echo '<div id="rating-container" style="margin-left:20px; background-color: white;">';
-                                          echo ' <div class="rating" style="font-size:25px;">
-                                                <span class="h6" style="font-size:25px;">Rate the book: </span>
-                                                <i class="bi bi-star" data-value="1" data-book-id="'.$bookID.'" data-user-id="'. $_SESSION['id'].'"></i>
-                                                <i class="bi bi-star" data-value="2" data-book-id="'.$bookID.'" data-user-id="'. $_SESSION['id'].'"></i>
-                                                <i class="bi bi-star" data-value="3" data-book-id="'.$bookID.'" data-user-id="'. $_SESSION['id'].'"></i>
-                                                <i class="bi bi-star" data-value="4" data-book-id="'.$bookID.'" data-user-id="'. $_SESSION['id'].'"></i>
-                                                <i class="bi bi-star" data-value="5" data-book-id="'.$bookID.'" data-user-id="'. $_SESSION['id'].'"></i>
-                                          </div>';
-                                          echo '<div class="rating1" style="font-size:25px;" >
-                                                <span class="h5" style="font-size:25px;">My rating: </span>
-                                                <span id="rating-holder">'.GetRating($conn, $bookID, $_SESSION['id']).' </span>
-                                                <div id="rating-response"></div>';
-                                          echo '</div>'; 
-                                          echo '</div>';
-                                    }
+                                          </form>';                                       
+                                    }//end of post comment section
+                                    
+                                    //get comment section
                                     $sql = "SELECT * FROM rating WHERE bookID = '$bookID' LIMIT 5 ";
                                     $result = $conn->query($sql);
                                     $sql2 = "SELECT COUNT(*) as total_comments FROM rating WHERE bookID = '$bookID'";
@@ -500,7 +404,7 @@ if ($return_status_code === 400) {
                                     $row2 = mysqli_fetch_assoc($result_new);
                                     $totalComments = $row2['total_comments'];
                                     echo '<div class="card-body text-center" style="background-color: white;">
-                                    <h4 class="card-title" style="font-size: 40px;">Comments <span style="font-size: 20px;">(' . $totalComments . ' comments)</span></h4>';
+                                    <h4 class="card-title" style="font-size: 40px;">Comments <span style="font-size: 20px;">(' . $totalComments . ')</span></h4>';
                                     echo '</div>';
                                     while ($row = $result->fetch_assoc()) {
                                         echo '<div class="comment-box"><p>';
@@ -512,7 +416,7 @@ if ($return_status_code === 400) {
                                             echo '<span style=" opacity: 0.6; font-style: italic; font-size: 12px;">' . date('Y-m-d H:i', strtotime($row['ratingTime'])) . '</span><br><br>';
                                             echo nl2br($row['comment']."<br><br>");
                                         echo '</p>';
-					if(isset($_SESSION['id'])){
+					      if(isset($_SESSION['id'])){
                                         if($_SESSION['id'] == $row['customerID']){
                                             echo '<form class="delete-form" method="POST" action="'.deleteComments($conn).'">
                                             <input type="hidden" name="customerID" value="'.$row['customerID'].'">
@@ -530,9 +434,9 @@ if ($return_status_code === 400) {
                                     echo'</div>';
       
                                     echo '<br><div style="text-align: center;">
-                                          <button type="button" class="btn btn-primary" id="toggleButton" onclick="toggleButtonText()" style="width: 200px; height: 50px; font-size: 18px; padding: 10px;">Show all comments</button>';
-                                    echo '</div>';
-      
+                                          <button type="button"  id="toggleButton" onclick="toggleButtonText()" style="font-weight: bold; width: 150px; height: 50px; font-size: 25px; padding: 10px; border: none; background-color: white;">Show all</button>';
+                                    echo '</div></br>';
+                                    //end of getcomment section
                         ?>
                   </div>
 
@@ -561,6 +465,7 @@ if ($return_status_code === 400) {
             <script src="/javascript/customer/book/book-detail.js"></script>
             <script src="/tool/js/input_validity.js"></script>
             <script src="/tool/js/encoder.js"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
       </body>
 
       </html>

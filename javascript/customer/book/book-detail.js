@@ -39,14 +39,29 @@ $(document).ready(function ()
     $(".btn-primary").click(function(){
         $(".collapse").collapse('toggle');
     });
+    $('.rate input').on('click', function(){
+        const bookId = this.getAttribute('data-book-id');
+        const userId = this.getAttribute('data-user-id');
+          var ratingNum = $(this).val();
+          
+          $.ajax({
+              type: 'POST',
+              url: '/ajax_service/customer/book/rating.php',
+              data: { rating: ratingNum, book_id: bookId, user_id: userId },
+              success : function() {
+                  console.log(ratingNum, bookId, userId);
+                  
+              }
+          });
+      });
 });
 
 function toggleButtonText() {
     var button = document.getElementById('toggleButton');
-    if (button.textContent === "Show all comments") {
-          button.textContent = "Show less comments";
+    if (button.textContent === "Show all") {
+          button.textContent = "Show less";
     } else {
-          button.textContent = "Show all comments";
+          button.textContent = "Show all";
     }
     }
 
@@ -414,12 +429,12 @@ document.querySelectorAll('.rating .bi').forEach((star, index, starList) => {
 
 
 // Reset stars to empty when mouse leaves the rating div
-document.querySelector('.rating').addEventListener('mouseleave', function() {
-    document.querySelectorAll('.rating .bi').forEach(star => {
-        star.classList.remove('bi-star-fill');
-        star.classList.add('bi-star');
-    });
-});
+// document.querySelector('.rating').addEventListener('mouseleave', function() {
+//     document.querySelectorAll('.rating .bi').forEach(star => {
+//         star.classList.remove('bi-star-fill');
+//         star.classList.add('bi-star');
+//     });
+// });
 
 function checkAmmount() {
         const amount = parseInt($('#quantity').val());
