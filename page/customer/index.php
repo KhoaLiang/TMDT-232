@@ -30,15 +30,7 @@ if ($return_status_code === 400) {
             require_once __DIR__ . '/../../head_element/google_analytic.php';
             ?>
       </head>
-      <!-- Google tag (gtag.js) -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-M5V2XFMWW4"></script>
-      <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
 
-      gtag('config', 'G-M5V2XFMWW4');
-      </script>
       <body>
             <?php
             require_once __DIR__ . '/../../layout/customer/header.php';
