@@ -12,9 +12,6 @@ if ($return_status_code === 400) {
       require_once __DIR__ . '/../../../error/403.php';
 } else if ($return_status_code === 200) {
       require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
-
-      unset($_SESSION['update_book_id']);
-      unset($_SESSION['update_customer_id']);
 ?>
 
       <!DOCTYPE html>
@@ -42,6 +39,7 @@ if ($return_status_code === 400) {
                   <div class='w-100 h-100 d-flex'>
                         <form onsubmit="confirmSubmitForm(event)" class='position-relative border border-1 rounded border-dark custom_container m-auto bg-white d-flex flex-column my-4'>
                               <h1 class='ms-xl-3 mt-2 mx-auto'>Add Book</h1>
+                              <hr class='mx-3'>
                               <div class="ms-auto me-3 mt-xl-3 mb-3 mb-xl-2 mt-5 order-xl-1 order-2 button_group align-self-xl-end">
                                     <button class="btn btn-secondary ms-1" onclick="resetForm()" type='button'>Reset</button>
                                     <button class="btn btn-success me-1" type='submit' onclick="clearAllCustomValidity()">Save</button>
@@ -85,7 +83,7 @@ if ($return_status_code === 400) {
                                                       <small class="form-text text-muted">You can enter multiple authors with each seperated by comma</small>
                                                 </div>
                                                 <div class="my-2 px-xl-5 px-3">
-                                                      <label for="categoryInput" class="form-label">Category:</label>
+                                                      <label for="categoryInput" class="form-label">Category:<span class='fw-bold text-danger'>&nbsp;*</span></label>
                                                       <textarea rows="4" readonly onclick="openCategoryModal()" class="form-control pointer" id="categoryInput"></textarea>
                                                 </div>
                                                 <div class="my-2 px-xl-5 px-3">
@@ -102,7 +100,7 @@ if ($return_status_code === 400) {
                                                 </div>
                                                 <div class="my-2 px-xl-5 px-3 d-flex flex-md-row flex-column row">
                                                       <div class='col'>
-                                                            <label for="physicalPriceInput" class="form-label">Physical Copy Price ($):</label>
+                                                            <label for="physicalPriceInput" class="form-label">Hardcover Price ($):</label>
                                                             <input step="any" type="number" class="form-control" id="physicalPriceInput" placeholder="Enter price">
                                                       </div>
                                                       <div class="ms-md-5 mt-2 mt-md-0 col">

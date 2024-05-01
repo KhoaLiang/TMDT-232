@@ -153,7 +153,7 @@ function getCategory(search)
 
             error: function (err)
             {
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -222,11 +222,11 @@ function submitForm()
       const edition = encodeData($('#editionInput').val()) === '' ? '' : parseInt(encodeData($('#editionInput').val()));
       const isbn = encodeData($('#isbnInput').val().replace(/-/g, ''));
       const author = $('#authorInput').val() !== '' ? (($('#authorInput').val().split(',')).filter(str => str.trim() !== '')).map(str => encodeData(str)) : '';
-      const category = encodeData($('#categoryInput').val());//$('#categoryInput').val() !== '' ? (($('#categoryInput').val().split(';')).filter(str => str.trim() !== '')).map(str => encodeData(str)) : '';
+      const category = $('#categoryInput').val() !== '' ? (($('#categoryInput').val().split('\n')).filter(str => str.trim() !== '')).map(str => encodeData(str)) : '';// encodeData($('#categoryInput').val());
       const publisher = encodeData($('#publisherInput').val());
       const publishDate = encodeData($('#publishDateInput').val());
       const physicalPrice = encodeData($('#physicalPriceInput').val()) === '' ? '' : parseFloat(encodeData($('#physicalPriceInput').val()));
-      const inStock = encodeData($('#inStockInput').val()) === '' ? '' : parseInt(encodeData($('#inStockInput').val()));
+      let inStock = encodeData($('#inStockInput').val()) === '' ? '' : parseInt(encodeData($('#inStockInput').val()));
       const filePrice = encodeData($('#filePriceInput').val()) === '' ? '' : parseFloat(encodeData($('#filePriceInput').val()));
       const description = encodeData($('#descriptionInput').val());
 
@@ -293,6 +293,13 @@ function submitForm()
             return;
       }
 
+      if (category.length === 0)
+      {
+            $('#errorModal').modal('show');
+            $('#error_message').text('Book must belong to at least one category!');
+            return;
+      }
+
       if (publisher === '')
       {
             reportCustomValidity($('#publisherInput').get(0), 'Publisher is empty!');
@@ -330,19 +337,23 @@ function submitForm()
 
       if (!((typeof physicalPrice === 'number' && !isNaN(physicalPrice) && physicalPrice > 0) || (typeof physicalPrice === 'string' && physicalPrice === '')))
       {
-            reportCustomValidity($('#physicalPriceInput').get(0), 'Physical copy price invalid!');
+            reportCustomValidity($('#physicalPriceInput').get(0), 'Hardcover price invalid!');
             return;
       }
 
       if (!((typeof inStock === 'number' && !isNaN(inStock) && inStock >= 0) || (typeof inStock === 'string' && inStock === '')))
       {
-            reportCustomValidity($('#inStockInput').get(0), 'Physical copy in stock invalid!');
+            reportCustomValidity($('#inStockInput').get(0), 'Hardcover in stock invalid!');
             return;
+      } else if (inStock === '')
+      {
+            inStock = 0;
+            $('#inStockInput').val(0);
       }
 
       if (!((typeof filePrice === 'number' && !isNaN(filePrice) && filePrice > 0) || (typeof filePrice === 'string' && filePrice === '')))
       {
-            reportCustomValidity($('#filePriceInput').get(0), 'File copy price invalid!');
+            reportCustomValidity($('#filePriceInput').get(0), 'E-book price invalid!');
             return;
       }
 
@@ -385,6 +396,7 @@ function submitForm()
       }
 
       const postData = new FormData();
+      postData.append('id', encodeData(bookID));
       postData.append('name', name);
       postData.append('edition', edition);
       postData.append('isbn', isbn);
@@ -400,10 +412,6 @@ function submitForm()
       postData.append('pdf', newFile);
       postData.append('removeFile', removeFile);
 
-      $('*').addClass('wait');
-      $('button, input').prop('disabled', true);
-      $('a').addClass('disable_link');
-
       $.ajax({
             url: '/ajax_service/admin/book/update_book.php',
             method: 'POST',
@@ -416,10 +424,6 @@ function submitForm()
             dataType: 'json',
             success: function (data)
             {
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-
                   if (data.error)
                   {
                         $('#errorModal').modal('show');
@@ -497,11 +501,7 @@ function submitForm()
 
             error: function (err)
             {
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
 
-                  console.error(err);
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');

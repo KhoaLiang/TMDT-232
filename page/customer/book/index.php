@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../../tool/php/role_check.php';
-require_once __DIR__ . '/../../../tool/php/ratingStars.php';
 
 $return_status_code = return_navigate_error();
 
@@ -11,54 +10,6 @@ if ($return_status_code === 400) {
       http_response_code(403);
       require_once __DIR__ . '/../../../error/403.php';
 } else if ($return_status_code === 200) {
-      require_once __DIR__ . '/../../../config/db_connection.php';
-      require_once __DIR__ . '/../../../tool/php/converter.php';
-      require_once __DIR__ . '/../../../tool/php/formatter.php';
-
-      try {
-            // Connect to MySQL
-            $conn = mysqli_connect($db_host, $db_user, $db_password, $db_database, $db_port);
-
-            // Check connection
-            if (!$conn) {
-                  http_response_code(500);
-                  require_once __DIR__ . '/../../../error/500.php';
-                  exit;
-            }
-            $elem = '';
-
-            $stmt = $conn->prepare('WITH RankedBooks AS (
-  SELECT book.id, book.name,
-         author.authorName,
-         fileCopy.price AS filePrice,
-         physicalCopy.price AS physicalPrice,
-         book.imagePath AS pic,
-         book.avgRating AS star,
-         eventapply.eventID,
-         COALESCE(eventdiscount.discount, 0) AS discount,
-         ROW_NUMBER() OVER (PARTITION BY book.id ORDER BY discount DESC) AS discount_rank
-  FROM book
-  INNER JOIN author ON book.id = author.bookID
-  INNER JOIN fileCopy ON book.id = fileCopy.id
-  INNER JOIN physicalCopy ON book.id = physicalCopy.id
-  LEFT JOIN eventapply ON book.id = eventapply.bookID
-  LEFT JOIN eventdiscount ON eventapply.eventID = eventdiscount.ID
-)
-SELECT *
-FROM RankedBooks
-WHERE discount_rank = 1');
-            // $stmt = $conn->prepare('select book.id, book.name, author.authorName, fileCopy.price as filePrice, physicalCopy.price as physicalPrice, book.imagePath as pic, book.avgRating as star from book inner join author on book.id = author.bookID
-            // join fileCopy on book.id = fileCopy.id
-            // join physicalCopy on book.id = physicalCopy.id');
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $cate = $conn->prepare('SELECT category.ID, category.name FROM category');
-            $auth = $conn->prepare('SELECT author.authorName FROM author');
-      } catch (Exception $e) {
-            http_response_code(500);
-            require_once __DIR__ . '/../../../error/500.php';
-            exit;
-      }
 ?>
 
       <!DOCTYPE html>
@@ -70,48 +21,10 @@ WHERE discount_rank = 1');
             require_once __DIR__ . '/../../../head_element/meta.php';
             ?>
             <link rel="stylesheet" href="/css/preset_style.css">
-            <title>Book list</title>
-            <style>
-                  .card:hover {
-                        transform: scale(1.1);
-                  } 
-                  .card {
-                        margin: 1rem;
-                  }
-                  .author {
-                        color: gray;
-                  }
-                  .pic {
-                        height: 28rem;
-                        width: 100%;
-                  }
-                  a{
-                        text-decoration: none;
-                        color: black;
-                  }
-                  @media (min-width: 767.98px) { .card-body {
-                  max-height: 205px; /* Adjust this value as needed */
-                  overflow: auto; /* Add a scrollbar if the content is too long */
-                  } 
-                  .card-body::-webkit-scrollbar {
-                  display: none;
-                  }
-            }
-            .heading-decord{
-                  font-weight: bold;
-                  padding: 20px;
-            }
-            #Discount_Button.on {
-                  box-shadow: 0 0 10px #fff; /* White glow */
-                  background-color: red; /* Faint white background */
-                  color: #fff; /* White text */
-            }
-            #Best-Seller_Button.on {
-                  box-shadow: 0 0 10px #fff; /* White glow */
-                  background-color: #ffc107; /* Faint white background */
-                  color: #fff; /* White text */
-            }
-            </style>
+            <link rel="stylesheet" href="/css/customer/book/book-list.css">
+            <meta name="page creator" content="Anh Khoa, Nghia Duong">
+            <meta name="description" content="Browse book list of NQK bookstore">
+            <title>Browse Books</title>
       </head>
 
       <body>
@@ -119,158 +32,181 @@ WHERE discount_rank = 1');
             require_once __DIR__ . '/../../../layout/customer/header.php';
             ?>
             <section id="page">
-            <h1 class="heading-decord" style="text-align: center;">Our collection</h1>
+                  <div class="container-xxl my-3 px-1 px-xl-3">
+                        <div class='d-flex'>
+                              <div class='d-none d-xl-block panel border border-2 me-4 bg-white p-3 rounded'>
+                                    <div>
+                                          <h4>Category</h4>
+                                          <input onchange='fetchCategoryList()' id='categorySearch' class="form-control" type="search" placeholder="Search" aria-label="Search by categories">
+                                          <div class='ps-2 mt-3' id='categoryList'>
+                                          </div>
+                                    </div>
+                                    <div class='mt-4'>
+                                          <h4>Author</h4>
+                                          <input onchange='fetchAuthorList()' id='authorSearch' class="form-control" type="search" placeholder="Search" aria-label="Search by authors">
+                                          <div class='ps-2 mt-3' id='authorList'>
+                                          </div>
+                                    </div>
+                                    <div class='mt-4'>
+                                          <h4>Publisher</h4>
+                                          <input onchange='fetchPublisherList()' id='publisherSearch' class="form-control" type="search" placeholder="Search" aria-label="Search by publishers">
+                                          <div class='ps-2 mt-3' id='publisherList'>
+                                          </div>
+                                    </div>
+                              </div>
+                              <div class='flex-grow-1 border border-2 bg-white d-flex flex-column px-1 px-sm-2 rounded' id='listContainer'>
+                                    <form class="d-flex align-items-center w-100 search_form mt-3" role="search" id="search_form">
+                                          <button title='submit search form' class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
+                                                <svg fill="#000000" width="20px" height="20px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="1.568">
+                                                      <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                      <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                      <g id="SVGRepo_iconCarrier">
+                                                            <path d="M31.707 30.282l-9.717-9.776c1.811-2.169 2.902-4.96 2.902-8.007 0-6.904-5.596-12.5-12.5-12.5s-12.5 5.596-12.5 12.5 5.596 12.5 12.5 12.5c3.136 0 6.002-1.158 8.197-3.067l9.703 9.764c0.39 0.39 1.024 0.39 1.415 0s0.39-1.023 0-1.415zM12.393 23.016c-5.808 0-10.517-4.709-10.517-10.517s4.708-10.517 10.517-10.517c5.808 0 10.516 4.708 10.516 10.517s-4.709 10.517-10.517 10.517z"></path>
+                                                      </g>
+                                                </svg>
+                                          </button>
 
-            <!--
-            <ul id="book-List"
-            <li>Example book</li>
-            </ul>
-            -->
-      <div class="container">
-                  <div class="row justify-content-center">
-                        <div class="col-12 col-md-4 m-2">
-                              <!-- category form -->
-                               <select class="form-select " aria-label="Default select example" id="category">
-                              <option selected value="All_Category">All Category</option>
-                              <?php 
-                                    if ($cate) {
-                                          $success = $cate->execute();
-                                          if ($success) {
-                                                $result1 = $cate->get_result();
-                                                while ($row = $result1->fetch_assoc()) {
-                                                      // Process each row of data here...
-                                                      echo '<option value="' . $row['ID'].'" >'. $row['name'] . '</option>';
-                                                }
-                                                      } else {
-                                                echo "Error executing statement: " . $conn->error;
-                                                      }     
-                                                } else {
-                                                echo "Error preparing statement: " . $conn->error;
-                                                }
-                              ?>
-                              </select>  
-                              <!-- end of catagory collum -->
-                        </div>
-
-                        <div class="col-12 col-md-4 m-2">
-                              <!-- category form -->
-                              <select class="form-select " aria-label="Default select example" id="DisplayBook">
-                                    <option selected value="Default">Default Listing</option>
-                                    <option value="Discount">Discount</option>
-                                    <option value="Best-Seller">Best Seller</option>
-                                    <option value="HighToLowPhysical">Physical Price Descending</option>
-                                    <option value="LowToHighPhysical">Physical Price Ascending</option>
-                              </select>  
-                              <!-- end of select discount and best seller form -->
-                        </div>
-                        <!-- <button type="button" class="btn btn-outline-danger col-10 col-md-2 col-lg-1 m-2" id= "Discount_Button">Discount</button>
-                        <button type="button" class="btn btn-outline-warning col-10 col-md-2 col-lg-1 m-2" id= "Best-Seller_Button">Best seller</button> -->
-                        <!-- search bar -->
-                  <div class="row justify-content-center">
-                        <div class="col-12 col-md-5 m-2">
-                              <form class="d-flex align-items-center w-100 search_form mx-auto mx-lg-0 mt-2 mt-lg-0 order-2 order-lg-1" role="search" id="search_book">
-                                    <input id="search-input" class="form-control me-2" type="search" placeholder="Search by name, author or ISBN number or Publisher" aria-label="Search">
-                                    <!-- <input type="submit" value="Search" class="btn btn-primary"> -->
-                                    <button type="submit" class="btn btn-primary">
-                                          <i class="fas fa-search"></i>
-                                    </button>
-                              </form>
+                                          <input id="search_book" class="form-control" type="search" placeholder="Search book by name" aria-label="Search for books">
+                                    </form>
+                                    <div class='d-flex mt-3'>
+                                          <div class='d-sm-flex'>
+                                                <div>
+                                                      <select onchange="fetchBook()" id='listOption' class="form-select pointer" aria-label="Select listing option">
+                                                            <option value="1" selected>Default Listing</option>
+                                                            <option value="2">On Sale</option>
+                                                            <option value="3">This Week Best Sellers</option>
+                                                            <option value="4">Price: Low to High</option>
+                                                            <option value="5">Price: High to Low</option>
+                                                      </select>
+                                                </div>
+                                                <div class='ms-sm-3 mt-3 mt-sm-0'>
+                                                      <select id='listLimit' class="form-select pointer" aria-label="Select number of books per page">
+                                                            <option value="12" selected>12 books</option>
+                                                            <option value="24">24 books</option>
+                                                            <option value="48">48 books</option>
+                                                      </select>
+                                                </div>
+                                          </div>
+                                          <div class='d-block d-xl-none ms-3'>
+                                                <button type="button" class="btn border border-1 border-secondary" data-bs-toggle="modal" data-bs-target="#filterModal"><svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                            <g id="SVGRepo_iconCarrier">
+                                                                  <path d="M14 20.5H10C9.80189 20.4974 9.61263 20.4176 9.47253 20.2775C9.33244 20.1374 9.25259 19.9481 9.25 19.75V12L3.9 4.69C3.81544 4.58007 3.76395 4.44832 3.75155 4.31018C3.73915 4.17204 3.76636 4.03323 3.83 3.91C3.89375 3.78712 3.98984 3.68399 4.10792 3.61173C4.226 3.53947 4.36157 3.50084 4.5 3.5H19.5C19.6384 3.50084 19.774 3.53947 19.8921 3.61173C20.0101 3.68399 20.1062 3.78712 20.17 3.91C20.2336 4.03323 20.2608 4.17204 20.2484 4.31018C20.236 4.44832 20.1846 4.58007 20.1 4.69L14.75 12V19.75C14.7474 19.9481 14.6676 20.1374 14.5275 20.2775C14.3874 20.4176 14.1981 20.4974 14 20.5ZM10.75 19H13.25V11.75C13.2492 11.5907 13.302 11.4357 13.4 11.31L18 5H6L10.62 11.31C10.718 11.4357 10.7708 11.5907 10.77 11.75L10.75 19Z" fill="#000000"></path>
+                                                            </g>
+                                                      </svg><span class='customDisplay'>&nbsp;Filter</span></button>
+                                          </div>
+                                          <div class="btn-group d-none d-xl-inline-flex ms-3">
+                                                <button onclick="adJustOffset(false)" name="previous" type="button" class="btn btn-light fw-medium border border-1 border-secondary">&lt;</button>
+                                                <button type="button" class="btn btn-light fw-medium border border-1 border-secondary" disabled name="offset"></button>
+                                                <button onclick="adJustOffset(true)" name="next" type="button" class="btn btn-light fw-medium border border-1 border-secondary">&gt;</button>
+                                          </div>
+                                    </div>
+                                    <hr>
+                                    <div id='bookList' class='d-flex flex-column'></div>
+                                    <div class='mx-auto mb-3 mt-auto'>
+                                          <div class="btn-group mt-3">
+                                                <button onclick="adJustOffset(false)" name="previous" type="button" class="btn btn-light fw-medium border border-1 border-secondary">&lt;</button>
+                                                <button type="button" class="btn btn-light fw-medium border border-1 border-secondary" disabled name="offset"></button>
+                                                <button onclick="adJustOffset(true)" name="next" type="button" class="btn btn-light fw-medium border border-1 border-secondary">&gt;</button>
+                                          </div>
+                                    </div>
+                              </div>
                         </div>
                   </div>
-                  
-                  <div class="row justify-content-center">
-                        <div class="col-12 col-md-2 m-2">
-                              <select class="form-select" id="itemsPerPage">
-                                    <option value="100" selected>All books</option>
-                                    <option value="6">6 books per page</option>
-                                    <option value="12">12 books per page</option>
-                                    <option value="24">24 books per page</option>
-                                    <option value="51">51 books per page</option>
-                              </select>
-                        </div>
-                        <nav class=" col-12 col-md-2 m-2 page-nav" aria-label="Page navigation example">
-                              <ul class="pagination">
-                                    <li class="page-item">
-                                          <a class="page-link" href="#">«</a>
-                                    </li>
-                                    <!-- Add as many page links as you need -->
-                                    <li class="page-item">
-                                          <a class="page-link" href="#">»</a>
-                                    </li>
-                              </ul>
-                        </nav> 
-                        
+                  <div class='container-xxl my-3 px-1 px-xl-3'>
+                        <form class="bg-white rounded d-flex flex-column border border-2 p-2" id='newBookForm'>
+                              <h3 class='mx-auto mt-2'>Request new book</h3>
+                              <small class='mx-auto text-center'>Is there a book you want to add to our store?</small>
+                              <small class='mx-auto text-center'>Enter the name and author below and we will get it soon...</small>
+                              <div class='d-flex flex-column flex-md-row p-3'>
+                                    <div class='flex-grow-1'>
+                                          <label for="book_name" class="form-label">Book Name:<span class='fw-bold text-danger'>&nbsp;*</span></label>
+                                          <input type="text" class="form-control" id="book_name" placeholder="Enter book name">
+                                    </div>
+                                    <div class='ms-md-3 mt-3 mt-md-0 flex-grow-1'>
+                                          <label for="book_author" class="form-label">Author:<span class='fw-bold text-danger'>&nbsp;*</span></label>
+                                          <input type="text" class="form-control" id="book_author" placeholder="Enter author name">
+                                          <small class="form-text text-muted">You can enter multiple authors with each seperated by comma</small>
+                                    </div>
+                              </div>
+                              <div class='mb-3 mx-auto'>
+                                    <button type='submit' class='btn btn-light border border-1 border-secondary'>Submit</button>
+                              </div>
+                        </form>
                   </div>
-                  
-            </div>
-            <br>
-            <!-- <div id="TestBookList">
-                  <p>Test Item perpage here</p>
-            </div> -->
-            <div id="bookList">
-                  <?php
-                        for ($i = 1; $i <= $result->num_rows; $i++) {
-                        if ($i % 3 == 1) {
-                              echo '<div class="row justify-content-center align-items-center g-2 m-3">';
-                        }
-                        echo '<div class="col-11 col-md-6 col-xl-4">';
-                        $row = $result->fetch_assoc();
-                        // $row["pic"] = "src=\"https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row["pic"])) . "\"";
-                        $imagePath = "https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row['pic']));
-                              echo '<div class="card w-75 mx-auto d-block">';
-                              echo "<a href=\"book-detail?id=".normalizeURL(rawurlencode($row["id"]))."\">"; 
-                              echo '<img src="' . $imagePath . '" class="card-img-top" style="height: 28rem;" alt="...">';
-                                    echo "<div class=\"card-body\">";
-                                          echo "<h5 class=\"card-title\">"."Book: ".$row["name"]."</h5>";
-                                          if($row["discount"] > 0){
-                                                echo '<p class="text-danger"> <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ff0000">
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                  <g id="SVGRepo_iconCarrier">
-                        <path d="M3.9889 14.6604L2.46891 13.1404C1.84891 12.5204 1.84891 11.5004 2.46891 10.8804L3.9889 9.36039C4.2489 9.10039 4.4589 8.59038 4.4589 8.23038V6.08036C4.4589 5.20036 5.1789 4.48038 6.0589 4.48038H8.2089C8.5689 4.48038 9.0789 4.27041 9.3389 4.01041L10.8589 2.49039C11.4789 1.87039 12.4989 1.87039 13.1189 2.49039L14.6389 4.01041C14.8989 4.27041 15.4089 4.48038 15.7689 4.48038H17.9189C18.7989 4.48038 19.5189 5.20036 19.5189 6.08036V8.23038C19.5189 8.59038 19.7289 9.10039 19.9889 9.36039L21.5089 10.8804C22.1289 11.5004 22.1289 12.5204 21.5089 13.1404L19.9889 14.6604C19.7289 14.9204 19.5189 15.4304 19.5189 15.7904V17.9403C19.5189 18.8203 18.7989 19.5404 17.9189 19.5404H15.7689C15.4089 19.5404 14.8989 19.7504 14.6389 20.0104L13.1189 21.5304C12.4989 22.1504 11.4789 22.1504 10.8589 21.5304L9.3389 20.0104C9.0789 19.7504 8.5689 19.5404 8.2089 19.5404H6.0589C5.1789 19.5404 4.4589 18.8203 4.4589 17.9403V15.7904C4.4589 15.4204 4.2489 14.9104 3.9889 14.6604Z" stroke="#ff0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M9 15L15 9" stroke="#ff0000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M14.4945 14.5H14.5035" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M9.49451 9.5H9.50349" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </g>
-            </svg> '.$row["discount"].'%</p>';
-                                          }
-                                          echo '<p class="author">'.$row["authorName"].'</p>';
-                                          if($row["discount"] > 0){
-                                                echo '<p class="price ">E-book price: <span style="text-decoration: line-through;">' . $row["filePrice"] . '$</span> ' .round($row["filePrice"] - $row["filePrice"] * $row["discount"] / 100, 2). '$</p>';
-                                                echo '<p class="price ">Physical price: <span style="text-decoration: line-through;">' . $row["physicalPrice"] . '$</span> ' .round($row["physicalPrice"] - $row["physicalPrice"] * $row["discount"] / 100, 2). '$</p>';
-                                                }
-                                                else {
-                                                echo "<p class=\"price \">"."E-book price: ".$row["filePrice"]."$"."</p>";
-                                                echo "<p class=\"price \">"."Physical price: ".$row["physicalPrice"]."$"."</p>";
-                                          }
-                                          echo '<span class="text-warning">'.displayRatingStars($row["star"]).'</span>';
-                                          echo "(".$row["star"].")";
-                                          
-                                    echo "</div>";
-                              echo "</a>";
-                              echo "</div>";
-
-                        echo '</div>';
-                        if ($i % 3 == 0 || $i == $result->num_rows) {
-                              echo '</div>';
-                        }
-                        }
-                        
-                        
-                  ?>
-            </div>
-      
-      </div>
-            
-        
+                  <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="modalLabel">
+                        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                              <div class="modal-content">
+                                    <div class="modal-header">
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                          <div>
+                                                <div>
+                                                      <h4>Category</h4>
+                                                      <input onchange='fetchCategoryList()' id='categorySearchModal' class="form-control" type="search" placeholder="Search" aria-label="Search by categories">
+                                                      <div class='ps-2 mt-3' id='categoryListModal'>
+                                                      </div>
+                                                </div>
+                                                <div class='mt-4'>
+                                                      <h4>Author</h4>
+                                                      <input onchange='fetchAuthorList()' id='authorSearchModal' class="form-control" type="search" placeholder="Search" aria-label="Search by authors">
+                                                      <div class='ps-2 mt-3' id='authorListModal'>
+                                                      </div>
+                                                </div>
+                                                <div class='mt-4'>
+                                                      <h4>Publisher</h4>
+                                                      <input onchange='fetchPublisherList()' id='publisherSearchModal' class="form-control" type="search" placeholder="Search" aria-label="Search by publishers">
+                                                      <div class='ps-2 mt-3' id='publisherListModal'>
+                                                      </div>
+                                                </div>
+                                          </div>
+                                    </div>
+                              </div>
+                        </div>
+                  </div>
+                  <div class=" modal fade" id="errorModal" tabindex="-1" aria-labelledby="modalLabel">
+                        <div class="modal-dialog modal-dialog-centered">
+                              <div class="modal-content">
+                                    <div class="modal-header">
+                                          <h2 class="modal-title fs-5">Error</h2>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body d-flex flex-column">
+                                          <p id="error_message"></p>
+                                    </div>
+                                    <div class="modal-footer">
+                                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Confirm</button>
+                                    </div>
+                              </div>
+                        </div>
+                  </div>
+                  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="modalLabel">
+                        <div class="modal-dialog modal-dialog-centered">
+                              <div class="modal-content">
+                                    <div class="modal-header">
+                                          <h2 class="modal-title fs-5">Success</h2>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body d-flex flex-column">
+                                          <p>Your request was successfully sent, thank you for your contribution!</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Confirm</button>
+                                    </div>
+                              </div>
+                        </div>
+                  </div>
             </section>
             <?php
             require_once __DIR__ . '/../../../layout/footer.php';
             ?>
             <script src="/javascript/customer/menu_after_load.js"></script>
             <script src="/tool/js/ratingStars.js"></script>
-            <script src="/javascript/customer/book/book-list-cus.js"></script>
-            
+            <script src="/javascript/customer/book/book-list.js"></script>
+            <script src="/tool/js/encoder.js"></script>
+            <script src="/tool/js/input_validity.js"></script>
       </body>
 
       </html>

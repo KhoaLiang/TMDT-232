@@ -11,13 +11,11 @@ if ($return_status_code === 400) {
       http_response_code(403);
       require_once __DIR__ . '/../../../error/403.php';
 } else if ($return_status_code === 200) {
-      unset($_SESSION['update_book_id']);
-      unset($_SESSION['update_customer_id']);
-      
       require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
 
       require_once __DIR__ . '/../../../config/db_connection.php';
       require_once __DIR__ . '/../../../tool/php/converter.php';
+      require_once __DIR__ . '/../../../tool/php/check_https.php';
 
       try {
             // Connect to MySQL
@@ -132,8 +130,15 @@ if ($return_status_code === 400) {
                                     <div class="col-lg-5 col-12">
                                           <div class='w-100 d-flex flex-column h-100 justify-content-center'>
                                                 <img class='custom_image w-100 mx-auto' id="userImage" alt="user image" data-initial-src="<?php if ($result['imagePath'])
-                                                                                                                                                echo "https://{$_SERVER['HTTP_HOST']}/data/user/admin/" . normalizeURL(rawurlencode($result['imagePath']));
-                                                                                                                                          else echo '/image/default_male.jpeg'; ?>">
+                                                                                                                                                echo (isSecure() ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/data/user/customer/" . normalizeURL(rawurlencode($result['imagePath']));
+                                                                                                                                          else {
+                                                                                                                                                if ($result['gender'] === 'M')
+                                                                                                                                                      echo '/image/default_male.jpeg';
+                                                                                                                                                else if ($result['gender'] === 'F')
+                                                                                                                                                      echo '/image/default_female.jpg';
+                                                                                                                                                else if ($result['gender'] === 'O')
+                                                                                                                                                      echo '/image/default_other.png';
+                                                                                                                                          } ?>">
                                                 </img>
                                                 <label class='btn btn-sm btn-light border border-dark mt-3 mx-auto'>
                                                       <input accept='image/jpeg,image/png' id="imageInput" type='file' class='d-none' onchange="setNewImage(event)"></input>

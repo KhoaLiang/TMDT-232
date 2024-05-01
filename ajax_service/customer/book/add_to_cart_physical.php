@@ -1,62 +1,106 @@
+
 <?php
 require_once __DIR__ . '/../../../tool/php/session_check.php';
 
-require_once __DIR__ . '/../../../tool/php/sanitizer.php';
+if (!check_session()) {
+  http_response_code(403);
+  echo json_encode(['error' => 'Not authorized!']);
+  exit;
+} else if ($_SESSION['type'] !== 'customer') {
+  http_response_code(400);
+  echo json_encode(['error' => 'Bad request!']);
+  exit;
+}
+
 require_once __DIR__ . '/../../../config/db_connection.php';
 require_once __DIR__ . '/../../../tool/php/converter.php';
-require_once __DIR__ . '/../../../tool/php/formatter.php';
-$bookId = $_POST['book_id'];
-$userId = $_POST['user_id'];
-$quantity = $_POST['quantity'];
+require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
+require_once __DIR__ . '/../../../tool/php/sanitizer.php';
 
-$conn = mysqli_connect($db_host, $db_user, $db_password, $db_database, $db_port);
-// Query the database for books in the selected category
-// This is a simplified example, you should use prepared statements to prevent SQL injection
-//$result = $conn->query("SELECT category.id FROM category WHERE category.id = '$category'");
-$sql1 = "SELECT * FROM customerorder WHERE customerorder.customerID = '$userId' and customerorder.status = 0;";
-$result1 = $conn->query($sql1);
-if($result1 === FALSE || mysqli_num_rows($result1) == 0){
-  $sql = "SELECT CONCAT('ORDER', MAX(CAST(SUBSTRING(id, 6) AS UNSIGNED)) + 1) AS new_id FROM customerorder";
-  $result = $conn->query($sql);
-  $row1 = $result->fetch_assoc();
-  $newId = $row1['new_id'];
-  $sql3 = "INSERT INTO customerorder (id, status, totalCost, totalDiscount, customerID) VALUES ('$newId',0,0,0, '$userId')";
-  $result3 = $conn->query($sql3);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  if (isset($_POST['id'], $_POST['amount'])) {
+    try {
+      if (!isset($_SERVER['HTTP_X_CSRF_TOKEN']) || !checkToken($_SERVER['HTTP_X_CSRF_TOKEN'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'CSRF token validation failed!']);
+        exit;
+      }
 
-  $sql4 = "INSERT INTO fileorder (id) VALUES ('$newId')";
-  $result4 = $conn->query($sql4);
+      $bookID = sanitize(rawurldecode($_POST['id']));
+      $amount = sanitize(rawurldecode($_POST['amount']));
 
-  $sql6 = "INSERT INTO physicalorder (id, destinationAddress) VALUES ('$newId', '211 Ly Thuong Kiet')";
-  $result6 = $conn->query($sql6);
+      if (!is_numeric($amount) || is_nan($amount) || $amount <= 0) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Book amount invalid!']);
+        exit;
+      }
 
-  $sql5 = "INSERT INTO physicalordercontain (bookID, orderID, amount) VALUES ('$bookId', '$orderID', '$quantity')";
-  $result5 = $conn->query($sql5);
-}
-if($result1 !== FALSE && mysqli_num_rows($result1) > 0){
-  $row = $result1->fetch_assoc();
-  $orderID = $row['id'];
-  $sql7 = "SELECT * FROM physicalorder";
-  $result7 = $conn->query($sql7);
-  
-  $books = array();
-  $found = false;
-  while($row7 = $result7->fetch_assoc()){
-    $books[] = $row7;
-    
-    if($row7['id'] == $orderID){
-       $sql2 = "INSERT INTO physicalordercontain (bookID, orderID, amount) VALUES ('$bookId', '$orderID', '$quantity')";
-       $result2 = $conn->query($sql2);
-       $found = true;
-       break;
+      $conn = mysqli_connect($db_host, $db_user, $db_password, $db_database, $db_port);
+
+      // Check connection
+      if (!$conn) {
+        http_response_code(500);
+        echo json_encode(['error' => 'MySQL Connection Failed!']);
+        exit;
+      }
+
+      $stmt = $conn->prepare("SELECT * FROM physicalCopy join book on book.id=physicalCopy.id WHERE book.id=? and book.status=true");
+      if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Query `SELECT * FROM physicalCopy join book on book.id=physicalCopy.id WHERE book.id=? and book.status=true` preparation failed!']);
+        exit;
+      }
+      $stmt->bind_param("s", $bookID);
+      if (!$stmt->execute()) {
+        http_response_code(500);
+        echo json_encode(['error' => $stmt->error]);
+        $stmt->close();
+        $conn->close();
+        exit;
+      }
+      $result = $stmt->get_result();
+      if ($result->num_rows === 0) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Book not found!']);
+        $stmt->close();
+        $conn->close();
+        exit;
+      }
+      $stmt->close();
+
+      $conn->begin_transaction();
+
+      $stmt = $conn->prepare('call addPhysicalToCart(?,?,?)');
+      if (!$stmt) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Query `call addPhysicalToCart(?,?,?)` preparation failed!']);
+        $conn->rollback();
+        $conn->close();
+        exit;
+      }
+      $stmt->bind_param("sss", $_SESSION['id'], $bookID, $amount);
+      if (!$stmt->execute()) {
+        http_response_code(500);
+        echo json_encode(['error' => $stmt->error]);
+        $stmt->close();
+        $conn->rollback();
+        $conn->close();
+        exit;
+      }
+      $stmt->close();
+      $conn->commit();
+      $conn->close();
+      echo json_encode(['query_result' => true]);
+    } catch (Exception $e) {
+      http_response_code(500);
+      echo json_encode(['error' => $e->getMessage()]);
     }
+  } else {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid data received!']);
   }
-
-  if(!$found){
-    $sql8 = "INSERT INTO physicalorder (id, destinationAddress) VALUES ('$orderID', '211 Ly Thuong Kiet')";
-    $result8 = $conn->query($sql8);
-    $sql2 = "INSERT INTO physicalordercontain (bookID, orderID, amount) VALUES ('$bookId', '$orderID', '$quantity')";
-    $result2 = $conn->query($sql2);
-  }
+} else {
+  http_response_code(400);
+  echo json_encode(['error' => 'Invalid request method!']);
 }
-echo json_encode($books);
 ?>

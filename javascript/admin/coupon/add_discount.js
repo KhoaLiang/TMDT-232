@@ -106,7 +106,9 @@ function selectAllBookAddModal(e)
             bookApply = [];
             //selectAll = [];
             $('#couponBookApply').val('');
-      }
+            $('#couponBookApply').removeClass('pointer');
+      } else
+            $('#couponBookApply').addClass('pointer');
 }
 
 function addCoupon()
@@ -216,7 +218,7 @@ function addCoupon()
                   },
                   error: function (err)
                   {
-                        console.error(err);
+                        
 
                         if (err.status >= 500)
                         {
@@ -298,7 +300,7 @@ function addCoupon()
                   },
                   error: function (err)
                   {
-                        console.error(err);
+                        
 
                         if (err.status >= 500)
                         {
@@ -380,7 +382,7 @@ function addCoupon()
                   },
                   error: function (err)
                   {
-                        console.error(err);
+                        
 
                         if (err.status >= 500)
                         {

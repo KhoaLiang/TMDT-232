@@ -16,6 +16,8 @@ require_once __DIR__ . '/../../../config/db_connection.php';
 require_once __DIR__ . '/../../../tool/php/converter.php';
 require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
 require_once __DIR__ . '/../../../tool/php/sanitizer.php';
+require_once __DIR__ . '/../../../tool/php/send_mail.php';
+require_once __DIR__ . '/../../../tool/php/formatter.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       if (isset($_POST['deliveryAddress'])) {
@@ -201,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $get_inStock_stmt->free_result();
 
                         if ($inStock < $amount) {
-                              echo json_encode(['error' => 'Not enough stock for ' . $name . ' - ' . $edition]);
+                              echo json_encode(['error' => 'Not enough stock for ' . $name . ' - ' . $edition . ' edition!']);
                               $stmt->close();
                               $get_amount_stmt->close();
                               $get_inStock_stmt->close();
@@ -271,7 +273,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                   $conn->commit();
 
+                  $stmt = $conn->prepare('select email from appUser where id=?');
+                  if (!$stmt) {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Query `select email from appUser where id=?` preparation failed!']);
+                        $conn->close();
+                        exit;
+                  }
+                  $stmt->bind_param('s', $_SESSION['id']);
+                  if (!$stmt->execute()) {
+                        http_response_code(500);
+                        echo json_encode(['error' => $stmt->error]);
+                        $stmt->close();
+                        $conn->close();
+                        exit;
+                  }
+                  $email = $stmt->get_result()->fetch_assoc()['email'];
+                  $stmt->close();
+
+                  $stmt = $conn->prepare('select orderCode,purchaseTime,totalCost,totalDiscount from customerOrder where id=?');
+                  if (!$stmt) {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Query `select orderCode,purchaseTime,totalCost,totalDiscount from customerOrder where id=?` preparation failed!']);
+                        $conn->close();
+                        exit;
+                  }
+                  $stmt->bind_param('s', $orderID);
+                  if (!$stmt->execute()) {
+                        http_response_code(500);
+                        echo json_encode(['error' => $stmt->error]);
+                        $stmt->close();
+                        $conn->close();
+                        exit;
+                  }
+                  $result = $stmt->get_result()->fetch_assoc();
+                  $orderCode = splitOrderCode($result['orderCode']);
+                  $purchaseTime = $result['purchaseTime'];
+                  $totalCost = $result['totalCost'];
+                  $totalDiscount = $result['totalDiscount'];
+                  $stmt->close();
+
+                  $stmt = $conn->prepare('select name,edition from book join fileOrderContain on fileOrderContain.bookID=book.id where orderID=?');
+                  if (!$stmt) {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Query `select name,edition from book join fileOrderContain on fileOrderContain.bookID=book.id where orderID=?` preparation failed!']);
+                        $conn->close();
+                        exit;
+                  }
+                  $stmt->bind_param('s', $orderID);
+                  if (!$stmt->execute()) {
+                        http_response_code(500);
+                        echo json_encode(['error' => $stmt->error]);
+                        $stmt->close();
+                        $conn->close();
+                        exit;
+                  }
+                  $result = $stmt->get_result();
+                  $fileOrder = [];
+                  while ($row = $result->fetch_assoc()) {
+                        $fileOrder[] = $row['name'] . ' - ' . convertToOrdinal($row['edition']) . ' edition';
+                  }
+                  $stmt->close();
+
+                  $stmt = $conn->prepare('select name,edition from book join physicalOrderContain on physicalOrderContain.bookID=book.id where orderID=?');
+                  if (!$stmt) {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Query `select name,edition from book join physicalOrderContain on physicalOrderContain.bookID=book.id where orderID=?` preparation failed!']);
+                        $conn->close();
+                        exit;
+                  }
+                  $stmt->bind_param('s', $orderID);
+                  if (!$stmt->execute()) {
+                        http_response_code(500);
+                        echo json_encode(['error' => $stmt->error]);
+                        $stmt->close();
+                        $conn->close();
+                        exit;
+                  }
+                  $result = $stmt->get_result();
+                  $physicalOrder = [];
+                  while ($row = $result->fetch_assoc()) {
+                        $physicalOrder[] = $row['name'] . ' - ' . convertToOrdinal($row['edition']) . ' edition';
+                  }
+                  $stmt->close();
+
+                  billing_mail($email, $orderCode, $purchaseTime, $totalDiscount, $totalCost, $fileOrder, $physicalOrder, $deliveryAddress);
+
                   $conn->close();
+
                   echo json_encode(['query_result' => true]);
             } catch (Exception $e) {
                   http_response_code(500);

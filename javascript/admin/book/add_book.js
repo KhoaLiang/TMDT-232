@@ -140,7 +140,7 @@ function getCategory(search)
 
             error: function (err)
             {
-                  console.error(err);
+                  
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -193,7 +193,7 @@ function submitForm()
       const edition = encodeData($('#editionInput').val()) === '' ? '' : parseInt(encodeData($('#editionInput').val()));
       const isbn = encodeData($('#isbnInput').val().replace(/-/g, ''));
       const author = $('#authorInput').val() !== '' ? (($('#authorInput').val().split(',')).filter(str => str.trim() !== '')).map(str => encodeData(str)) : '';
-      const category = encodeData($('#categoryInput').val()); //$('#categoryInput').val() !== '' ? (($('#categoryInput').val().split(',')).filter(str => str.trim() !== '')).map(str => encodeData(str)) : '';
+      const category = $('#categoryInput').val() !== '' ? (($('#categoryInput').val().split('\n')).filter(str => str.trim() !== '')).map(str => encodeData(str)) : '';// encodeData($('#categoryInput').val());
       const publisher = encodeData($('#publisherInput').val());
       const publishDate = encodeData($('#publishDateInput').val());
       const physicalPrice = encodeData($('#physicalPriceInput').val()) === '' ? '' : parseFloat(encodeData($('#physicalPriceInput').val()));
@@ -289,6 +289,13 @@ function submitForm()
             return;
       }
 
+      if (category.length === 0)
+      {
+            $('#errorModal').modal('show');
+            $('#error_message').text('Book must belong to at least one category!');
+            return;
+      }
+
 
       if (publisher === '')
       {
@@ -327,19 +334,19 @@ function submitForm()
 
       if (!((typeof physicalPrice === 'number' && !isNaN(physicalPrice) && physicalPrice > 0) || (typeof physicalPrice === 'string' && physicalPrice === '')))
       {
-            reportCustomValidity($('#physicalPriceInput').get(0), 'Physical copy price invalid!');
+            reportCustomValidity($('#physicalPriceInput').get(0), 'Hardcover price invalid!');
             return;
       }
 
       if (!((typeof inStock === 'number' && !isNaN(inStock) && inStock >= 0) || (typeof inStock === 'string' && inStock === '')))
       {
-            reportCustomValidity($('#inStockInput').get(0), 'Physical copy in stock invalid!');
+            reportCustomValidity($('#inStockInput').get(0), 'Hardcover in stock invalid!');
             return;
       }
 
       if (!((typeof filePrice === 'number' && !isNaN(filePrice) && filePrice > 0) || (typeof filePrice === 'string' && filePrice === '')))
       {
-            reportCustomValidity($('#filePriceInput').get(0), 'File copy price invalid!');
+            reportCustomValidity($('#filePriceInput').get(0), 'E-book price invalid!');
             return;
       }
 
@@ -369,10 +376,6 @@ function submitForm()
       postData.append('image', newImg);
       postData.append('pdf', newFile);
 
-      $('*').addClass('wait');
-      $('button, input').prop('disabled', true);
-      $('a').addClass('disable_link');
-
       $.ajax({
             url: '/ajax_service/admin/book/add_book.php',
             method: 'POST',
@@ -385,10 +388,6 @@ function submitForm()
             dataType: 'json',
             success: function (data)
             {
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-
                   if (data.error)
                   {
                         $('#errorModal').modal('show');
@@ -404,11 +403,7 @@ function submitForm()
 
             error: function (err)
             {
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-
-                  console.error(err);
+                  
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');

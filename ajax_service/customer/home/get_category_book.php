@@ -4,6 +4,8 @@ require_once __DIR__ . '/../../../config/db_connection.php';
 require_once __DIR__ . '/../../../tool/php/formatter.php';
 require_once __DIR__ . '/../../../tool/php/converter.php';
 require_once __DIR__ . '/../../../tool/php/sanitizer.php';
+require_once __DIR__ . '/../../../tool/php/check_https.php';
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       if (isset($_GET['name'])) {
@@ -20,10 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         exit;
                   }
 
-                  $stmt = $conn->prepare('select book.id,book.name,edition,imagePath from book join belong on belong.bookID=book.id join category on category.id=belong.categoryID where category.name=? and book.status=true order by book.name,book.edition,book.id');
+                  $stmt = $conn->prepare('select book.id,book.name,book.edition,book.imagePath,coalesce(totalSold,0) as totalSold from book join belong on belong.bookID=book.id join category on category.id=belong.categoryID left join (select bookID, sum(totalSold) as totalSold from (
+select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and week(purchaseTime,1)=week(curdate(),1) group by bookID
+union
+select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and week(purchaseTime,1)=week(curdate(),1) group by bookID
+) as combined group by bookID order by totalSold desc,bookID) as superCombined on book.id=superCombined.bookID where book.status=true and category.name like ? order by totalSold desc,book.name,edition limit 10;');
                   if (!$stmt) {
                         http_response_code(500);
-                        echo json_encode(['error' => 'Query `select book.id,book.name,edition,imagePath from book join belong on belong.bookID=book.id join category on category.id=belong.categoryID where category.name=? and book.status=true order by book.name,book.edition,book.id` preparation failed!']);
+                        echo json_encode(['error' => 'Query `select book.id,book.name,book.edition,book.imagePath,coalesce(totalSold,0) as totalSold from book join belong on belong.bookID=book.id join category on category.id=belong.categoryID left join (select bookID, sum(totalSold) as totalSold from (
+select bookID,sum(amount) as totalSold from physicalOrderContain join customerOrder on customerOrder.id=physicalOrderContain.orderID where customerOrder.status=true and week(purchaseTime,1)=week(curdate(),1) group by bookID
+union
+select bookID,count(*) as totalSold from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID where customerOrder.status=true and week(purchaseTime,1)=week(curdate(),1) group by bookID
+) as combined group by bookID order by totalSold desc,bookID) as superCombined on book.id=superCombined.bookID where book.status=true and category.name like ? order by totalSold desc,book.name,edition limit 10;` preparation failed!']);
                         $conn->close();
                         exit;
                   }
@@ -40,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                   $idx = 0;
                   while ($row = $result->fetch_assoc()) {
                         $host = $_SERVER['HTTP_HOST'];
-                        $row['imagePath'] = "https://$host/data/book/" . normalizeURL(rawurlencode($row['imagePath']));
+                        $row['imagePath'] = (isSecure() ? 'https' : 'http') . "://$host/data/book/" . normalizeURL(rawurlencode($row['imagePath']));
                         $row['edition'] = convertToOrdinal($row['edition']);
                         $queryResult[] = $row;
 

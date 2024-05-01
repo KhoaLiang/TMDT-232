@@ -64,7 +64,7 @@ function enterEmail(e, user_type)
                   $('button, a, input').prop('disabled', false);
                   $('a').removeClass('disable_link');
 
-                  console.error(err);
+                  
                   if (err.status >= 500)
                   {
                         $('#error_message_content_1').text('Server encountered error!');
@@ -125,7 +125,7 @@ function requestRecoveryCode()
                   $('button, input').prop('disabled', false);
                   $('a').removeClass('disable_link');
 
-                  console.error(err);
+                  
                   if (err.status >= 500)
                   {
                         $('#error_message_content_2').text('Server encountered error!');
@@ -170,10 +170,6 @@ function enterCode(e)
             }
       }
 
-      $('*').addClass('wait');
-      $('button, input').prop('disabled', true);
-      $('a').addClass('disable_link');
-
       $.ajax({
             url: '/ajax_service/authentication/check_recovery_code.php',
             method: 'POST',
@@ -181,10 +177,6 @@ function enterCode(e)
             dataType: 'json',
             success: function (data)
             {
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-
                   if (data.error)
                   {
                         $('#error_message_content_2').text(data.error);
@@ -204,11 +196,7 @@ function enterCode(e)
             },
             error: function (err)
             {
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-
-                  console.error(err);
+                  
                   if (err.status >= 500)
                   {
                         $('#error_message_content_2').text('Server encountered error!');
@@ -306,7 +294,7 @@ function changePassword(e, user_type)
                   $('button, input').prop('disabled', false);
                   $('a').removeClass('disable_link');
 
-                  console.error(err);
+                  
                   if (err.status >= 500)
                   {
                         $('#error_message_content_3').text('Server encountered error!');

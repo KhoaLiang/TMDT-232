@@ -13,17 +13,18 @@ require_once __DIR__ . '/../../../tool/php/sanitizer.php';
 require_once __DIR__ . '/../../../tool/php/formatter.php';
 require_once __DIR__ . '/../../../tool/php/converter.php';
 require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
+require_once __DIR__ . '/../../../tool/php/check_https.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-      if (isset($_GET['code'])) {
+      if (isset($_GET['code']) && isset($_GET['id'])) {
             try {
                   if (!isset($_SERVER['HTTP_X_CSRF_TOKEN']) || !checkToken($_SERVER['HTTP_X_CSRF_TOKEN'])) {
                         http_response_code(403);
                         echo json_encode(['error' => 'CSRF token validation failed!']);
                         exit;
                   }
-                  
-                  $id = $_SESSION['update_customer_id'];
+
+                  $id = sanitize(rawurldecode($_GET['id']));
                   $code = sanitize(rawurldecode(str_replace('-', '', $_GET['code'])));
 
                   // Connect to MySQL
@@ -92,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         $row['isbn'] = formatISBN($row['isbn']);
                         $row['publishDate'] = MDYDateFormat($row['publishDate']);
                         $row['edition'] = convertToOrdinal($row['edition']);
-                        $row['imagePath'] = "https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row['imagePath']));
+                        $row['imagePath'] = (isSecure() ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row['imagePath']));
 
                         $sub_stmt = $conn->prepare('select authorName from author join book on author.bookID=book.id where author.bookID=?');
                         if (!$sub_stmt) {
@@ -140,7 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         }
                         $sub_stmt->close();
 
-                        unset($row['id']);
                         $finalResult[] = $row;
                   }
                   $stmt->close();

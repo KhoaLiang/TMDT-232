@@ -14,6 +14,7 @@ if ($return_status_code === 400) {
       require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
       require_once __DIR__ . '/../../../config/db_connection.php';
       require_once __DIR__ . '/../../../tool/php/converter.php';
+      require_once __DIR__ . '/../../../tool/php/check_https.php';
 
       try {
             // Connect to MySQL
@@ -99,8 +100,15 @@ if ($return_status_code === 400) {
                                           <div class="col-lg-5 col-12 p-0">
                                                 <div class='w-100 d-flex flex-column h-100 justify-content-center'>
                                                       <img class='custom_image w-100 mx-auto border border-2 rounded' id="userImage" alt="user image" data-initial-src="<?php if ($result['imagePath'])
-                                                                                                                                                                              echo "https://{$_SERVER['HTTP_HOST']}/data/user/customer/" . normalizeURL(rawurlencode($result['imagePath']));
-                                                                                                                                                                        else echo '/image/default_male.jpeg'; ?>">
+                                                                                                                                                                              echo (isSecure() ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/data/user/customer/" . normalizeURL(rawurlencode($result['imagePath']));
+                                                                                                                                                                        else {
+                                                                                                                                                                              if ($result['gender'] === 'M')
+                                                                                                                                                                                    echo '/image/default_male.jpeg';
+                                                                                                                                                                              else if ($result['gender'] === 'F')
+                                                                                                                                                                                    echo '/image/default_female.jpg';
+                                                                                                                                                                              else if ($result['gender'] === 'O')
+                                                                                                                                                                                    echo '/image/default_other.png';
+                                                                                                                                                                        } ?>">
                                                       </img>
                                                       <label class='btn btn-sm btn-light border border-dark mt-3 mx-auto'>
                                                             <input accept='image/jpeg,image/png' id="imageInput" type='file' class='d-none' onchange="setNewImage(event)"></input>
@@ -155,7 +163,10 @@ if ($return_status_code === 400) {
                                     </div>
                               </form>
                               <div id='historyPurchase' class='flex-column'>
-                                    <p class='fw-medium'>Current Accummulated Points:&nbsp;<span id="current_point" class='text-success'></span></p>
+                                    <p>Current Accummulated Points:&nbsp;<span id="current_point" class='fw-bold'></span></p>
+                                    <p>Loyalty Discount:&nbsp;<span id="loyalty_discount" class='fw-bold'></span></p>
+                                    <p>User Referenced:&nbsp;<span id="current_ref" class='fw-bold'></span></p>
+                                    <p>Referrer Discount:&nbsp;<span id="ref_discount" class='fw-bold'></span></p>
                                     <div>
                                           <form class="d-flex align-items-center w-100 search_form mt-2" role="search" id="search_order_form">
                                                 <button title='search order' class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
@@ -346,17 +357,17 @@ if ($return_status_code === 400) {
                                                 <p id='orderTime'></p>
                                           </div>
                                           <div class='d-flex'>
-                                                <p class='fw-medium'>Total Price:&nbsp;</p>
-                                                <p id='orderPrice'></p>
-                                          </div>
-                                          <div class='d-flex'>
                                                 <p class='fw-medium'>Total Discount:&nbsp;</p>
                                                 <p id='orderDiscount'></p>
+                                          </div>
+                                          <div class='d-flex'>
+                                                <p class='fw-medium'>Total Price:&nbsp;</p>
+                                                <p id='orderPrice'></p>
                                           </div>
 
                                           <div class='mt-4'>
                                                 <div class='flex-column' id='fileCopyDisplay'>
-                                                      <h5>File Copies</h5>
+                                                      <h5>E-books</h5>
                                                       <div class="w-100 overflow-x-auto">
                                                             <table class="table table-hover border border-2 table-bordered w-100">
                                                                   <thead>
@@ -381,7 +392,7 @@ if ($return_status_code === 400) {
                                                       </div>
                                                 </div>
                                                 <div class='flex-column mt-3' id='physicalCopyDisplay'>
-                                                      <h5>Physical Copies</h5>
+                                                      <h5>Hardcovers</h5>
                                                       <p>
                                                             <span class='fw-medium'>Delivery Address:&nbsp;</span>
                                                             <span id='physicalDestination'></span>

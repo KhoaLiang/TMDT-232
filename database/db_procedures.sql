@@ -447,29 +447,63 @@ begin
     end while;
     
     update customerOrder set status=true,purchaseTime=now(),orderCode=code where id=orderID;
+    update customer join customerOrder on customerOrder.customerID=customer.id set customer.point=customer.point+round(customerOrder.totalCost*(select pointConversionRate from pointConfig)/100.0,2) where customerOrder.id=orderID;
 end//
 delimiter ;
 
-drop procedure if exists getDiscountBooks;
+drop procedure if exists addFileToCart;
 delimiter //
-create procedure getDiscountBooks()
+create procedure addFileToCart(
+	in customerID varchar(20),
+    in bookID varchar(20)
+)
 begin
-	declare eventID varchar(20) default null;
+	declare orderID varchar(20) default null;
     
-    select combined.id into eventID from (
-	select distinct discount.id,eventDiscount.discount,1 as cardinal from eventDiscount join discount on discount.id=eventDiscount.id and discount.status=true where eventDiscount.applyForAll=true and eventDiscount.startDate<=curdate() and eventDiscount.endDate>=curdate()
-	union
-	select distinct discount.id,eventDiscount.discount,2 as cardinal from eventDiscount join discount on discount.id=eventDiscount.id and discount.status=true join eventApply on eventDiscount.applyForAll=false and eventDiscount.id=eventApply.eventID where eventDiscount.startDate<=curdate() and eventDiscount.endDate>=curdate()
-	) as combined order by combined.discount desc,combined.cardinal,combined.id limit 1;
+    select id into orderID from customerOrder where customerOrder.status=false and customerOrder.customerID=customerID;
     
-    if eventID is not null then
-		select discount,startDate,endDate from eventDiscount where id=eventID;
+    if orderID is null then
+		insert into customerOrder(customerID) values(customerID);
+        select id into orderID from customerOrder where customerOrder.status=false and customerOrder.customerID=customerID;
     end if;
     
-    if eventID is not null and (select applyForAll from eventDiscount where id=eventID) then
-		select id,name,edition,imagePath from book order by name,edition,id limit 10;
-    elseif eventID is not null and not(select applyForAll from eventDiscount where id=eventID) then
-		select book.id,name,edition,imagePath from book join eventApply on eventApply.bookID=book.id and eventApply.eventID=eventID order by name,edition,id limit 10;
+    if not exists(select * from fileOrder where id=orderID) then
+		insert into fileOrder(id) values(orderID);
+    end if;
+    
+    insert into fileOrderContain(orderID,bookID) values(orderID,bookID);
+end//
+delimiter ;
+
+drop procedure if exists addPhysicalToCart;
+delimiter //
+create procedure addPhysicalToCart(
+	in customerID varchar(20),
+    in bookID varchar(20),
+    in amount int
+)
+begin
+	declare orderID varchar(20) default null;
+    
+    select id into orderID from customerOrder where customerOrder.status=false and customerOrder.customerID=customerID;
+    
+    if orderID is null then
+		insert into customerOrder(customerID) values(customerID);
+        select id into orderID from customerOrder where customerOrder.status=false and customerOrder.customerID=customerID;
+    end if;
+    
+    if not exists(select * from physicalOrder where id=orderID) then
+		begin
+			declare address varchar(1000) default null;
+            select appUser.address into address from appUser where appUser.id=customerID;
+            insert into physicalOrder(id,destinationAddress) values(orderID,address);
+        end;
+    end if;
+    
+    if not exists(select * from physicalOrderContain where physicalOrderContain.orderID=orderID and physicalOrderContain.bookID=bookID) then
+		insert into physicalOrderContain(orderID,bookID,amount) values(orderID,bookID,amount);
+    else
+		update physicalOrderContain set physicalOrderContain.amount=physicalOrderContain.amount+amount where physicalOrderContain.orderID=orderID and physicalOrderContain.bookID=bookID;
     end if;
 end//
 delimiter ;

@@ -41,6 +41,10 @@ begin
     if exists(select * from fileOrderContain join customerOrder on customerOrder.id=fileOrderContain.orderID and customerOrder.status=true and customerOrder.customerID=customerID where fileOrderContain.orderID!=new.orderID and fileOrderContain.bookID=new.bookID) then
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'This customer has already bought this book!';
     end if;
+    
+    if (select price from fileCopy where id=new.bookID) is null or (select filePath from fileCopy where id=new.bookID) is null then
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'This e-book is not available for purchase!';
+    end if;
 end//
 delimiter ;
 
@@ -86,6 +90,18 @@ for each row
 begin
     if (select customerOrder.status from customerOrder where customerOrder.id=old.orderID) then
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Can not update content of order that has been purchased!';
+    end if;
+end//
+delimiter ;
+
+drop trigger if exists physicalOrderContainBusinessConstraintInsertTrigger;
+delimiter //
+create trigger physicalOrderContainBusinessConstraintInsertTrigger
+before insert on physicalOrderContain
+for each row
+begin
+    if (select price from physicalCopy where id=new.bookID) is null or (select inStock from physicalCopy where id=new.bookID)=0 then
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'This hardcover is not available for purchase!';
     end if;
 end//
 delimiter ;
@@ -177,50 +193,7 @@ begin
     end if;
 end//
 delimiter ;
-
--- This trigger update average rating of the book after insertion
-drop trigger if exists ratingInsertTrigger2;
-delimiter //
-create trigger ratingInsertTrigger2
-after insert on rating
-for each row
-begin
-	update book set avgRating=round((select total(star) from rating where rating.bookID=new.bookID)/(select count(*) from rating where rating.bookID=new.bookID),1) where book.id=new.bookID;
-end//
-delimiter ;
-
--- This trigger update average rating of the book after update
-drop trigger if exists ratingUpdateTrigger;
-delimiter //
-create trigger ratingUpdateTrigger
-after update on rating
-for each row
-begin
-	update book set avgRating=round((select total(star) from rating where rating.bookID=new.bookID)/(select count(*) from rating where rating.bookID=new.bookID),1) where book.id=new.bookID;
-end//
-delimiter ;
 -- ** End of rating **
-
--- ** Begin of comment **
--- This trigger forbid any insert statement to `comment` table if the user hasn't bought the book yet
-drop trigger if exists commentInsertTrigger;
-delimiter //
-create trigger commentInsertTrigger
-before insert on comment
-for each row
-begin
-	if not (
-    exists(select * from customerOrder join fileOrder on fileOrder.id=customerOrder.id join fileOrderContain on fileOrderContain.orderID=fileOrder.id
-    where customerOrder.status=true and customerOrder.customerID=new.customerID and fileOrderContain.bookID=new.bookID) 
-    or
-    exists(select * from customerOrder join physicalOrder on physicalOrder.id=customerOrder.id join physicalOrderContain on physicalOrderContain.orderID=physicalOrder.id
-    where customerOrder.status=true and customerOrder.customerID=new.customerID and physicalOrderContain.bookID=new.bookID)
-    ) then
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Customer hasn\'t buy this book yet, commenting is not allowed!';
-    end if;
-end//
-delimiter ;
--- ** End of comment **
 
 -- ** Begin of customerOrder **
 -- These 2 triggers below forbid any delete or update statement to any row of `customerOrder` table that has `status` set to true (order has been purchased)

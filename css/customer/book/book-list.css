@@ -1,0 +1,84 @@
+.itemChoose {
+      color: rgb(255, 125, 0);
+}
+
+#search_book {
+      padding-left: 35px !important;
+}
+
+.card {
+      min-width: 225px;
+      max-width: 225px;
+}
+
+.card-img-top {
+      margin-left: auto;
+      margin-right: auto;
+      /* width: 150px; */
+      /* height: 250px; */
+      height: 300px;
+}
+
+/* .card p {
+      font-size: 13px;
+} */
+
+.panel {
+      width: 300px;
+      height: 1000px;
+      overflow-y: auto;
+}
+
+.cardHover:hover {
+      border: 1px solid black;
+}
+
+.rowContainer {
+      width: 800px;
+}
+
+@media only screen and (max-width:1199px) {
+      .rowContainer {
+            width: 1080px;
+      }
+}
+
+@media only screen and (max-width:1099px) {
+      .rowContainer {
+            width: 805px;
+      }
+}
+
+@media only screen and (max-width:849px) {
+      .rowContainer {
+            width: 530px;
+      }
+}
+
+@media only screen and (max-width:575px) {
+      .rowContainer {
+            width: auto;
+      }
+}
+
+@media only screen and (max-width:339px) {
+      .customDisplay {
+            display: none;
+      }
+}
+
+/* @media only screen and (max-width:767px) {
+      .card {
+            min-width: 200px;
+            max-width: 200px;
+      }
+
+      .card-img-top {
+            width: 150px;
+            height: 250px;
+      }
+
+      .card p {
+            font-size: 13px;
+      }
+} */

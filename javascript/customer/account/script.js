@@ -308,7 +308,38 @@ function changePersonalInfo()
                         $('#addressInput').data('initial-value', $('#addressInput').val());
                         $('#dobInput').data('initial-value', $('#dobInput').val());
                         $('#genderInput').data('initial-value', $('#genderInput').val());
-                        $('#userImage').data('initial-src', $('#userImage').prop('src'));
+                        if ($('#userImage').prop('src').includes($('#userImage').data('initial-src')))
+                        {
+                              if ($('#userImage').data('initial-src').includes('default_male.jpeg') || $('#userImage').data('initial-src').includes('default_female.jpg') || $('#userImage').data('initial-src').includes('default_other.png'))
+                              {
+                                    if (gender === 'M')
+                                    {
+                                          let temp = $('#userImage').prop('src').replace("default_female.jpg", "default_male.jpeg");
+                                          temp = temp.replace("default_other.png", "default_male.jpeg");
+
+                                          $('#userImage').data('initial-src', temp);
+                                          $('#userImage').prop('src', temp);
+                                    }
+                                    else if (gender === 'F')
+                                    {
+                                          let temp = $('#userImage').prop('src').replace("default_male.jpeg", "default_female.jpg");
+                                          temp = temp.replace("default_other.png", "default_female.jpg");
+
+                                          $('#userImage').data('initial-src', temp);
+                                          $('#userImage').prop('src', temp);
+                                    }
+                                    else if (gender === 'O')
+                                    {
+                                          let temp = $('#userImage').prop('src').replace("default_male.jpeg", "default_other.png");
+                                          temp = temp.replace("default_female.jpg", "default_other.png");
+
+                                          $('#userImage').data('initial-src', temp);
+                                          $('#userImage').prop('src', temp);
+                                    }
+                              }
+                        }
+                        else
+                              $('#userImage').data('initial-src', $('#userImage').prop('src'));
                         $('#imageFileName').text('');
                         $('#imageInput').val('');
                         newImg = null;
@@ -322,7 +353,7 @@ function changePersonalInfo()
                   $('a').removeClass('disable_link');
                   $('#emailInput').prop('disabled', true);
 
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -419,7 +450,7 @@ function changePassword()
                   $('a').removeClass('disable_link');
                   $('#emailInput').prop('disabled', true);
 
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -471,7 +502,7 @@ function deactivateAccount()
                   $('a').removeClass('disable_link');
                   $('#emailInput').prop('disabled', true);
 
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -523,7 +554,7 @@ function deleteAccount()
                   $('a').removeClass('disable_link');
                   $('#emailInput').prop('disabled', true);
 
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -542,10 +573,6 @@ function findOrder()
       const search = encodeData($('#search_order').val().replace('/-/g', ''));
       const date = encodeData($('#orderDateInput').val());
 
-      $('*').addClass('wait');
-      $('button, input').prop('disabled', true);
-      $('a').addClass('disable_link');
-
       $.ajax({
             url: '/ajax_service/customer/account/get_order_list.php',
             method: 'GET',
@@ -556,11 +583,6 @@ function findOrder()
             dataType: 'json',
             success: function (data)
             {
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-                  $('#emailInput').prop('disabled', true);
-
                   if (data.error)
                   {
                         $('#errorModal').modal('show');
@@ -568,7 +590,11 @@ function findOrder()
                   }
                   else if (data.query_result)
                   {
-                        $('#current_point').text(data.query_result[0]);
+                        $('#current_point').text(data.query_result[0].point);
+                        $('#current_ref').text(data.query_result[0].refNumber);
+                        $('#loyalty_discount').text(data.query_result[0].loyaltyDiscount + '%');
+                        $('#ref_discount').text(data.query_result[0].refDiscount + '%');
+
                         $('#table_body').empty();
                         for (let i = 0; i < data.query_result[1].length; i++)
                         {
@@ -599,12 +625,7 @@ function findOrder()
 
             error: function (err)
             {
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-                  $('#emailInput').prop('disabled', true);
 
-                  console.error(err);
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -624,10 +645,6 @@ async function orderDetail(code, time, price, discount)
       $('#orderTime').text(time);
       $('#orderPrice').text(price);
       $('#orderDiscount').text(discount);
-
-      $('*').addClass('wait');
-      $('button, input').prop('disabled', true);
-      $('a').addClass('disable_link');
 
       let failed = false;
 
@@ -656,7 +673,7 @@ async function orderDetail(code, time, price, discount)
                               {
                                     let temp = '';
                                     temp += `<td class='align-middle'>${ i + 1 }</td>`
-                                    temp += `<td class='align-middle'><img src="${ data.query_result[i].imagePath }" alt=\"book image\" class=\"book_image\"></img></td>`;
+                                    temp += `<td class='align-middle'><a href="/book/book-detail?id=${ data.query_result[i].id }" alt="Go to book detail"><img src="${ data.query_result[i].imagePath }" alt=\"Book image\" class=\"book_image\"></img></a></td>`;
                                     temp += `<td class=\"col-2 align-middle\">${ data.query_result[i].name }</td>`;
                                     temp += `<td class=\"align-middle\">${ data.query_result[i].edition }</td>`;
                                     temp += `<td class=\"align-middle text-nowrap\">${ data.query_result[i].isbn }</td>`;
@@ -707,12 +724,7 @@ async function orderDetail(code, time, price, discount)
             {
                   failed = true;
 
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-                  $('#emailInput').prop('disabled', true);
 
-                  console.error(err);
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -752,7 +764,7 @@ async function orderDetail(code, time, price, discount)
                               {
                                     let temp = '';
                                     temp += `<td class='align-middle'>${ i + 1 }</td>`
-                                    temp += `<td class='align-middle'><img src="${ data.query_result[i].imagePath }" alt=\"book image\" class=\"book_image\"></img></td>`;
+                                    temp += `<td class='align-middle'><a href="/book/book-detail?id=${ data.query_result[i].id }" alt="Go to book detail"><img src="${ data.query_result[i].imagePath }" alt=\"Book image\" class=\"book_image\"></img></a></td>`;
                                     temp += `<td class=\"col-2 align-middle\">${ data.query_result[i].name }</td>`;
                                     temp += `<td class=\"align-middle\">${ data.query_result[i].edition }</td>`;
                                     temp += `<td class=\"align-middle text-nowrap\">${ data.query_result[i].isbn }</td>`;
@@ -802,12 +814,7 @@ async function orderDetail(code, time, price, discount)
             {
                   failed = true;
 
-                  $('*').removeClass('wait');
-                  $('button, input').prop('disabled', false);
-                  $('a').removeClass('disable_link');
-                  $('#emailInput').prop('disabled', true);
 
-                  console.error(err);
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -821,11 +828,6 @@ async function orderDetail(code, time, price, discount)
       });
 
       if (failed) return;
-
-      $('*').removeClass('wait');
-      $('button, input').prop('disabled', false);
-      $('a').removeClass('disable_link');
-      $('#emailInput').prop('disabled', true);
 
       $('#orderModal').modal('show');
 

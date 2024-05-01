@@ -1,6 +1,7 @@
 
 <?php
 require_once __DIR__ . '/verify_user_id.php';
+require_once __DIR__ . '/check_https.php';
 
 function check_session()
 {
@@ -11,7 +12,7 @@ function check_session()
                   'lifetime' => 3 * 24 * 60 * 60,
                   'path' => '/',
                   'domain' => '',
-                  'secure' => true,
+                  'secure' => isSecure(),
                   'httponly' => true,
                   'samesite' => 'Strict'
             ])) return false;
@@ -21,10 +22,11 @@ function check_session()
       }
 
       if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['id']) && isset($_SESSION['type']) && ($_SESSION['type'] === 'admin' || $_SESSION['type'] === 'customer')) {
-            if (verifyUserID($_SESSION['id']))
+            if (verifyUserID($_SESSION['id'], $_SESSION['type']))
                   return true;
             else {
-                  $_SESSION = [];
+                  session_destroy();
+                  //$_SESSION = [];
                   return false;
             }
       } else return false;

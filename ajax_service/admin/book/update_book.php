@@ -11,6 +11,7 @@ if (!check_session() || (check_session() && $_SESSION['type'] !== 'admin')) {
 require_once __DIR__ . '/../../../tool/php/sanitizer.php';
 require_once __DIR__ . '/../../../config/db_connection.php';
 require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
+require_once __DIR__ . '/../../../tool/php/check_https.php';
 
 // Include Composer's autoloader
 require_once __DIR__ . '/../../../vendor/autoload.php';
@@ -38,7 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             isset($_POST['physicalPrice']) &&
             isset($_POST['filePrice']) &&
             isset($_POST['inStock']) &&
-            isset($_POST['removeFile']) 
+            isset($_POST['removeFile']) &&
+            isset($_POST['id'])
       ) {
             try {
                   if (!isset($_SERVER['HTTP_X_CSRF_TOKEN']) || !checkToken($_SERVER['HTTP_X_CSRF_TOKEN'])) {
@@ -47,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         exit;
                   }
 
-                  $id = $_SESSION['update_book_id'];
+                  $id = sanitize(rawurldecode($_POST['id']));
                   $name = sanitize(rawurldecode($_POST['name']));
                   $edition = sanitize(rawurldecode($_POST['edition']));
                   $isbn = sanitize(str_replace('-', '', rawurldecode($_POST['isbn'])));
@@ -58,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   $description = sanitize(rawurldecode($_POST['description'])) ? sanitize(rawurldecode($_POST['description'])) : null;
                   $physicalPrice = sanitize(rawurldecode($_POST['physicalPrice'])) ? sanitize(rawurldecode($_POST['physicalPrice'])) : null;
                   $filePrice = sanitize(rawurldecode($_POST['filePrice'])) ? sanitize(rawurldecode($_POST['filePrice'])) : null;
-                  $inStock = sanitize(rawurldecode($_POST['inStock'])) ? sanitize(rawurldecode($_POST['inStock'])) : null;
+                  $inStock = sanitize(rawurldecode($_POST['inStock'])) ? sanitize(rawurldecode($_POST['inStock'])) : 0;
                   $removeFile = filter_var(sanitize(rawurlencode($_POST['removeFile'])), FILTER_VALIDATE_BOOLEAN);
 
                   if (!$id) {
@@ -121,6 +123,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                   }
 
+                  if (!count($category)) {
+                        http_response_code(400);
+                        echo json_encode(['error' => 'Book must belong to at least one category!']);
+                        exit;
+                  }
+
                   if (!$publisher) {
                         http_response_code(400);
                         echo json_encode(['error' => 'Publisher is empty!']);
@@ -159,19 +167,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                   if ($physicalPrice && (!is_numeric($physicalPrice) || $physicalPrice <= 0)) {
                         http_response_code(400);
-                        echo json_encode(['error' => 'Physical copy price invalid!']);
+                        echo json_encode(['error' => 'Hardcover price invalid!']);
                         exit;
                   }
 
                   if ($inStock && (!is_numeric($inStock) || $inStock < 0)) {
                         http_response_code(400);
-                        echo json_encode(['error' => 'Physical copy in stock invalid!']);
+                        echo json_encode(['error' => 'Hardcover in stock invalid!']);
                         exit;
                   }
 
                   if ($filePrice && (!is_numeric($filePrice) || $filePrice <= 0)) {
                         http_response_code(400);
-                        echo json_encode(['error' => 'File copy price invalid!']);
+                        echo json_encode(['error' => 'E-book price invalid!']);
                         exit;
                   }
 
@@ -712,7 +720,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                           exit;
                                     }
                                     $stmt->close();
-                                    $queryResult = "https://{$_SERVER['HTTP_HOST']}/data/book/$pdfFile";
+                                    $queryResult = (isSecure() ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/data/book/$pdfFile";
                               }
                         }
                   } else if ($removeFile) {

@@ -11,17 +11,16 @@ if ($return_status_code === 400) {
       http_response_code(403);
       require_once __DIR__ . '/../../../error/403.php';
 } else if ($return_status_code === 200) {
-      unset($_SESSION['update_book_id']);
 
       require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
       require_once __DIR__ . '/../../../config/db_connection.php';
       require_once __DIR__ . '/../../../tool/php/converter.php';
       require_once __DIR__ . '/../../../tool/php/sanitizer.php';
+      require_once __DIR__ . '/../../../tool/php/check_https.php';
 
       if (isset($_GET['id'])) {
             try {
                   $id = sanitize(rawurldecode($_GET['id']));
-                  $_SESSION['update_customer_id'] = $id;
 
                   // Connect to MySQL
                   $conn = mysqli_connect($db_host, $db_user, $db_password, $db_database, $db_port);
@@ -87,6 +86,9 @@ if ($return_status_code === 400) {
             <title>Customer Detail</title>
             <?php storeToken(); ?>
             <link rel="stylesheet" href="/css/admin/customer/customer_detail.css">
+            <script>
+                  const customerID = '<?php echo $id; ?>';
+            </script>
       </head>
 
       <body>
@@ -111,7 +113,12 @@ if ($return_status_code === 400) {
                                     <hr class='mx-2'>
                               </div>
                               <div class='w-100 flex-grow-1 mb-2 d-flex flex-column'>
-                                    <p class='fw-medium px-2'>Current Accummulated Points:&nbsp;<span id="current_point" class='text-success'></span></p>
+                                    <div class='px-2'>
+                                          <p>Current Accummulated Points:&nbsp;<span id="current_point" class='fw-bold'></span></p>
+                                          <p>Loyalty Discount:&nbsp;<span id="loyalty_discount" class='fw-bold'></span></p>
+                                          <p>User Referenced:&nbsp;<span id="current_ref" class='fw-bold'></span></p>
+                                          <p>Referrer Discount:&nbsp;<span id="ref_discount" class='fw-bold'></span></p>
+                                    </div>
                                     <div class='px-2'>
                                           <form class="d-flex align-items-center w-100 search_form mt-2" role="search" id="search_order_form">
                                                 <button title='search order' class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
@@ -183,8 +190,15 @@ if ($return_status_code === 400) {
                                     <div class="col-lg-5 col-12">
                                           <div class='w-100 d-flex flex-column h-100 justify-content-center'>
                                                 <img class='custom_image w-100 mx-auto' id="userImage" alt="User image" data-initial-src="<?php if ($result['imagePath'])
-                                                                                                                                                echo "https://{$_SERVER['HTTP_HOST']}/data/user/customer/" . normalizeURL(rawurlencode($result['imagePath']));
-                                                                                                                                          else echo '/image/default_male.jpeg'; ?>">
+                                                                                                                                                echo (isSecure() ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/data/user/customer/" . normalizeURL(rawurlencode($result['imagePath']));
+                                                                                                                                          else {
+                                                                                                                                                if ($result['gender'] === 'M')
+                                                                                                                                                      echo '/image/default_male.jpeg';
+                                                                                                                                                else if ($result['gender'] === 'F')
+                                                                                                                                                      echo '/image/default_female.jpg';
+                                                                                                                                                else if ($result['gender'] === 'O')
+                                                                                                                                                      echo '/image/default_other.png';
+                                                                                                                                          } ?>">
                                                 </img>
                                           </div>
                                     </div>
@@ -323,7 +337,7 @@ if ($return_status_code === 400) {
 
                                           <div class='mt-4'>
                                                 <div class='flex-column' id='fileCopyDisplay'>
-                                                      <h5>File Copies</h5>
+                                                      <h5>E-books</h5>
                                                       <div class="w-100 overflow-x-auto">
                                                             <table class="table table-hover border border-2 table-bordered w-100">
                                                                   <thead>
@@ -348,7 +362,7 @@ if ($return_status_code === 400) {
                                                       </div>
                                                 </div>
                                                 <div class='flex-column mt-3' id='physicalCopyDisplay'>
-                                                      <h5>Physical Copies</h5>
+                                                      <h5>Hardcovers</h5>
                                                       <p>
                                                             <span class='fw-medium'>Delivery Address:&nbsp;</span>
                                                             <span id='physicalDestination'></span>

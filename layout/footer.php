@@ -30,7 +30,7 @@
                                     <img title='Mastercard payment method' src='/image/mastercard.jpg' class='payment_method_footer rounded border bg-white ms-sm-1 mt-1 mt-sm-0'>
                               </div>
                               <div class='d-flex flex-column flex-sm-row align-items-center justify-content-center mt-1'>
-                                    <img title='JCB payment method' src='/image/jcb.png' class='payment_method_footer rounded border border-1 border-white bg-white me-sm-1 mb-1 mb-sm-0'>
+                                    <img title='American Express payment method' src='/image/AE.png' class='payment_method_footer rounded border border-1 border-white bg-white me-sm-1 mb-1 mb-sm-0'>
                                     <svg class='payment_method_footer rounded border bg-white ms-sm-1 mt-1 mt-sm-0' version="1.1" id="Layer_1" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="64px" height="64px" viewBox="0 0 780 501" enable-background="new 0 0 780 501" xml:space="preserve" fill="#000000">
                                           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -112,7 +112,7 @@
                                                 </g>
                                           </svg>
                                     </a>
-                                    <a aria-label='NQK Bookstore linkedln' href="#" class='my-1 bg-white rounded-circle' style="width:30px;height:30px;">
+                                    <a aria-label='NQK Bookstore linkedln' href="#" class='d-flex align-items-center justify-content-center bg-white rounded-circle' style="width:30px;height:30px;">
                                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20px" height="20px">
                                                 <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
                                           </svg>
@@ -128,10 +128,10 @@
                                     </a>
                               </div>
                               <div class='d-flex flex-column ms-1'>
-                                    <a aria-label='NQK Bookstore facebook' href="#" class='mb-1 align-middle text-start pt-1' style="height:30px">Facebook</a>
-                                    <a aria-label='NQK Bookstore instagram' href="#" class='my-1 align-middle text-start pt-1' style="height:30px">Instagram</a>
+                                    <a aria-label='NQK Bookstore facebook' href="#" class='align-middle text-start pt-1' style="height:30px">Facebook</a>
+                                    <a aria-label='NQK Bookstore instagram' href="#" class='mt-2 align-middle text-start pt-1' style="height:30px">Instagram</a>
                                     <a aria-label='NQK Bookstore X' href="#" class='mt-1 align-middle text-start pt-1' style="height:30px">X (Twitter)</a>
-                                    <a aria-label=' NQK group github' href="https://github.com/NQK-dev-team" class='my-1 align-middle text-start pt-2' style="height:30px">Github</a>
+                                    <a aria-label=' NQK group github' href="https://github.com/NQK-dev-team" class='align-middle text-start pt-2' style="height:30px">Github</a>
                               </div>
                         </div>
                   </div>

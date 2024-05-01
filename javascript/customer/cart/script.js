@@ -2,11 +2,12 @@ let deleteID = null, refreshList = null;
 let pause = false;
 
 
-$(document).ready(function ()
+$(document).ready(async function ()
 {
       $('#errorModal').on('hidden.bs.modal', function ()
       {
             $('#error_message').text('');
+            pause = false;
       });
 
       $("#cartForm").submit(function (e)
@@ -15,7 +16,7 @@ $(document).ready(function ()
 
             pause = true;
 
-            $('#confirmModal').modal('show');
+            payOrder()
       });
 
       $('#deleteModal').on('hidden.bs.modal', function ()
@@ -24,18 +25,23 @@ $(document).ready(function ()
             refreshList = null;
       });
 
-      // $('#paymentSuccess').on('hidden.bs.modal', function ()
-      // {
-      //       pause = false;
-      // });
+      $('#paymentSuccess').on('hidden.bs.modal', function ()
+      {
+            pause = false;
+      });
 
-      reEvalOrder(true);
+      await reEvalOrder(true);
 
-      fetchFileOrder();
+      await fetchFileOrder();
 
-      fetchPhysicalOrder(true);
+      await fetchPhysicalOrder(true);
 
-      updateBillingDetail();
+      await updateBillingDetail();
+
+      $('div[name="physical_row"]').each(function ()
+      {
+            updateInStock($(this).data('id'));
+      });
 
       setInterval(() =>
       {
@@ -56,7 +62,7 @@ $(document).ready(function ()
 
 function placeOrder()
 {
-      if ($('#fileSection').css('display') === 'none' && $('#physicalSection').css('display') === 'none')
+      if (!$('#fileList').children().length && !$('#physicalList').children().length)
       {
             $('#errorModal').modal('show');
             $('#error_message').text('Your cart is empty!');
@@ -79,7 +85,7 @@ function placeOrder()
       {
             const id = $(this).data('id');
 
-            checkAmmount(id);
+            checkAmmount(id, true);
 
             if ($(`#book_ammount_${ id }`).get(0).validationMessage)
             {
@@ -88,88 +94,9 @@ function placeOrder()
             }
       });
 
-      if (signal) return;
+      //if (signal) return;
 
-      if ($('#card-payment').is(':checked'))
-      {
-            if (!$('#visa-payment').is(':checked') && !$('#jcb-payment').is(':checked') && !$('#mastercard-payment').is(':checked'))
-            {
-                  $('#errorModal').modal('show');
-                  $('#error_message').text('Please select a card type!');
-                  return;
-            }
-
-            clearCustomValidity($(`#card-holder-name`).get(0));
-            if (!$('#card-holder-name').val())
-            {
-                  reportCustomValidity($(`#card-holder-name`).get(0), "Please fill in your card holder name!");
-                  return;
-            }
-
-            clearCustomValidity($(`#card-number`).get(0));
-            if (!$('#card-number').val())
-            {
-                  reportCustomValidity($(`#card-number`).get(0), "Please fill in your card number!");
-                  return;
-            }
-            else if ($('#card-number').val().length < 16)
-            {
-                  reportCustomValidity($(`#card-number`).get(0), "Card number must have 16 digits!");
-                  return;
-            }
-            else
-            {
-                  const regex = /^[0-9]{16}$/;
-                  const cardNumber = $('#card-number').val();
-                  if (!regex.test(cardNumber))
-                  {
-                        reportCustomValidity($(`#card-number`).get(0), "Card number contain non-numerical character(s)!");
-                        return;
-                  }
-            }
-
-            clearCustomValidity($(`#card-expiration`).get(0));
-            if (!$('#card-expiration').val())
-            {
-                  reportCustomValidity($(`#card-expiration`).get(0), "Please fill in your card expiration date!");
-                  return;
-            }
-            else
-            {
-                  const selected = new Date($('#card-expiration').val());
-                  const current = new Date();
-
-                  if (selected.getFullYear() < current.getFullYear() || (selected.getFullYear() === current.getFullYear() && selected.getMonth() <= current.getMonth()))
-                  {
-                        reportCustomValidity($(`#card-expiration`).get(0), "Your card has expired!");
-                        return;
-                  }
-            }
-
-            clearCustomValidity($(`#card-cvv`).get(0));
-            if (!$('#card-cvv').val())
-            {
-                  reportCustomValidity($(`#card-cvv`).get(0), "Please fill in your card CVV!");
-                  return;
-            }
-            else if ($('#card-cvv').val().length < 3)
-            {
-                  reportCustomValidity($(`#card-cvv`).get(0), "CVV must have 3 digits!");
-                  return;
-            }
-            else
-            {
-                  const regex = /^[0-9]{3}$/;
-                  const cvv = $('#card-cvv').val();
-                  if (!regex.test(cvv))
-                  {
-                        reportCustomValidity($(`#card-cvv`).get(0), "CVV contain non-numerical character(s)!");
-                        return;
-                  }
-            }
-      }
-
-      $('#cartForm').submit();
+      return !signal;
 }
 
 function updateInStock(id)
@@ -186,16 +113,16 @@ function updateInStock(id)
                         $('#errorModal').modal('show');
                         $('#error_message').text(data.error);
                   }
-                  else if (data.query_result)
+                  else
                   {
                         $(`#in_stock_${ id }`).text(data.query_result);
-                        checkAmmount(id);
+                        checkAmmount(id, true);
                   }
             },
 
             error: function (err)
             {
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -209,9 +136,9 @@ function updateInStock(id)
       });
 }
 
-function reEvalOrder(isFirstTime)
+async function reEvalOrder(isFirstTime)
 {
-      $.ajax({
+      await $.ajax({
             url: '/ajax_service/customer/cart/re_eval_order.php',
             method: 'GET',
             headers: {
@@ -237,7 +164,7 @@ function reEvalOrder(isFirstTime)
 
             error: function (err)
             {
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -251,9 +178,9 @@ function reEvalOrder(isFirstTime)
       });
 }
 
-function updateBillingDetail()
+async function updateBillingDetail()
 {
-      $.ajax({
+      await $.ajax({
             url: '/ajax_service/customer/cart/get_bill_detail.php',
             method: 'GET',
             headers: {
@@ -280,7 +207,7 @@ function updateBillingDetail()
 
             error: function (err)
             {
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -294,9 +221,9 @@ function updateBillingDetail()
       });
 }
 
-function fetchFileOrder()
+async function fetchFileOrder()
 {
-      $.ajax({
+      await $.ajax({
             url: '/ajax_service/customer/cart/get_file_order.php',
             method: 'GET',
             headers: {
@@ -315,7 +242,7 @@ function fetchFileOrder()
                         if (!Array.isArray(data.query_result) && data.query_result.detail.length)
                         {
                               $('#fileList').empty();
-                              $('#fileSection').css('display', 'flex');
+                              // $('#fileSection').css('display', 'flex');
 
                               let temp = '';
                               for (let i = 0; i < data.query_result.detail.length - 1; i++)
@@ -407,14 +334,14 @@ function fetchFileOrder()
                         else
                         {
                               $('#fileList').empty();
-                              $('#fileSection').css('display', 'none');
+                              // $('#fileSection').css('display', 'none');
                         }
                   }
             },
 
             error: function (err)
             {
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -428,9 +355,9 @@ function fetchFileOrder()
       });
 }
 
-function fetchPhysicalOrder(isFirstTime)
+async function fetchPhysicalOrder(isFirstTime)
 {
-      $.ajax({
+      await $.ajax({
             url: '/ajax_service/customer/cart/get_physical_order.php',
             method: 'GET',
             headers: {
@@ -450,7 +377,7 @@ function fetchPhysicalOrder(isFirstTime)
                         {
                               $('#physicalList').empty();
                               $('#physicalDestination').prop('disabled', false);
-                              $('#physicalSection').css('display', 'flex');
+                              // $('#physicalSection').css('display', 'flex');
 
                               if (isFirstTime)
                                     $('#physicalDestination').val(data.query_result.destinationAddress);
@@ -495,12 +422,12 @@ function fetchPhysicalOrder(isFirstTime)
                                     <div class='mt-lg-auto mx-lg-0 mx-auto mt-2 pt-lg-4 d-flex justify-content-center'>
                                           <div class="btn-group" role="group">
                                                 <input aria-label='Decrease amount' onclick='adjustAmount(false,"${ data.query_result.detail[i].id }")' type="button" class="btn-check" id="decrease_book_ammount_${ data.query_result.detail[i].id }" autocomplete="off">
-                                                <label class="btn btn-outline-danger" for="decrease_book_ammount_${ data.query_result.detail[i].id }">-</label>
+                                                <label class="btn btn-secondary" for="decrease_book_ammount_${ data.query_result.detail[i].id }">-</label>
 
-                                                <input onchange='checkAmmount("${ data.query_result.detail[i].id }",true)' type="number" class="fw-bold ammount_input ps-2" id="book_ammount_${ data.query_result.detail[i].id }" autocomplete="off" value="${ data.query_result.detail[i].amount }" min="1" max="${ data.query_result.detail[i].inStock }">
+                                                <input onchange='checkAmmount("${ data.query_result.detail[i].id }",false,true)' type="number" class="fw-bold ammount_input ps-2 border border-2 border-secondary" id="book_ammount_${ data.query_result.detail[i].id }" autocomplete="off" value="${ data.query_result.detail[i].amount }" min="1" max="${ data.query_result.detail[i].inStock }">
 
                                                 <input aria-label='Increase amount' onclick='adjustAmount(true,"${ data.query_result.detail[i].id }")' type="button" class="btn-check" id="increase_book_ammount_${ data.query_result.detail[i].id }" autocomplete="off">
-                                                <label class="btn btn-outline-success" for="increase_book_ammount_${ data.query_result.detail[i].id }">+</label>
+                                                <label class="btn btn-secondary" for="increase_book_ammount_${ data.query_result.detail[i].id }">+</label>
                                           </div>
                                     </div>
                                           <div class='d-flex mt-2 mb-lg-auto mx-auto'>
@@ -551,12 +478,12 @@ function fetchPhysicalOrder(isFirstTime)
                                     <div class='mt-lg-auto mx-lg-0 mx-auto mt-2 pt-lg-4 d-flex justify-content-center'>
                                           <div class="btn-group my-lg-auto mx-lg-0 mx-auto mt-2" role="group">
                                                 <input aria-label='Decrease amount' onclick='adjustAmount(false,"${ data.query_result.detail[data.query_result.detail.length - 1].id }")' type="button" class="btn-check" id="decrease_book_ammount_${ data.query_result.detail[data.query_result.detail.length - 1].id }" autocomplete="off">
-                                                <label class="btn btn-outline-danger" for="decrease_book_ammount_${ data.query_result.detail[data.query_result.detail.length - 1].id }">-</label>
+                                                <label class="btn btn-secondary" for="decrease_book_ammount_${ data.query_result.detail[data.query_result.detail.length - 1].id }">-</label>
 
-                                                <input onchange='checkAmmount("${ data.query_result.detail[data.query_result.detail.length - 1].id }",true)' type="number" class="fw-bold ammount_input ps-2" id="book_ammount_${ data.query_result.detail[data.query_result.detail.length - 1].id }" autocomplete="off" value="${ data.query_result.detail[data.query_result.detail.length - 1].amount }" min="1" max="${ data.query_result.detail[data.query_result.detail.length - 1].inStock }">
+                                                <input onchange='checkAmmount("${ data.query_result.detail[data.query_result.detail.length - 1].id }",false,true)' type="number" class="fw-bold ammount_input ps-2 border border-2 border-secondary" id="book_ammount_${ data.query_result.detail[data.query_result.detail.length - 1].id }" autocomplete="off" value="${ data.query_result.detail[data.query_result.detail.length - 1].amount }" min="1" max="${ data.query_result.detail[data.query_result.detail.length - 1].inStock }">
 
                                                 <input aria-label='Increase amount' onclick='adjustAmount(true,"${ data.query_result.detail[data.query_result.detail.length - 1].id }")' type="button" class="btn-check" id="increase_book_ammount_${ data.query_result.detail[data.query_result.detail.length - 1].id }" autocomplete="off">
-                                                <label class="btn btn-outline-success" for="increase_book_ammount_${ data.query_result.detail[data.query_result.detail.length - 1].id }">+</label>
+                                                <label class="btn btn-secondary" for="increase_book_ammount_${ data.query_result.detail[data.query_result.detail.length - 1].id }">+</label>
                                           </div>
                                     </div>
                                           <div class='d-flex mt-2 mb-lg-auto mx-auto'>
@@ -575,14 +502,14 @@ function fetchPhysicalOrder(isFirstTime)
                         {
                               $('#physicalList').empty();
                               $('#physicalDestination').prop('disabled', true).val('');
-                              $('#physicalSection').css('display', 'none');
+                              // $('#physicalSection').css('display', 'none');
                         }
                   }
             },
 
             error: function (err)
             {
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -631,7 +558,7 @@ function removeBook()
 
                   error: function (err)
                   {
-                        console.error(err);
+
                         if (err.status >= 500)
                         {
                               $('#errorModal').modal('show');
@@ -670,7 +597,7 @@ function removeBook()
 
                   error: function (err)
                   {
-                        console.error(err);
+
                         if (err.status >= 500)
                         {
                               $('#errorModal').modal('show');
@@ -689,37 +616,62 @@ function removeBook()
 function adjustAmount(isIncrease, id)
 {
       if (isIncrease)
+      {
             $(`#book_ammount_${ id }`).val(parseInt($(`#book_ammount_${ id }`).val()) + 1);
+            // const inStock = parseInt($(`#in_stock_${ id }`).text());
+            // if (parseInt($(`#book_ammount_${ id }`).val()) > inStock)
+            // {
+            //       $(`#book_ammount_${ id }`).val(inStock);
+            // }
+      }
       else
+      {
             $(`#book_ammount_${ id }`).val(parseInt($(`#book_ammount_${ id }`).val()) - 1);
+            // if (parseInt($(`#book_ammount_${ id }`).val()) < 1)
+            // {
+            //       $(`#book_ammount_${ id }`).val(1);
+            // }
+      }
 
-      checkAmmount(id, true);
+      checkAmmount(id, false, true);
 }
 
-function checkAmmount(id, update = false)
+function checkAmmount(id, errorFlag, update = false)
 {
       const amount = parseInt($(`#book_ammount_${ id }`).val());
       const inStock = parseInt($(`#in_stock_${ id }`).text());
 
-      clearCustomValidity($(`#book_ammount_${ id }`).get(0));
+      if (errorFlag)
+      {
+            clearCustomValidity($(`#book_ammount_${ id }`).get(0));
 
-      if (amount < 0)
+            if (amount < 0)
+            {
+                  reportCustomValidity($(`#book_ammount_${ id }`).get(0), "Book amount can not be negative!");
+                  return;
+            } else if (amount === 0)
+            {
+                  reportCustomValidity($(`#book_ammount_${ id }`).get(0), "Book amount can not be zero!");
+                  return;
+            }
+            else if (amount > inStock)
+            {
+                  reportCustomValidity($(`#book_ammount_${ id }`).get(0), "Book amount exceeds in stock amount!");
+                  return;
+            }
+      }
+
+      if (amount < 1 && inStock >= 1)
       {
-            reportCustomValidity($(`#book_ammount_${ id }`).get(0), "Book amount can not be negative!");
-            return;
-      } else if (amount === 0)
-      {
-            reportCustomValidity($(`#book_ammount_${ id }`).get(0), "Book amount can not be zero!");
-            return;
+            $(`#book_ammount_${ id }`).val(1);
       }
       else if (amount > inStock)
       {
-            reportCustomValidity($(`#book_ammount_${ id }`).get(0), "Book amount exceeds in stock amount!");
-            return;
+            $(`#book_ammount_${ id }`).val(inStock);
       }
 
       if (update)
-            updateAmount(amount, id);
+            updateAmount(parseInt($(`#book_ammount_${ id }`).val()), id);
 }
 
 function updateAmount(amount, id)
@@ -747,7 +699,7 @@ function updateAmount(amount, id)
 
             error: function (err)
             {
-                  console.error(err);
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -765,6 +717,12 @@ function payOrder()
 {
       const deliveryAddress = encodeData($('#physicalDestination').val());
 
+      $('*').addClass('wait');
+      $('button, input').prop('disabled', true);
+      $('a').addClass('disable_link');
+
+      const disableProp = $('#physicalDestination').prop('disabled');
+
       $.ajax({
             url: '/ajax_service/customer/cart/pay_order.php',
             method: 'POST',
@@ -775,6 +733,11 @@ function payOrder()
             dataType: 'json',
             success: function (data)
             {
+                  $('*').removeClass('wait');
+                  $('button, input').prop('disabled', false);
+                  $('a').removeClass('disable_link');
+                  $('#physicalDestination').prop('disabled', disableProp);
+
                   if (data.error)
                   {
                         $('#errorModal').modal('show');
@@ -793,7 +756,12 @@ function payOrder()
 
             error: function (err)
             {
-                  console.error(err);
+                  $('*').removeClass('wait');
+                  $('button, input').prop('disabled', false);
+                  $('a').removeClass('disable_link');
+                  $('#physicalDestination').prop('disabled', disableProp);
+
+
                   if (err.status >= 500)
                   {
                         $('#errorModal').modal('show');
@@ -805,16 +773,4 @@ function payOrder()
                   }
             }
       });
-}
-
-function selectCardPayment(selected)
-{
-      if (selected)
-            $('#card_input').removeClass('none');
-      else
-      {
-            $('#card_input').addClass('none');
-      }
-      $('#jcb-payment,#visa-payment,#mastercard-payment').prop('checked', false);
-      $('#card-holder-name,#card-number,#card-expiration,#card-cvv').val('');
 }

@@ -3,7 +3,7 @@ drop schema if exists bookstore;
 create schema bookstore;
 
 use bookstore;
-
+                              
 -- Important --
 SET @nullVar = NULL;
 
@@ -96,7 +96,7 @@ create table physicalCopy(
 	id varchar(20) primary key,
     price double,
     check (price>0),
-	inStock int,
+	inStock int not null default 0,
     check(inStock>=0),
     foreign key (id) references book(id) on delete cascade on update cascade
 );
@@ -105,39 +105,21 @@ create table rating(
 	customerID varchar(20),
     bookID varchar(20),
     primary key(customerID,bookID),
-    star double not null,
+    star int not null,
     check(star>=0 and star<=5),
+    comment text,
+    ratingTime datetime not null default CURRENT_TIMESTAMP,
     foreign key (customerID) references customer(id) on delete cascade on update cascade,
     foreign key (bookID) references book(id) on delete cascade on update cascade
-);
-
-create table comment(
-	customerID varchar(20),
-    bookID varchar(20),
-    primary key(customerID,bookID),
-    foreign key (customerID) references customer(id) on delete cascade on update cascade,
-    foreign key (bookID) references book(id) on delete cascade on update cascade
-);
-
-create table commentContent(
-	customerID varchar(20),
-    bookID varchar(20),
-    commentIdx int default 1, -- This only used to form a primary key, no further usage other than that.
-	check(commentIdx>=1),
-    primary key(customerID,bookID,commentIdx),
-    commentTime datetime not null,
-    content varchar(2000) not null,
-    foreign key (customerID) references comment(customerID) on delete cascade on update cascade,
-    foreign key (bookID) references comment(bookID) on delete cascade on update cascade
 );
 
 create table customerOrder(
 	id varchar(20) primary key,
     purchaseTime datetime,
     status boolean not null default false, -- true means the order has been purchased, false means not
-    totalCost double not null, -- cost after using discount coupons
+    totalCost double not null default 0, -- cost after using discount coupons
     check(totalCost>=0),
-    totalDiscount double not null,
+    totalDiscount double not null default 0,
     check(totalDiscount>=0),
     customerID varchar(20) not null,
     orderCode varchar(16) unique,
@@ -226,3 +208,10 @@ create table eventApply(
     foreign key (eventID) references eventDiscount(id) on delete cascade on update cascade,
     foreign key (bookID) references book(id) on delete cascade on update cascade
 ); -- Used to tell which books are discounted by the discount event that has `applyForAll` set to false
+
+create table request(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+    name varchar(255) not null,
+    author varchar(1000) not null,
+    requestTime datetime not null default now()
+);

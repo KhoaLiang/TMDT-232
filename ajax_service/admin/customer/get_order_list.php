@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../../tool/php/converter.php';
 require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-      if (isset($_GET['code']) && isset($_GET['date'])) {
+      if (isset($_GET['code']) && isset($_GET['date']) && isset($_GET['id'])) {
             try {
                   if (!isset($_SERVER['HTTP_X_CSRF_TOKEN']) || !checkToken($_SERVER['HTTP_X_CSRF_TOKEN'])) {
                         http_response_code(403);
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         exit;
                   }
 
-                  $id = $_SESSION['update_customer_id'];
+                  $id = sanitize(rawurldecode($_GET['id']));
                   $code = sanitize(rawurldecode(str_replace('-', '', $_GET['code'])));
                   $date = sanitize(rawurldecode($_GET['date']));
 
@@ -62,6 +62,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                         exit;
                   }
                   $point = $result->fetch_assoc()['point'];
+                  $stmt->close();
+
+                  $stmt = $conn->prepare("SELECT discount from customerDiscount where point<=? order by point desc limit 1");
+                  if (!$stmt) {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Query `SELECT discount from customerDiscount where point<=? order by point desc limit 1` preparation failed!']);
+                        exit;
+                  }
+                  $stmt->bind_param('s', $point);
+                  if (!$stmt->execute()) {
+                        http_response_code(500);
+                        echo json_encode(['error' => $stmt->error]);
+                        $stmt->close();
+                        $conn->close();
+                        exit;
+                  }
+                  $result = $stmt->get_result();
+                  if ($result->num_rows == 0) {
+                        $loyaltyDiscount = 0;
+                  } else {
+                        $loyaltyDiscount = $result->fetch_assoc()['discount'];
+                  }
+                  $stmt->close();
+
+                  $stmt = $conn->prepare("SELECT count(*) as result from customer where referrer=?");
+                  if (!$stmt) {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Query `SELECT count(*) as result from customer where referrer=?` preparation failed!']);
+                        exit;
+                  }
+                  $stmt->bind_param('s', $id);
+                  if (!$stmt->execute()) {
+                        http_response_code(500);
+                        echo json_encode(['error' => $stmt->error]);
+                        $stmt->close();
+                        $conn->close();
+                        exit;
+                  }
+                  $refNumber = $stmt->get_result()->fetch_assoc()['result'];
+                  $stmt->close();
+
+                  $stmt = $conn->prepare("SELECT discount from referrerDiscount where numberOfPeople<=? order by numberOfPeople desc limit 1");
+                  if (!$stmt) {
+                        http_response_code(500);
+                        echo json_encode(['error' => 'Query `SELECT discount from referrerDiscount where numberOfPeople<=? order by numberOfPeople desc limit 1` preparation failed!']);
+                        exit;
+                  }
+                  $stmt->bind_param('s', $refNumber);
+                  if (!$stmt->execute()) {
+                        http_response_code(500);
+                        echo json_encode(['error' => $stmt->error]);
+                        $stmt->close();
+                        $conn->close();
+                        exit;
+                  }
+                  $result = $stmt->get_result();
+                  if ($result->num_rows == 0) {
+                        $refDiscount = 0;
+                  } else {
+                        $refDiscount = $result->fetch_assoc()['discount'];
+                  }
                   $stmt->close();
 
                   $orders = [];
@@ -156,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                   }
 
                   $conn->close();
-                  echo json_encode(['query_result' => [$point, $orders]]);
+                  echo json_encode(['query_result' => [['point' => $point, 'loyaltyDiscount' => $loyaltyDiscount, 'refNumber' => $refNumber, 'refDiscount' => $refDiscount], $orders]]);
             } catch (Exception $e) {
                   http_response_code(500);
                   echo json_encode(['error' => $e->getMessage()]);

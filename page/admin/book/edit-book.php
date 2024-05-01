@@ -11,7 +11,6 @@ if ($return_status_code === 400) {
       http_response_code(403);
       require_once __DIR__ . '/../../../error/403.php';
 } else if ($return_status_code === 200) {
-      unset($_SESSION['update_customer_id']);
 
       require_once __DIR__ . '/../../../tool/php/anti_csrf.php';
 
@@ -20,11 +19,10 @@ if ($return_status_code === 400) {
             require_once __DIR__ . '/../../../tool/php/sanitizer.php';
             require_once __DIR__ . '/../../../tool/php/formatter.php';
             require_once __DIR__ . '/../../../tool/php/converter.php';
+            require_once __DIR__ . '/../../../tool/php/check_https.php';
 
             try {
                   $id = sanitize(rawurldecode($_GET['id']));
-
-                  $_SESSION['update_book_id'] = $id;
 
                   // Connect to MySQL
                   $conn = mysqli_connect($db_host, $db_user, $db_password, $db_database, $db_port);
@@ -64,7 +62,7 @@ if ($return_status_code === 400) {
                         } else {
                               $result = $result->fetch_assoc();
                               $result['isbn'] = formatISBN($result['isbn']);
-                              $result['imagePath'] = "src=\"https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($result['imagePath'])) . "\"";
+                              $result['imagePath'] = "src=\"" . (isSecure() ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($result['imagePath'])) . "\"";
                               $query_result = $result;
                         }
                   }
@@ -176,7 +174,7 @@ if ($return_status_code === 400) {
                               $query_result['fileCopy'] = [];
                         } else {
                               $row = $result->fetch_assoc();
-                              $row['filePath'] = $row['filePath'] ? "href=\"https://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row['filePath'])) . "\"" : '';
+                              $row['filePath'] = $row['filePath'] ? "href=\"" . (isSecure() ? 'https' : 'http') . "://{$_SERVER['HTTP_HOST']}/data/book/" . normalizeURL(rawurlencode($row['filePath'])) . "\"" : '';
                               $query_result['fileCopy']['price'] = $row['price'];
                               $query_result['fileCopy']['filePath'] = $row['filePath'];
                         }
@@ -239,6 +237,7 @@ if ($return_status_code === 400) {
             <?php storeToken(); ?>
             <script>
                   let originalCategory = `<?php echo implode("\n", $query_result['category']); ?>`;
+                  const bookID = '<?php echo $id; ?>';
             </script>
       </head>
 
@@ -250,6 +249,7 @@ if ($return_status_code === 400) {
                   <div class='w-100 h-100 d-flex'>
                         <form onsubmit="confirmSubmitForm(event)" class='position-relative border border-1 rounded border-dark custom_container m-auto bg-white d-flex flex-column my-4'>
                               <h1 class='ms-xl-3 mt-2 mx-auto'>Edit Book</h1>
+                              <hr class='mx-3'>
                               <div class="ms-auto me-3 mt-xl-3 mb-3 mb-xl-2 mt-5 order-xl-1 order-2 button_group align-self-xl-end">
                                     <button class="btn btn-secondary ms-1" onclick="resetForm()" type='button'>Reset</button>
                                     <button class="btn btn-success me-1" type='submit' onclick="clearAllCustomValidity()">Save</button>
@@ -292,7 +292,7 @@ if ($return_status_code === 400) {
                                                       <small class="form-text text-muted">You can enter multiple authors with each seperated by comma</small>
                                                 </div>
                                                 <div class="my-2 px-xl-5 px-3">
-                                                      <label for="categoryInput" class="form-label">Category:</label>
+                                                      <label for="categoryInput" class="form-label">Category:<span class='fw-bold text-danger'>&nbsp;*</span></label>
                                                       <textarea readonly onclick="openCategoryModal()" rows="4" class="form-control pointer" id="categoryInput"><?php echo implode("\n", $query_result['category']); ?></textarea>
                                                 </div>
                                                 <div class="my-2 px-xl-5 px-3">
@@ -309,12 +309,12 @@ if ($return_status_code === 400) {
                                                 </div>
                                                 <div class="my-2 px-xl-5 px-3 d-flex flex-md-row flex-column row">
                                                       <div class='col'>
-                                                            <label for="physicalPriceInput" class="form-label">Physical Copy Price ($):</label>
+                                                            <label for="physicalPriceInput" class="form-label">Hardcover Price ($):</label>
                                                             <input step="any" type="number" class="form-control" id="physicalPriceInput" value="<?php if ($query_result['physicalCopy']['price']) echo $query_result['physicalCopy']['price']; ?>" placeholder="<?php if (!$query_result['physicalCopy']['price']) echo 'Enter price'; ?>">
                                                       </div>
                                                       <div class="ms-md-5 mt-2 mt-md-0 col">
                                                             <label for="inStockInput" class="form-label">In Stock:</label>
-                                                            <input type="number" class="form-control" id="inStockInput" value="<?php if ($query_result['physicalCopy']['inStock']) echo $query_result['physicalCopy']['inStock']; ?>" placeholder="<?php if (!$query_result['physicalCopy']['inStock']) echo 'Enter number'; ?>">
+                                                            <input type="number" class="form-control" id="inStockInput" value="<?php if ($query_result['physicalCopy']['inStock'] || $query_result['physicalCopy']['inStock'] === 0) echo $query_result['physicalCopy']['inStock']; ?>" placeholder="<?php if (!$query_result['physicalCopy']['inStock']) echo 'Enter number'; ?>">
                                                       </div>
                                                 </div>
                                                 <div class="mb-auto mt-2 px-xl-5 px-3 d-flex flex-md-row flex-column row">
