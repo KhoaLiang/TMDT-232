@@ -186,6 +186,9 @@ if ($return_status_code === 400) {
                   $bDiscount = $discount['discount'];
                   $stmt->close();
 
+                  $userStar = 'null';
+                  $userComment = '';
+
                   if (check_session() && $_SESSION['type'] === 'customer') {
                         $canRate = false;
 
@@ -228,8 +231,6 @@ if ($return_status_code === 400) {
                               $conn->close();
                               exit;
                         }
-                        $userStar = 'null';
-                        $userComment = '';
                         $result = $stmt->get_result();
                         if ($result->num_rows === 1) {
                               $result = $result->fetch_assoc();
@@ -272,6 +273,9 @@ if ($return_status_code === 400) {
                   let originalRating = <?php echo $userStar; ?>;
                   let originalComment = '<?php echo $userComment; ?>';
             </script>
+            <?php
+            require_once __DIR__ . '/../../../head_element/google_analytic.php';
+            ?>
       </head>
 
       <body>
@@ -463,7 +467,7 @@ if ($return_status_code === 400) {
                               <div id='ratingList'>
                               </div>
                               <div class='mx-auto mt-3' id='showBtn'>
-                                    <button onclick='showAll=true; fetchRatings()' class='border-0 bg-white'>Show All <i class="bi bi-chevron-down"></i></button>
+                                    <button onclick='showAll=true; fetchRatings()' class='border-0 bg-light'>Show All <i class="bi bi-chevron-down"></i></button>
                               </div>
                         </div>
                   </div>
